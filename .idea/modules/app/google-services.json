@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "824138431450",
+    "firebase_url": "https://try3x-bc479.firebaseio.com",
+    "project_id": "try3x-bc479",
+    "storage_bucket": "try3x-bc479.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824138431450:android:f06bae08a73d78f5b19ee3",
+        "android_client_info": {
+          "package_name": "com.try3x.uttam"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "824138431450-fdscgff8hue4nhho09ggnok01lmbkqoq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.try3x.uttam",
+            "certificate_hash": "70265a1124fa01a173a321c5076e09c8dd5d66eb"
+          }
+        },
+        {
+          "client_id": "824138431450-1nh1nibgopmrk5ij1pgf48t8iorq14tj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.try3x.uttam",
+            "certificate_hash": "244196aaec52837867e60c0243fe8974a74358fc"
+          }
+        },
+        {
+          "client_id": "824138431450-g4c0em8ipmfrsq1h82rlueu7q08opff4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbqWjxtRRmgCRF_9SK2hcsu_inZ8EzgtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "824138431450-g4c0em8ipmfrsq1h82rlueu7q08opff4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:iconTint="@color/OrangeRed"
+            android:icon="@drawable/person"
+            android:title="My Baji"
+            android:id="@+id/menuMybaji"
+            />
+
+        <item
+            android:icon="@drawable/person"
+            android:title="My Coin"
+            android:id="@+id/menuMyCoin"
+            />
+
+        <item
+            android:icon="@drawable/person"
+            android:title="Profile"
+            android:id="@+id/menuProfile"
+            />
+    </group>
+
+</menu>

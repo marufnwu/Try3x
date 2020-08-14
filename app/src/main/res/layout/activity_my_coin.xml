@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyCoinActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_margin="@dimen/_3sdp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@drawable/bg_gra_pink"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_150sdp">
+
+           <LinearLayout
+               android:layout_centerInParent="true"
+               android:orientation="vertical"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <ImageView
+                   android:layout_gravity="center"
+                   android:src="@drawable/money"
+                   android:layout_width="@dimen/_60sdp"
+                   android:layout_height="@dimen/_60sdp"/>
+
+               <LinearLayout
+                   android:layout_gravity="center_horizontal"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content">
+                   <TextView
+                       android:textColor="@color/Snow"
+                       android:layout_margin="@dimen/_8sdp"
+                       android:textSize="@dimen/_25sdp"
+                       android:text="₹"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"/>
+                   <TextView
+                       android:id="@+id/txtCoin"
+                       android:textColor="@color/White"
+                       android:textSize="@dimen/_25sdp"
+                       android:layout_gravity="center"
+                       android:text="00"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"/>
+
+                   <ImageView
+                       android:id="@+id/imgReload"
+                       android:layout_marginStart="@dimen/_5sdp"
+                       android:src="@drawable/ic_round_autorenew_24"
+                       android:layout_width="wrap_content"
+                       android:layout_height="match_parent"/>
+
+               </LinearLayout>
+
+               <TextView
+                   android:id="@+id/txtAddCoin"
+                   android:textStyle="bold"
+                   android:padding="@dimen/_8sdp"
+                   android:textSize="@dimen/_13sdp"
+                   android:textAllCaps="false"
+                   android:textColor="@color/Gold"
+                   android:background="@drawable/bg_gra_black"
+                   android:text="Add Coin"
+                   android:layout_gravity="center_horizontal"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+           </LinearLayout>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:padding="@dimen/_8sdp"
+            android:layout_marginStart="@dimen/_3sdp"
+            android:layout_marginEnd="@dimen/_3sdp"
+            android:background="@drawable/bg_gra_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/layoutHeader"
+                android:background="@drawable/bg_gra_pink"
+                android:gravity="center_vertical"
+                android:weightSum="9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_40sdp"/>
+
+                <TextView
+                    android:textColor="@color/White"
+                    android:textSize="@dimen/_13sdp"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="2"
+                    android:text="Date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:textColor="@color/White"
+                    android:textSize="@dimen/_13sdp"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="2"
+                    android:text="Time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:textColor="@color/White"
+                    android:textSize="@dimen/_13sdp"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="2"
+                    android:text="Comment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:textColor="@color/White"
+                    android:textSize="@dimen/_13sdp"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="2"
+                    android:text="Amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_above="@+id/progress"
+                android:id="@+id/recyclerCoin"
+                android:layout_below="@+id/layoutHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <ProgressBar
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:visibility="gone"
+                android:id="@+id/progress"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"/>
+
+
+            <LinearLayout
+                android:id="@+id/layoutReload"
+                android:visibility="gone"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_centerInParent="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/poor"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="@dimen/_100sdp"/>
+
+                <TextView
+                    android:textColor="@color/BlueViolet"
+                    android:layout_margin="@dimen/_8sdp"
+                    android:padding="@dimen/_5sdp"
+                    android:background="@drawable/bg_gra_btn_signin"
+                    android:textSize="@dimen/_13sdp"
+                    android:text="Try Again"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

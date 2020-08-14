@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_margin="@dimen/_8sdp"
+    android:padding="@dimen/_20sdp"
+    android:background="@drawable/bg_gra_pink"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:layout_gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="@dimen/_22sdp"
+        android:textColor="@color/OrangeRed"
+        android:text="About User"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:textColorHint="@color/Gray"
+        android:textColor="@color/DimGray"
+        android:id="@+id/edtName"
+        android:padding="8dp"
+        android:textSize="@dimen/_17sdp"
+        android:drawablePadding="15dp"
+        android:background="@drawable/edt_bg"
+        android:drawableLeft="@drawable/name"
+        android:hint="Full Name"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:textColorHint="@color/Gray"
+        android:textColor="@color/DimGray"
+        android:enabled="false"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:id="@+id/edtEmail"
+        android:padding="8dp"
+        android:textSize="@dimen/_17sdp"
+        android:drawablePadding="15dp"
+        android:background="@drawable/edt_bg"
+        android:drawableLeft="@drawable/email"
+        android:hint="Email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:textColorHint="@color/Gray"
+        android:textColor="@color/DimGray"
+        android:text="India"
+        android:enabled="false"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:id="@+id/edtCountry"
+        android:padding="8dp"
+        android:textSize="@dimen/_17sdp"
+        android:drawablePadding="15dp"
+        android:background="@drawable/edt_bg"
+        android:drawableLeft="@drawable/email"
+        android:hint="Country"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <LinearLayout
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:background="@drawable/spinner_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.rilixtech.widget.countrycodepicker.CountryCodePicker
+            android:id="@+id/cpp"
+            app:ccp_showFullName="false"
+            app:ccp_hideNameCode="true"
+            android:textColor="#989595"
+            android:padding="8dp"
+            android:layout_margin="10dp"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:textColorHint="@color/Gray"
+            android:textColor="@color/DimGray"
+            android:background="@drawable/spinner_bg"
+            android:inputType="phone"
+            android:drawablePadding="15dp"
+            android:padding="8dp"
+            android:hint="Phone"
+            android:layout_margin="10dp"
+            android:textSize="20sp"
+            android:id="@+id/edtPhone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+
+    <Button
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:id="@+id/btnSelectGender"
+        android:textColor="#989595"
+        android:textAllCaps="false"
+        android:textSize="@dimen/_14sdp"
+        android:text="Select Gender"
+        android:background="@drawable/spinner_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:id="@+id/btnSelectPayMethod"
+        android:textColor="#989595"
+        android:textAllCaps="false"
+        android:textSize="@dimen/_14sdp"
+        android:text="Select Payment Method"
+        android:background="@drawable/spinner_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <EditText
+
+        android:textColorHint="@color/Gray"
+        android:textColor="@color/DimGray"
+       android:visibility="gone"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:id="@+id/edtPayId"
+        android:padding="8dp"
+        android:textSize="@dimen/_17sdp"
+        android:drawablePadding="15dp"
+        android:background="@drawable/spinner_bg"
+        android:hint="Payment Id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <LinearLayout
+        android:visibility="visible"
+        android:id="@+id/layoutRefer"
+        android:gravity="center_horizontal"
+        android:background="@drawable/spinner_bg"
+        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/DimGray"
+            android:textSize="@dimen/_17sdp"
+            android:padding="@dimen/_8sdp"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/txtReferBy"
+            android:text="Refer By: Maruf Ahmed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+
+
+    <Button
+        android:background="@drawable/bg_gra_btn_signin"
+        android:id="@+id/btnContinue"
+        android:textColor="#fff"
+        android:textAllCaps="false"
+        android:textSize="20sp"
+        android:text="Continue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

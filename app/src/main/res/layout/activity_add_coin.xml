@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gra_pink"
+    tools:context=".AddCoinActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_above="@+id/layoutSelected"
+        android:padding="@dimen/_8sdp"
+        android:layout_margin="@dimen/_8sdp"
+        android:background="@drawable/bg_gra_sky"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/White"
+            android:textSize="@dimen/_13sdp"
+            android:padding="@dimen/_5sdp"
+            android:background="@drawable/bg_recycler_head"
+            android:text="Select Package"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:padding="@dimen/_8sdp"
+            android:id="@+id/layoutParrent"
+            android:paddingEnd="@dimen/_3sdp"
+            android:paddingStart="@dimen/_3sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:background="@drawable/bg_recycler_head"
+            android:gravity="center_vertical"
+            android:weightSum="3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txtName"
+                android:textColor="@color/White"
+                android:textSize="@dimen/_14sdp"
+                android:gravity="center_horizontal"
+                android:layout_weight="1"
+                android:text="Name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtPrice"
+                android:textColor="@color/White"
+                android:textSize="@dimen/_14sdp"
+                android:gravity="center_horizontal"
+                android:layout_weight="1"
+                android:text="Price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtCoin"
+                android:textColor="@color/White"
+                android:textSize="@dimen/_14sdp"
+                android:gravity="center_horizontal"
+                android:layout_weight="1"
+                android:text="Coin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerCoinPack"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_centerInParent="true"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp"/>
+
+            <LinearLayout
+                android:id="@+id/layoutReload"
+                android:visibility="gone"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_centerInParent="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/poor"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="@dimen/_100sdp"/>
+
+                <TextView
+                    android:textColor="@color/BlueViolet"
+                    android:layout_margin="@dimen/_8sdp"
+                    android:padding="@dimen/_5sdp"
+                    android:background="@drawable/bg_gra_btn_signin"
+                    android:textSize="@dimen/_13sdp"
+                    android:text="Try Again"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutSelected"
+        android:layout_above="@+id/btnMakePayment"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_margin="@dimen/_10sdp"
+        android:padding="@dimen/_8sdp"
+        android:background="@drawable/bg_gra_sky"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/White"
+            android:textSize="@dimen/_13sdp"
+            android:padding="@dimen/_3sdp"
+            android:background="@drawable/bg_recycler_head"
+            android:text="Selected Package"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+       <TableLayout
+           android:gravity="center_horizontal"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <TableRow
+               android:padding="@dimen/_5sdp"
+               android:gravity="center_horizontal"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:layout_column="1"
+                   android:textColor="@color/White"
+                   android:textSize="@dimen/_15sdp"
+                   android:text="Package Name: "
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+               <TextView
+                   android:layout_column="1"
+                   android:id="@+id/txtPackName"
+                   android:textSize="@dimen/_15sdp"
+                   android:textColor="@color/Crimson"
+                   android:text="N/A"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+
+           </TableRow>
+           <TableRow
+               android:padding="@dimen/_5sdp"
+               android:gravity="center_horizontal"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:layout_column="1"
+                   android:textColor="@color/White"
+                   android:textSize="@dimen/_15sdp"
+                   android:text="Package Price: "
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+               <TextView
+                   android:layout_column="1"
+                   android:id="@+id/txtPackPrice"
+                   android:textSize="@dimen/_15sdp"
+                   android:textColor="@color/Crimson"
+                   android:text="N/A"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+
+           </TableRow>
+           <TableRow
+               android:padding="@dimen/_5sdp"
+               android:gravity="center_horizontal"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:layout_column="1"
+                   android:textColor="@color/White"
+                   android:textSize="@dimen/_15sdp"
+                   android:text="Package Coin: "
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+               <TextView
+                   android:layout_column="1"
+                   android:id="@+id/txtPackCoin"
+                   android:textSize="@dimen/_15sdp"
+                   android:textColor="@color/Crimson"
+                   android:text="N/A"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+
+           </TableRow>
+       </TableLayout>
+
+
+    </LinearLayout>
+
+    <Button
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:background="@drawable/bg_gra_btn_signin"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:id="@+id/btnMakePayment"
+        android:layout_alignParentBottom="true"
+        android:text="Make Payment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

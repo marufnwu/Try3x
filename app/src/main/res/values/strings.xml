@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Try3x</string>
+    <string name="my_coin">My Coin</string>
+    <string name="commission">Commission</string>
+    <string name="withdrawable">Withdrawable</string>
+    <string name="add_coin">Add Coin</string>
+</resources>

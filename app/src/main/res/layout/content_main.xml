@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:weightSum="3"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:textColor="@color/Yellow"
+            android:drawableEnd="@drawable/arrow_right"
+            android:background="@drawable/bg_gra_sky"
+            android:textAllCaps="false"
+            android:textSize="@dimen/_10sdp"
+            android:layout_margin="@dimen/_4sdp"
+            android:id="@+id/btnMyCoin"
+            android:layout_weight="1"
+            android:text="@string/my_coin"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_25sdp"/>
+
+        <Button
+            android:textColor="@color/DarkRed"
+            android:drawableEnd="@drawable/arrow_right"
+            android:background="@drawable/gra_bg_green"
+            android:textAllCaps="false"
+            android:textSize="@dimen/_10sdp"
+            android:layout_margin="@dimen/_4sdp"
+            android:id="@+id/btnCommission"
+            android:layout_weight="1"
+            android:text="@string/commission"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_25sdp"/>
+
+        <Button
+
+            android:textColor="@color/GreenYellow"
+            android:drawableEnd="@drawable/arrow_right"
+            android:background="@drawable/bg_gra_pink"
+            android:textAllCaps="false"
+            android:textSize="@dimen/_10sdp"
+            android:layout_margin="@dimen/_4sdp"
+            android:id="@+id/btnwithdrawable"
+            android:layout_weight="1"
+            android:text="@string/withdrawable"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_25sdp"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_margin="@dimen/_5sdp"
+        android:padding="@dimen/_8sdp"
+        android:background="@drawable/bg_gra_viewpager"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tab_layout_background"
+            app:tabMode="scrollable"
+            app:tabBackground="@drawable/tab_layout_selector"
+            app:tabSelectedTextColor="@color/Teal"
+            app:tabPaddingStart="@dimen/_10sdp"
+            app:tabPaddingEnd="@dimen/_10sdp"
+            app:tabIndicatorHeight="0dp"
+            app:tabRippleColor="@null" />
+
+        <com.try3x.uttam.Custom.MyViewpager
+            android:id="@+id/gameViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.try3x.uttam.Custom.MyViewpager"/>
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>

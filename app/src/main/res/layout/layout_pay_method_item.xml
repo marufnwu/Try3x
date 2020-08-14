@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_margin="@dimen/_8sdp"
+    android:background="@color/WhiteSmoke"
+    android:gravity="center_vertical"
+    android:weightSum="4.5"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:padding="@dimen/_8sdp"
+        android:src="@drawable/pay_method"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_50sdp"/>
+
+    <LinearLayout
+        android:padding="@dimen/_8sdp"
+        android:orientation="vertical"
+        android:layout_weight="3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txtMethodName"
+            android:textStyle="bold"
+            android:textSize="@dimen/_13sdp"
+            android:text="Paytm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/txtMethodNum"
+            android:textSize="@dimen/_13sdp"
+            android:text="01955-786556"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <ImageView
+        android:padding="@dimen/_5sdp"
+        android:src="@drawable/pencil"
+        android:layout_weight="0.5"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_50sdp"/>
+
+</LinearLayout>

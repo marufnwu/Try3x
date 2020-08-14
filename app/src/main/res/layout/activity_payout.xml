@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/bg_gra_pink"
+    android:layout_height="match_parent"
+    tools:context=".PayoutActivity">
+
+    <LinearLayout
+        android:padding="@dimen/_8sdp"
+        android:layout_margin="@dimen/_8sdp"
+        android:background="@drawable/bg_gra_orange"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:src="@drawable/money"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"/>
+
+        <LinearLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@color/Snow"
+                android:layout_margin="@dimen/_8sdp"
+                android:textSize="@dimen/_25sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/txtCoin"
+                android:textColor="@color/White"
+                android:textSize="@dimen/_25sdp"
+                android:layout_gravity="center"
+                android:text="00"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:id="@+id/imgReload"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:src="@drawable/ic_round_autorenew_24"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:weightSum="5"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+           <LinearLayout
+               android:gravity="center_horizontal"
+               android:orientation="vertical"
+                android:layout_weight="2"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:textColor="@color/White"
+                   android:textSize="@dimen/_10sdp"
+                   android:text="Coin (Min 100)"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+               <EditText
+                   android:maxLength="5"
+                   android:inputType="numberDecimal"
+                   android:id="@+id/edtCoin"
+                   android:textSize="@dimen/_18sdp"
+                   android:layout_margin="@dimen/_8sdp"
+                   android:textColorHint="@color/WhiteSmoke"
+                   android:textColor="@color/White"
+                   android:padding="@dimen/_5sdp"
+                   android:gravity="center"
+                   android:background="@color/CornflowerBlue"
+                   android:hint="000"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+           </LinearLayout>
+
+            <ImageView
+                android:layout_weight="1"
+                android:layout_margin="@dimen/_8sdp"
+                android:src="@drawable/exchange"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_40sdp"/>
+
+         <LinearLayout
+             android:gravity="center_horizontal"
+             android:orientation="vertical"
+             android:layout_weight="2"
+             android:layout_width="0dp"
+             android:layout_height="wrap_content">
+             <TextView
+                 android:textColor="@color/White"
+                 android:textSize="@dimen/_10sdp"
+                 android:text="Rupee (Min 95)"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"/>
+             <TextView
+                 android:id="@+id/txtRupee"
+                 android:textSize="@dimen/_18sdp"
+                 android:text="000"
+                 android:layout_margin="@dimen/_8sdp"
+                 android:textColor="@color/White"
+                 android:padding="@dimen/_5sdp"
+                 android:gravity="center"
+                 android:background="@color/CornflowerBlue"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"/>
+         </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtSendRequest"
+            android:textStyle="bold"
+            android:padding="@dimen/_8sdp"
+            android:textSize="@dimen/_13sdp"
+            android:textAllCaps="false"
+            android:textColor="@color/Gold"
+            android:background="@drawable/bg_gra_black"
+            android:text="Send Request"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+    <RelativeLayout
+        android:background="@drawable/bg_gra_1"
+        android:padding="@dimen/_8sdp"
+        android:layout_margin="@dimen/_8sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/recyclerHead"
+            android:paddingEnd="@dimen/_3sdp"
+            android:paddingStart="@dimen/_3sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:background="@drawable/bg_recycler_head"
+            android:gravity="center_vertical"
+            android:weightSum="10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imgTransType"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_40sdp"/>
+
+            <TextView
+                android:id="@+id/txtDate"
+                android:textColor="@color/White"
+                android:textSize="@dimen/_10sdp"
+                android:gravity="center_horizontal"
+                android:layout_weight="2"
+                android:text="Date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtTime"
+                android:textColor="@color/White"
+                android:textSize="@dimen/_10sdp"
+                android:gravity="center_horizontal"
+                android:layout_weight="1.5"
+                android:text="Time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtComment"
+                android:textColor="@color/White"
+                android:textSize="@dimen/_10sdp"
+                android:gravity="center_horizontal"
+                android:layout_weight="2"
+                android:text="Comment"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtAmount"
+                android:textColor="@color/White"
+                android:textSize="@dimen/_10sdp"
+                android:gravity="center_horizontal"
+                android:layout_weight="1.5"
+                android:text="Amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtStatus"
+                android:textColor="@color/White"
+                android:textSize="@dimen/_10sdp"
+                android:gravity="center_horizontal"
+                android:layout_weight="1.5"
+                android:text="Status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_below="@+id/recyclerHead"
+            android:layout_above="@+id/progress"
+            android:id="@+id/recyclerPayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ProgressBar
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"
+            android:id="@+id/progress"
+            android:layout_centerHorizontal="true"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"/>
+
+        <LinearLayout
+            android:id="@+id/layoutReload"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:src="@drawable/poor"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="@dimen/_100sdp"/>
+
+            <TextView
+                android:textColor="@color/BlueViolet"
+                android:layout_margin="@dimen/_8sdp"
+                android:padding="@dimen/_5sdp"
+                android:background="@drawable/bg_gra_btn_signin"
+                android:textSize="@dimen/_13sdp"
+                android:text="Try Again"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>
