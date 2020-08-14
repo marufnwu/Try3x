@@ -41,6 +41,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
@@ -700,7 +702,8 @@ public class SplashActivity extends AppCompatActivity {
                             Paper.book().write(PaperDB.GMAILINFO, gmailInfo);
                             Log.d("SplashActivity", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            checkLogin(user);
+
+                            getFcmToken(user);
 
 
 
@@ -718,5 +721,25 @@ public class SplashActivity extends AppCompatActivity {
                         // [END_EXCLUDE]
                     }
                 });
+    }
+
+    private void getFcmToken(FirebaseUser user) {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("SplashActivity", "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+
+
+                    }
+                });
+
+        checkLogin(user);
     }
 }
