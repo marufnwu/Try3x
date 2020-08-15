@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         addInfoToNav();
         initViewpager();
 
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {

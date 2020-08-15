@@ -286,6 +286,12 @@ public class Baji4 extends Fragment implements OnPackageItemClickListener {
 
 
         dialog.show();
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
     }
 
     @Override

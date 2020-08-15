@@ -22,35 +22,12 @@
             android:src="@drawable/money"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"/>
-
-        <LinearLayout
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
-                android:textColor="@color/Snow"
-                android:layout_margin="@dimen/_8sdp"
-                android:textSize="@dimen/_25sdp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            <TextView
-                android:id="@+id/txtCoin"
-                android:textColor="@color/White"
-                android:textSize="@dimen/_25sdp"
-                android:layout_gravity="center"
-                android:text="00"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <ImageView
-                android:id="@+id/imgReload"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:src="@drawable/ic_round_autorenew_24"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-
-        </LinearLayout>
-
+        <ProgressBar
+            android:indeterminate="true"
+            android:id="@+id/progress_horizontal"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:weightSum="5"
@@ -72,8 +49,7 @@
                    android:text="Coin (Min 100)"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"/>
-               <EditText
-                   android:maxLength="5"
+               <TextView
                    android:inputType="numberDecimal"
                    android:id="@+id/edtCoin"
                    android:textSize="@dimen/_18sdp"
@@ -83,7 +59,7 @@
                    android:padding="@dimen/_5sdp"
                    android:gravity="center"
                    android:background="@color/CornflowerBlue"
-                   android:hint="000"
+                   android:text="00"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"/>
            </LinearLayout>
@@ -110,7 +86,7 @@
              <TextView
                  android:id="@+id/txtRupee"
                  android:textSize="@dimen/_18sdp"
-                 android:text="000"
+                 android:text="00"
                  android:layout_margin="@dimen/_8sdp"
                  android:textColor="@color/White"
                  android:padding="@dimen/_5sdp"

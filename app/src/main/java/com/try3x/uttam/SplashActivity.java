@@ -87,7 +87,6 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
         mAuth = FirebaseAuth.getInstance();
         Paper.init(this);
 
@@ -160,7 +159,7 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    private void checkLogin(final FirebaseUser user) {
+    private void checkLogin(final FirebaseUser user, final String fcmToken) {
         GmailInfo gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
         if (gmailInfo==null){
             Toast.makeText(this, "Login Again", Toast.LENGTH_SHORT).show();
@@ -168,7 +167,12 @@ public class SplashActivity extends AppCompatActivity {
         }
         String sha1 = Common.getKeyHash(SplashActivity.this);
         IRetrofitApiCall iRetrofitApiCall = RetrofitClient.getRetrofit().create(IRetrofitApiCall.class);
-        iRetrofitApiCall.isUserExits(sha1, user.getEmail(), gmailInfo.user_id)
+        iRetrofitApiCall.isUserExits(
+                sha1,
+                user.getEmail(),
+                gmailInfo.user_id,
+                fcmToken
+        )
                 .enqueue(new Callback<UserLogin>() {
                     @Override
                     public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
@@ -189,7 +193,7 @@ public class SplashActivity extends AppCompatActivity {
                                     Toast.makeText(SplashActivity.this, "User not Exits", Toast.LENGTH_SHORT).show();
 
                                     dismissWaitingDialog();
-                                    showInfoDialog(user);
+                                    showInfoDialog(user, fcmToken);
                                 }
                             }else {
                                 mAuth.signOut();
@@ -208,7 +212,7 @@ public class SplashActivity extends AppCompatActivity {
                 });
     }
 
-    private void showInfoDialog(final FirebaseUser user) {
+    private void showInfoDialog(final FirebaseUser user, final String fcmToken) {
         dialog = new Dialog(SplashActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
@@ -536,7 +540,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
 
                 if (!error){
-                    addUserToDB(user, edtFullName.getText().toString(), edtPhone.getText().toString(), gender, paymentMethod, payid);
+                    addUserToDB(user, edtFullName.getText().toString(), edtPhone.getText().toString(), gender, paymentMethod, payid, fcmToken);
                 }
             }
         });
@@ -545,7 +549,7 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    private void addUserToDB(final FirebaseUser user, final String name, final String phone, final int gender, final int paymentMethod, final String payid) {
+    private void addUserToDB(final FirebaseUser user, final String name, final String phone, final int gender, final int paymentMethod, final String payid, final String fcmToken) {
 
         dismissWaitingDialog();
         showWaitingDialog();
@@ -605,7 +609,8 @@ public class SplashActivity extends AppCompatActivity {
                                     String.valueOf(shortLink),
                                     referUserId,
                                     isReferBy,
-                                    referEmail
+                                    referEmail,
+                                    fcmToken
                                     )
                                     .enqueue(new Callback<addUserResponse>() {
                                         @Override
@@ -723,7 +728,7 @@ public class SplashActivity extends AppCompatActivity {
                 });
     }
 
-    private void getFcmToken(FirebaseUser user) {
+    private void getFcmToken(final FirebaseUser user) {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
@@ -736,10 +741,11 @@ public class SplashActivity extends AppCompatActivity {
                         // Get new Instance ID token
                         String token = task.getResult().getToken();
                         Log.d("TOken", token);
+                        checkLogin(user, token);
 
                     }
                 });
 
-        checkLogin(user);
+
     }
 }

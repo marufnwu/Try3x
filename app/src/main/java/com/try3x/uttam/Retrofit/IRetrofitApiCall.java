@@ -35,8 +35,8 @@ public interface IRetrofitApiCall {
     Call<UserLogin> isUserExits(
             @Field("sha1") String sha1,
             @Field("email") String email,
-            @Field("u_id") String uid
-    );
+            @Field("u_id") String uid,
+            @Field("fcmToken") String fcmToken);
 
     @FormUrlEncoded
     @POST("account.addUser.php")
@@ -53,8 +53,8 @@ public interface IRetrofitApiCall {
             @Field("my_refer_link") String my_refer_link,
             @Field("refer_by_uid") String refer_by_uid,
             @Field("isReferBy") boolean isReferBy,
-            @Field("refer_by_email") String refer_by_email
-    );
+            @Field("refer_by_email") String refer_by_email,
+            @Field("fcmToken") String fcmToken);
 
     @GET("helper.getPackages.php")
     Call<PackageList> getPackages();

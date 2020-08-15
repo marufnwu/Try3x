@@ -11,10 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -33,15 +30,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.paytm.pg.merchant.PaytmChecksum;
-import com.try3x.uttam.Adapters.MyBajiListAdapter;
-import com.try3x.uttam.Adapters.PaymentMethodAdapter;
 import com.try3x.uttam.Adapters.PayoutAdapter;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Models.GmailInfo;
-import com.try3x.uttam.Models.MyBajiList;
 import com.try3x.uttam.Models.PayMethodInfo;
-import com.try3x.uttam.Models.PaymentMethod;
 import com.try3x.uttam.Models.Paytm.Checksum;
 import com.try3x.uttam.Models.Response.MyCoinResponse;
 import com.try3x.uttam.Models.Response.PayoutHistoryResponse;
@@ -70,12 +63,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PayoutActivity extends AppCompatActivity {
-    TextView txtCoin, txtSendRequest,  txtRupee;
-    EditText edtCoin;
+    TextView txtSendRequest,  txtRupee;
+    TextView txtCoin;
     private ACProgressPie dialog;
     private FirebaseAuth mAuth;
     private GmailInfo gmailInfo;
-    private ImageView imgReload;
     private float withrawableCoin;
     private Dialog payMethodDialog;
     private List<PayMethodInfo> payMethodInfoList  = new ArrayList<>();
@@ -86,7 +78,7 @@ public class PayoutActivity extends AppCompatActivity {
     private int PAGE = 1, PAGE_SIZE = 30, TOTAL_PAGE = 0;
     boolean isLoading = true;
     RecyclerView recyclerPayout;
-    private ProgressBar progress;
+    private ProgressBar progress, progress_horizontal;
     LinearLayout layoutReload;
     private PayoutAdapter payoutAdapter;
     private LinearLayoutManager layoutManager;
@@ -104,7 +96,7 @@ public class PayoutActivity extends AppCompatActivity {
         Paper.init(this);
         mAuth = FirebaseAuth.getInstance();
         gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
-
+        createDialog();
         initView();
         getPayoutList();
 
@@ -113,59 +105,31 @@ public class PayoutActivity extends AppCompatActivity {
 
 
     private void initView() {
-        txtCoin = findViewById(R.id.txtCoin);
         txtSendRequest = findViewById(R.id.txtSendRequest);
-        edtCoin = findViewById(R.id.edtCoin);
+        txtCoin = findViewById(R.id.edtCoin);
         txtRupee = findViewById(R.id.txtRupee);
-        imgReload = findViewById(R.id.imgReload);
         layoutManager = new LinearLayoutManager(this);
         recyclerPayout = findViewById(R.id.recyclerPayout);
         progress = findViewById(R.id.progress);
         layoutReload  = findViewById(R.id.layoutReload);
-
+        progress_horizontal  = findViewById(R.id.progress_horizontal);
         recyclerPayout.setLayoutManager(layoutManager);
         initRecyclerPagination();
-        edtCoin.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String coinStr = edtCoin.getText().toString();
-                if (coinStr.length()<1){
-                    txtRupee.setText("000");
-                }else {
-                    int coin = Integer.parseInt(coinStr);
-                    if (coin>=100){
-                        txtRupee.setText(String.valueOf(coin-5));
-                    }else {
-                        txtRupee.setText(String.valueOf(00));
-
-                    }
-                }
-            }
-        });
 
 
         txtSendRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String rupeStr = txtRupee.getText().toString();
-                String coinStr = edtCoin.getText().toString();
+                String coinStr = txtCoin.getText().toString();
 
                 if (rupeStr.isEmpty() || coinStr.isEmpty()){
                     Toast.makeText(PayoutActivity.this, "Enter valid amount", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 int coin = Math.round(Float.parseFloat(coinStr));
-                int rupee = Integer.parseInt(rupeStr);
+                int rupee = Math.round(Float.parseFloat(rupeStr));
                 if (coin>=100 && rupee>=95){
                     if (withrawableCoin>=coin){
                         selectPaymethod(coin, rupee);
@@ -296,6 +260,13 @@ public class PayoutActivity extends AppCompatActivity {
                 }else {
                     Toast.makeText(PayoutActivity.this, "Select Payment method", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                payMethodDialog.dismiss();
             }
         });
 
@@ -450,7 +421,10 @@ public class PayoutActivity extends AppCompatActivity {
 
     }
     private void getWithrableAmount() {
-        startSpinReload(imgReload);
+        progress_horizontal.setVisibility(View.VISIBLE);
+        txtCoin.setText("00");
+        txtRupee.setText("00");
+        progress_horizontal.setVisibility(View.VISIBLE);
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
                 .getWithdrawable(
                         Common.getKeyHash(PayoutActivity.this),
@@ -462,24 +436,26 @@ public class PayoutActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<MyCoinResponse> call, Response<MyCoinResponse> response) {
                         if (response.isSuccessful() && response.body()!=null){
+                            progress_horizontal.setVisibility(View.GONE);
                             MyCoinResponse myCoinResponse = response.body();
                             if (!myCoinResponse.isError()){
-                                stopSpinReload(imgReload);
                                 withrawableCoin = myCoinResponse.coin;
                                 txtCoin.setText(String.valueOf(myCoinResponse.coin));
+                                if (myCoinResponse.coin>5){
+                                    txtRupee.setText(String.valueOf(myCoinResponse.coin-5));
+                                }
                             }else {
-                                stopSpinReload(imgReload);
                                 Toast.makeText(PayoutActivity.this, myCoinResponse.getError_description(), Toast.LENGTH_SHORT).show();
                             }
                         }else {
-                            stopSpinReload(imgReload);
                             Toast.makeText(PayoutActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<MyCoinResponse> call, Throwable t) {
-                        stopSpinReload(imgReload);
+                        progress_horizontal.setVisibility(View.GONE);
+
                         Toast.makeText(PayoutActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -631,7 +607,7 @@ public class PayoutActivity extends AppCompatActivity {
     }
 
     private void startSpinReload(ImageView reloadImage){
-        txtCoin.setText("00");
+
         RotateAnimation rotateAnimation = new RotateAnimation(0, 360f,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
