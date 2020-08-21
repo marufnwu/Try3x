@@ -48,7 +48,7 @@ public class MyBajiListAdapter extends RecyclerView.Adapter<MyBajiListAdapter.My
             holder.imgResultPub.setImageResource(R.drawable.ic_baseline_check_circle_24);
 
            if (baji.win_btn!=null){
-               if (baji.win_btn.equals(baji.btn) && baji.win_pack_id == baji.package_id){
+               if (baji.win_btn.equals(baji.btn)){
                    //win
                    holder.imgWin.setImageResource(R.drawable.ic_baseline_check_circle_24);
                    if (!baji.claim){

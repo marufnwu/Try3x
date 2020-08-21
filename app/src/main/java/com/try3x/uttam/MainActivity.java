@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.try3x.uttam.Adapters.BajiViewpagerAdapter;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Custom.MyViewpager;
@@ -36,6 +37,7 @@ import io.paperdb.Paper;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TOPIC_ALL_USER = "ALL_USERS";
     TabLayout tabLayout;
     MyViewpager viewpagerBaji;
     Button btnMyCoin, btnCommission ,btnWithdrawable;
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_ALL_USER);
     }
 
     private void addInfoToNav() {
