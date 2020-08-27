@@ -229,6 +229,7 @@ public class Baji4 extends Fragment implements OnPackageItemClickListener {
                                 bajiServerBody.getPackageList().clear();
                                 bajiPlaceListAdapter.notifyDataSetChanged();
                                 Toast.makeText(getContext(), ""+serverResponse.getError_description(), Toast.LENGTH_SHORT).show();
+                                Common.subscribeNoti(Common.getDate()+"_"+bajiServerBody.noOfBaji);
                             }else {
                                 dismissWaitingDialog();
                                 Toast.makeText(getContext(),  serverResponse.getError_description(), Toast.LENGTH_SHORT).show();

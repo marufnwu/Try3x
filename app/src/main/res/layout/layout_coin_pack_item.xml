@@ -9,7 +9,7 @@
         android:paddingEnd="@dimen/_3sdp"
         android:paddingStart="@dimen/_3sdp"
         android:layout_marginTop="@dimen/_3sdp"
-        android:background="@drawable/bg_gra_btn_signin"
+        android:background="@drawable/bg_gra_buy_coin"
         android:gravity="center_vertical"
         android:weightSum="3"
         android:layout_width="match_parent"
@@ -26,6 +26,8 @@
             android:layout_height="wrap_content"/>
 
         <TextView
+            android:drawablePadding="@dimen/_5sdp"
+            android:drawableLeft="@drawable/rupee"
             android:id="@+id/txtPrice"
             android:textColor="@color/White"
             android:textSize="@dimen/_14sdp"
@@ -36,6 +38,7 @@
             android:layout_height="wrap_content"/>
 
         <TextView
+            android:drawableLeft="@drawable/coin"
             android:id="@+id/txtCoin"
             android:textColor="@color/White"
             android:textSize="@dimen/_14sdp"

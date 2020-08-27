@@ -45,9 +45,9 @@ public class CoinPackAdapter extends RecyclerView.Adapter<CoinPackAdapter.MyView
         holder.txtPrice.setText(String.valueOf(coinPackage.price));
 
         if (selected == position){
-            holder.layoutParrent.setBackground(ctx.getDrawable(R.drawable.bg_gra_pink));
+            holder.layoutParrent.setBackground(ctx.getDrawable(R.drawable.bg_recy_item_select));
         }else {
-            holder.layoutParrent.setBackground(ctx.getDrawable(R.drawable.bg_gra_btn_signin));
+            holder.layoutParrent.setBackground(ctx.getDrawable(R.drawable.bg_gra_buy_coin));
         }
 
         holder.layoutParrent.setOnClickListener(new View.OnClickListener() {

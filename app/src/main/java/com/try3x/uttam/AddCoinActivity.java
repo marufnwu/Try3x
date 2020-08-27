@@ -10,14 +10,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 import com.shreyaspatil.EasyUpiPayment.EasyUpiPayment;
 import com.shreyaspatil.EasyUpiPayment.listener.PaymentStatusListener;
+import com.shreyaspatil.EasyUpiPayment.model.PaymentApp;
 import com.shreyaspatil.EasyUpiPayment.model.TransactionDetails;
 import com.try3x.uttam.Adapters.CoinPackAdapter;
 import com.try3x.uttam.Common.Common;
@@ -45,16 +48,18 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
     ProgressBar progress;
     LinearLayout layoutReload;
 
-    TextView txtPackName, txtPackPrice, txtPackCoin;
+    TextView txtPackName, txtPackPrice, txtPackCoin,txtPayAmount;
     GmailInfo gmailInfo;
     FirebaseAuth mAuth;
 
     CoinPackAdapter coinPackAdapter;
     CoinPackage coinPackage;
     private ACProgressPie dialog;
-    Button btnMakePayment;
     private String trans_ref;
     private float amount;
+    LinearLayout layPack;
+    ImageView imgSale;
+    ImageView imgPaytm,imgGpay,imgPhonpe,imgAmazonPay,imgBhmi,imgJiomoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,12 +84,34 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
         txtPackName = findViewById(R.id.txtPackName);
         txtPackPrice = findViewById(R.id.txtPackPrice);
         txtPackCoin = findViewById(R.id.txtPackCoin);
-        btnMakePayment = findViewById(R.id.btnMakePayment);
+        txtPayAmount = findViewById(R.id.txtPayAmount);
+
+        layPack = findViewById(R.id.layPack);
+        imgSale = findViewById(R.id.imgSale);
+
+        imgPaytm = findViewById(R.id.imgPaytm);
+        imgGpay = findViewById(R.id.imgGpay);
+        imgPhonpe = findViewById(R.id.imgPhonpe);
+        imgAmazonPay = findViewById(R.id.imgAmazonPay);
+        imgBhmi = findViewById(R.id.imgBhmi);
+        imgJiomoney = findViewById(R.id.imgJiomoney);
+
 
         recyclerCoinPack.setHasFixedSize(true);
         recyclerCoinPack.setLayoutManager(new LinearLayoutManager(this));
 
-        btnMakePayment.setOnClickListener(new View.OnClickListener() {
+       /* btnMakePayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (coinPackage!=null && coinPackage.price>0){
+                    getTransRef();
+                }else {
+                    Toast.makeText(AddCoinActivity.this, "Please Select Any Package", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });*/
+
+        imgPaytm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (coinPackage!=null && coinPackage.price>0){
@@ -127,7 +154,7 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
 
                     @Override
                     public void onFailure(Call<BuyCoinTransResponse> call, Throwable t) {
-
+                        dismissWaitingDialog();
                     }
                 });
     }
@@ -187,6 +214,7 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
                 .build();
 
         easyUpiPayment.setPaymentStatusListener(this);
+        easyUpiPayment.setDefaultPaymentApp(PaymentApp.PAYTM);
         trans_ref = buyCoinTransResponse.transaction_ref;
         amount = buyCoinTransResponse.amount;
         easyUpiPayment.startPayment();
@@ -309,13 +337,21 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
         }
 
         this.coinPackage = coinPackage;
-        txtPackCoin.setText(String.valueOf(this.coinPackage.coin));
+       /* txtPackCoin.setText(String.valueOf(this.coinPackage.coin));
         txtPackName.setText(String.valueOf(this.coinPackage.name));
-        txtPackPrice.setText(String.valueOf(this.coinPackage.price));
+        txtPackPrice.setText(String.valueOf(this.coinPackage.price));*/
+       txtPayAmount.setText(String.valueOf("Pay: "+this.coinPackage.price+" Rp."));
+        txtPayAmount.setVisibility(View.VISIBLE);
+
     }
 
     @Override
     public void onTransactionCompleted(TransactionDetails transactionDetails) {
+        coinPackage = null;
+        String response = new Gson().toJson(transactionDetails);
+        Toast.makeText(this, "onCompleted", Toast.LENGTH_SHORT).show();
+        Log.d("UpiPayment", "OnComplete");
+        Log.d("UpiPayment", "OnComplete: "+response);
        /* Toast.makeText(this, "Status: "+transactionDetails.getStatus()+" amount: "+transactionDetails.getAmount(), Toast.LENGTH_LONG).show();
         if (transactionDetails.getStatus().equals("success")){
             addBuyCoin(transactionDetails.getTransactionRefId(), Float.parseFloat(transactionDetails.getAmount()));
@@ -324,6 +360,8 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
 
     @Override
     public void onTransactionSuccess() {
+        clearSelectItem();
+
         Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
 
         if (trans_ref!=null && amount>0){
@@ -334,25 +372,37 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
 
     @Override
     public void onTransactionSubmitted() {
+        clearSelectItem();
+
         Toast.makeText(this, "Submitted", Toast.LENGTH_SHORT).show();
 
     }
 
     @Override
     public void onTransactionFailed() {
+        clearSelectItem();
+
         Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
 
     }
 
     @Override
     public void onTransactionCancelled() {
+
         Toast.makeText(this, "Cancel", Toast.LENGTH_SHORT).show();
 
     }
 
     @Override
     public void onAppNotFound() {
+        clearSelectItem();
         Toast.makeText(this, "App not found", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void clearSelectItem(){
+        coinPackage = null;
+        txtPayAmount.setVisibility(View.GONE);
 
     }
 }

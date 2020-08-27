@@ -7,10 +7,15 @@ import android.content.pm.Signature;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.try3x.uttam.BuildConfig;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class Common {
     public static String getKeyHash(Context ctx) {
@@ -91,5 +96,18 @@ public class Common {
         String[] part = date.split(" ");
 
         return part[0];
+    }
+
+    public static String getDate() {
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String formattedDate = df.format(c);
+
+        return  formattedDate;
+    }
+
+    public static void subscribeNoti(String s) {
+        Log.d("SubscribeNoti", s);
+        FirebaseMessaging.getInstance().subscribeToTopic(s);
     }
 }
