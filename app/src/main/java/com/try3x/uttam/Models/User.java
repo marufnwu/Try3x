@@ -3,7 +3,7 @@ package com.try3x.uttam.Models;
 public class User {
     public boolean acc_status;
     public int id,gender;
-    public String name,email,phone,country,acc_created_at,photo_url,u_id,refer_by,my_refer_link;
+    public String name,email,phone,country,acc_created_at,photo_url,u_id,refer_by, referCode;
     public String fcm_token;
 
     public User() {
@@ -105,11 +105,11 @@ public class User {
         this.refer_by = refer_by;
     }
 
-    public String getMy_refer_link() {
-        return my_refer_link;
+    public String getReferCode() {
+        return referCode;
     }
 
-    public void setMy_refer_link(String my_refer_link) {
-        this.my_refer_link = my_refer_link;
+    public void setReferCode(String referCode) {
+        this.referCode = referCode;
     }
 }

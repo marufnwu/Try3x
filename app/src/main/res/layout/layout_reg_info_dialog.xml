@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_margin="@dimen/_8sdp"
     android:padding="@dimen/_20sdp"
-    android:background="@drawable/bg_gra_pink"
+    android:background="@drawable/gra_bg_pink_1"
     android:layout_height="wrap_content">
 
     <TextView
@@ -13,20 +13,21 @@
         android:layout_gravity="center_horizontal"
         android:textStyle="bold"
         android:textSize="@dimen/_22sdp"
-        android:textColor="@color/OrangeRed"
+        android:textColor="@color/white"
         android:text="About User"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <EditText
+
         android:textColorHint="@color/Gray"
         android:textColor="@color/DimGray"
         android:id="@+id/edtName"
         android:padding="8dp"
-        android:textSize="@dimen/_17sdp"
+        android:textSize="@dimen/_14sdp"
         android:drawablePadding="15dp"
-        android:background="@drawable/edt_bg"
-        android:drawableLeft="@drawable/name"
+        android:gravity="center_horizontal"
+        android:background="@drawable/spinner_bg"
         android:hint="Full Name"
         android:layout_marginBottom="@dimen/_10sdp"
         android:layout_width="match_parent"
@@ -39,10 +40,10 @@
         android:layout_marginBottom="@dimen/_10sdp"
         android:id="@+id/edtEmail"
         android:padding="8dp"
-        android:textSize="@dimen/_17sdp"
+        android:textSize="@dimen/_14sdp"
         android:drawablePadding="15dp"
-        android:background="@drawable/edt_bg"
-        android:drawableLeft="@drawable/email"
+        android:gravity="center_horizontal"
+        android:background="@drawable/spinner_bg"
         android:hint="Email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -55,10 +56,10 @@
         android:layout_marginBottom="@dimen/_10sdp"
         android:id="@+id/edtCountry"
         android:padding="8dp"
-        android:textSize="@dimen/_17sdp"
+        android:textSize="@dimen/_14sdp"
         android:drawablePadding="15dp"
-        android:background="@drawable/edt_bg"
-        android:drawableLeft="@drawable/email"
+        android:gravity="center_horizontal"
+        android:background="@drawable/spinner_bg"
         android:hint="Country"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -81,6 +82,7 @@
             android:layout_height="wrap_content"/>
 
         <EditText
+            android:textSize="@dimen/_14sdp"
             android:textColorHint="@color/Gray"
             android:textColor="@color/DimGray"
             android:background="@drawable/spinner_bg"
@@ -89,7 +91,6 @@
             android:padding="8dp"
             android:hint="Phone"
             android:layout_margin="10dp"
-            android:textSize="20sp"
             android:id="@+id/edtPhone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
@@ -136,7 +137,7 @@
 
 
     <LinearLayout
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/layoutRefer"
         android:gravity="center_horizontal"
         android:background="@drawable/spinner_bg"
@@ -153,11 +154,47 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:gravity="center_horizontal"
+        android:background="@drawable/spinner_bg"
+        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:buttonTint="@color/BlueViolet"
+            android:textColor="@color/black"
+            android:id="@+id/chckBoxRefer"
+            android:textSize="@dimen/_13sdp"
+            android:layout_margin="@dimen/_8sdp"
+            android:padding="@dimen/_5sdp"
+            android:layout_gravity="start"
+            android:text="I Have Refer Code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:textColorHint="@color/Gray"
+            android:textColor="@color/DimGray"
+            android:layout_margin="@dimen/_3sdp"
+            android:hint="Refer Code"
+            android:visibility="gone"
+            android:gravity="center_horizontal"
+            android:background="@drawable/spinner_bg"
+            android:textSize="@dimen/_14sdp"
+            android:padding="@dimen/_8sdp"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/edtReferBy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 
 
     <Button
-        android:background="@drawable/bg_gra_btn_signin"
+        android:background="@drawable/bg_gra_buy_coin"
         android:id="@+id/btnContinue"
         android:textColor="#fff"
         android:textAllCaps="false"

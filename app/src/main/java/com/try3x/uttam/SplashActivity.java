@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -82,6 +84,8 @@ public class SplashActivity extends AppCompatActivity {
     private String payid;
     private String deepLinkReferCode;
     private ReferUserResponse referUser;
+    private boolean haveReferCode = false;
+    private Dialog regDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,6 +181,7 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<UserLogin> call, Response<UserLogin> response) {
                         if (response.isSuccessful() && response.body()!=null){
+                            dismissWaitingDialog();
                             UserLogin userLogin = response.body();
                             if (!userLogin.isError()){
                                 if (userLogin.isAccountExits()){
@@ -192,7 +197,7 @@ public class SplashActivity extends AppCompatActivity {
                                     //account not created, so now we show information dialog
                                     Toast.makeText(SplashActivity.this, "User not Exits", Toast.LENGTH_SHORT).show();
 
-                                    dismissWaitingDialog();
+
                                     showInfoDialog(user, fcmToken);
                                 }
                             }else {
@@ -213,92 +218,36 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showInfoDialog(final FirebaseUser user, final String fcmToken) {
-        dialog = new Dialog(SplashActivity.this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(false);
-        dialog.setContentView(R.layout.layout_reg_info_dialog);
+        regDialog = new Dialog(SplashActivity.this);
+        regDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        regDialog.setCancelable(false);
+        regDialog.setContentView(R.layout.layout_reg_info_dialog);
 
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        regDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
-        final EditText edtFullName = dialog.findViewById(R.id.edtName);
-        final EditText edtEmail = dialog.findViewById(R.id.edtEmail);
-        final EditText edtPayId = dialog.findViewById(R.id.edtPayId);
-        final EditText edtPhone = dialog.findViewById(R.id.edtPhone);
-        final CountryCodePicker countryCodePicker = dialog.findViewById(R.id.cpp);
-
-        final Button btnSelectGender = dialog.findViewById(R.id.btnSelectGender);
-        final Button btnPayMethod = dialog.findViewById(R.id.btnSelectPayMethod);
-        final LinearLayout layoutRefer = dialog.findViewById(R.id.layoutRefer);
-        final TextView txtReferBy = dialog.findViewById(R.id.txtReferBy);
-        Button btnContinue = dialog.findViewById(R.id.btnContinue);
-
-        Window window = dialog.getWindow();
+        Window window = regDialog.getWindow();
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        final EditText edtFullName = regDialog.findViewById(R.id.edtName);
+        final EditText edtEmail = regDialog.findViewById(R.id.edtEmail);
+        final EditText edtPayId = regDialog.findViewById(R.id.edtPayId);
+        final EditText edtPhone = regDialog.findViewById(R.id.edtPhone);
+        final CountryCodePicker countryCodePicker = regDialog.findViewById(R.id.cpp);
+
+        final Button btnSelectGender = regDialog.findViewById(R.id.btnSelectGender);
+        final Button btnPayMethod = regDialog.findViewById(R.id.btnSelectPayMethod);
+        final LinearLayout layoutRefer = regDialog.findViewById(R.id.layoutRefer);
+        final TextView txtReferBy = regDialog.findViewById(R.id.txtReferBy);
+
+        CheckBox chckBoxRefer = regDialog.findViewById(R.id.chckBoxRefer);
+        final EditText edtReferBy = regDialog.findViewById(R.id.edtReferBy);
+
+        Button btnContinue = regDialog.findViewById(R.id.btnContinue);
 
         edtEmail.setText(user.getEmail());
 
         edtFullName.setText(user.getDisplayName());
 
-
-
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        // Get deep link from result (may be null if no link is found)
-
-
-
-                        Uri deepLink = null;
-                        if (pendingDynamicLinkData != null) {
-                            deepLink = pendingDynamicLinkData.getLink();
-
-
-                            deepLinkReferCode = deepLink.getQueryParameter("referby");
-
-                            if (deepLinkReferCode!=null){
-                                Log.d("Deeplink", deepLinkReferCode);
-                                RetrofitClient.getRetrofit()
-                                        .create(IRetrofitApiCall.class)
-                                        .getReferUser(
-                                                Common.getKeyHash(SplashActivity.this),
-                                                deepLinkReferCode
-                                        )
-                                        .enqueue(new Callback<ReferUserResponse>() {
-                                            @Override
-                                            public void onResponse(Call<ReferUserResponse> call, Response<ReferUserResponse> response) {
-                                                if (response.isSuccessful() && response.body()!=null && !response.body().isError()){
-                                                    referUser = response.body();
-                                                    layoutRefer.setVisibility(View.VISIBLE);
-                                                    txtReferBy.setText("Refer By: "+referUser.name);
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onFailure(Call<ReferUserResponse> call, Throwable t) {
-
-                                            }
-                                        });
-
-                            }else {
-                                Log.d("Deeplink", "Null");
-
-                            }
-
-
-                        }
-
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("onFailure", e.getMessage());
-                    }
-                });
-
-        dialog.show();
+        regDialog.show();
 
 
 
@@ -507,6 +456,19 @@ public class SplashActivity extends AppCompatActivity {
             }
         });
 
+        chckBoxRefer.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    edtReferBy.setVisibility(View.VISIBLE);
+                    haveReferCode = true;
+                }else{
+                    edtReferBy.setVisibility(View.GONE);
+                    haveReferCode =false;
+                }
+            }
+        });
+
 
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -538,9 +500,16 @@ public class SplashActivity extends AppCompatActivity {
                     error = true;
                     edtPhone.setError("Enter Valid Phone");
                 }
+                String referBy = edtReferBy.getText().toString();
+                if (haveReferCode){
+                    if (edtReferBy.getText().toString().length()<6){
+                        error = true;
+                        edtReferBy.setError("Enter Refer Code");
+                    }
+                }
 
                 if (!error){
-                    addUserToDB(user, edtFullName.getText().toString(), edtPhone.getText().toString(), gender, paymentMethod, payid, fcmToken);
+                    addUserToDB(user, edtFullName.getText().toString(), edtPhone.getText().toString(), gender, paymentMethod, payid, fcmToken, haveReferCode, referBy);
                 }
             }
         });
@@ -549,100 +518,50 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    private void addUserToDB(final FirebaseUser user, final String name, final String phone, final int gender, final int paymentMethod, final String payid, final String fcmToken) {
-
-        dismissWaitingDialog();
+    private void addUserToDB(final FirebaseUser user, final String name, final String phone, final int gender, final int paymentMethod, final String payid, final String fcmToken, boolean haveRefer, String referCode) {
         showWaitingDialog();
 
         final GmailInfo gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
         showWaitingDialog();
 
-
-
-        String referLink  ="https://try3x.page.link/?"+
-                "link="+"https://play.google.com"+"?referby="+gmailInfo.user_id+
-                "&apn="+getPackageName()+
-                "&st="+"Install And Earn"+
-                "&sd="+"Try3x"+
-                "&si="+"https://i.ibb.co/N1RSJQN/splash.jpg";
-
-
-        FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLongLink(Uri.parse(referLink))
-                .buildShortDynamicLink()
-                .addOnCompleteListener(this, new OnCompleteListener<ShortDynamicLink>() {
+        IRetrofitApiCall iRetrofitApiCall = RetrofitClient.getRetrofit().create(IRetrofitApiCall.class);
+        iRetrofitApiCall.addUser(
+                Common.getKeyHash(SplashActivity.this),
+                user.getEmail(),
+                gmailInfo.user_id,
+                name,
+                user.getPhotoUrl().toString(),
+                phone,
+                gender,
+                paymentMethod,
+                payid,
+                haveRefer,
+                fcmToken,
+                referCode
+        )
+                .enqueue(new Callback<addUserResponse>() {
                     @Override
-                    public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-                        if (task.isSuccessful()) {
+                    public void onResponse(Call<addUserResponse> call, Response<addUserResponse> response) {
 
-                            Log.d("SuccessHolo", task.getResult().getShortLink().toString());
-                            // Short link created
+                        if (response.isSuccessful() && response.body()!=null){
 
+                            addUserResponse addUserResponse = response.body();
+                            if (!addUserResponse.error){
 
-                            Uri shortLink  = task.getResult().getShortLink();
-                            Uri flowchartLink = task.getResult().getPreviewLink();
-
-                            //share(shortLink, shareBtnId);
-                            Boolean isReferBy = false;
-                            String referUserId = "";
-                            String referEmail = "";
-                            if (deepLinkReferCode!=null){
-                                if (referUser.email!=null){
-                                    referUserId = deepLinkReferCode;
-                                    isReferBy = true;
-                                    referEmail = referUser.email;
-                                    Log.d("deeplink", "true");
-                                }
+                               checkLogin(user, fcmToken);
+                            }else {
+                                dismissWaitingDialog();
+                                Toast.makeText(SplashActivity.this, addUserResponse.error_description, Toast.LENGTH_SHORT).show();
                             }
-
-                            IRetrofitApiCall iRetrofitApiCall = RetrofitClient.getRetrofit().create(IRetrofitApiCall.class);
-                            iRetrofitApiCall.addUser(
-                                    Common.getKeyHash(SplashActivity.this),
-                                    user.getEmail(),
-                                    gmailInfo.user_id,
-                                    name,
-                                    user.getPhotoUrl().toString(),
-                                    phone,
-                                    gender,
-                                    paymentMethod,
-                                    payid,
-                                    String.valueOf(shortLink),
-                                    referUserId,
-                                    isReferBy,
-                                    referEmail,
-                                    fcmToken
-                                    )
-                                    .enqueue(new Callback<addUserResponse>() {
-                                        @Override
-                                        public void onResponse(Call<addUserResponse> call, Response<addUserResponse> response) {
-                                            if (response.isSuccessful() && response.body()!=null){
-                                                addUserResponse addUserResponse = response.body();
-                                                if (!addUserResponse.error){
-                                                    dismissWaitingDialog();
-                                                    gotoMainActivity();
-                                                }else {
-                                                    dismissWaitingDialog();
-                                                    Toast.makeText(SplashActivity.this, addUserResponse.error_description, Toast.LENGTH_SHORT).show();
-                                                }
-                                            }else {
-                                                dismissWaitingDialog();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<addUserResponse> call, Throwable t) {
-                                            dismissWaitingDialog();
-                                            Toast.makeText(SplashActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-
-
-
-                        } else {
-                            Log.e("main", " error "+task.getException() );
-                            Toast.makeText(SplashActivity.this, "", Toast.LENGTH_SHORT).show();
+                        }else {
                             dismissWaitingDialog();
                         }
+                    }
+
+                    @Override
+                    public void onFailure(Call<addUserResponse> call, Throwable t) {
+                        dismissWaitingDialog();
+                        Toast.makeText(SplashActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 

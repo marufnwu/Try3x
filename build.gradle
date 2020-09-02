@@ -20,6 +20,12 @@ allprojects {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
+        maven { url  "https://phonepe.bintray.com/PhonePeIntentSDK" }
+        maven {
+            url "https://artifactory.paytm.in/libs-release-local"
+        }
+
+
 
     }
 }

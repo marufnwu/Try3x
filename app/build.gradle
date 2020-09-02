@@ -79,5 +79,17 @@ dependencies {
     // Add the Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
 
+    //PayU
+    implementation 'com.payumoney.core:payumoney-sdk:7.6.0'
+    implementation 'com.payumoney.sdkui:plug-n-play:1.6.0'
+
+    implementation 'phonepe.intentsdk.android.release:IntentSDK:0.1.5'
+
+  /*  implementation('com.paytm:pgplussdk:1.4.4') {
+        transitive = true;
+    }*/
+
+    implementation 'com.paytm.appinvokesdk:appinvokesdk:1.3'
+
 
 }

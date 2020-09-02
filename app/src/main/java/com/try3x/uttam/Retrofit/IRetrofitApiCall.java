@@ -2,6 +2,8 @@ package com.try3x.uttam.Retrofit;
 
 import com.try3x.uttam.Models.PayMethodInfo;
 import com.try3x.uttam.Models.Paytm.Checksum;
+import com.try3x.uttam.Models.Paytm.PaytmHash;
+import com.try3x.uttam.Models.Paytm.Root;
 import com.try3x.uttam.Models.Response.BajiInfoResponse;
 import com.try3x.uttam.Models.Response.BuyCoinTransResponse;
 import com.try3x.uttam.Models.Response.CoinHistoryResponse;
@@ -50,11 +52,10 @@ public interface IRetrofitApiCall {
             @Field("gender") int gender,
             @Field("pay_method") int pay_method,
             @Field("pay_id") String pay_id,
-            @Field("my_refer_link") String my_refer_link,
-            @Field("refer_by_uid") String refer_by_uid,
             @Field("isReferBy") boolean isReferBy,
-            @Field("refer_by_email") String refer_by_email,
-            @Field("fcmToken") String fcmToken);
+            @Field("fcmToken") String fcmToken,
+            @Field("referCode") String referCod
+    );
 
     @GET("helper.getPackages.php")
     Call<PackageList> getPackages();
@@ -265,12 +266,40 @@ public interface IRetrofitApiCall {
     @FormUrlEncoded
     @POST("payment.getPayoutList.php")
     Call<PayoutHistoryResponse> getPayoutList(
-            @Field("sha1") String sha1,
-            @Field("email") String email,
-            @Field("u_id") String uId,
-            @Field("token") String token,
-            @Field("isPaging") boolean isPaging,
-            @Field("currPage") int currPage,
-            @Field("itemPage") int itemPage
+                    @Field("sha1") String sha1,
+                    @Field("email") String email,
+                    @Field("u_id") String uId,
+                    @Field("token") String token,
+                    @Field("isPaging") boolean isPaging,
+                    @Field("currPage") int currPage,
+                    @Field("itemPage") int itemPage
+            );
+
+    @FormUrlEncoded
+    @POST("payRequestHash.php")
+    Call<String> payRequestHash(
+            @Field("txnid") String txnId,
+            @Field("amount") float amount,
+            @Field("productinfo") String productinfo,
+            @Field("firstname") String firstname,
+            @Field("email") String email
+
+    );
+
+    @FormUrlEncoded
+    @POST("paytm/checkSum.php")
+    Call<ServerResponse> paytmRequestHash(
+            @Field("orderId") String orderId
+
+    );
+
+    @FormUrlEncoded
+    @POST("paytm/paytm.requestPayout.php")
+    Call<Root> paytmHash(
+            @Field("amount") String amount,
+            @Field("orderId") String orderId,
+            @Field("uId") String uId,
+            @Field("uEmail") String uEmail
+
     );
 }

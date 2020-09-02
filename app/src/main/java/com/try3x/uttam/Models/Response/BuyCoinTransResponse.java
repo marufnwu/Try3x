@@ -1,11 +1,22 @@
 package com.try3x.uttam.Models.Response;
 
+import com.try3x.uttam.Models.PhonPe;
+
 public class BuyCoinTransResponse {
     public boolean error;
     public String error_description;
     public String transaction_ref;
     public String transaction_id;
     public float amount;
+    public PhonPe phonpe;
+
+    public PhonPe getPhonpe() {
+        return phonpe;
+    }
+
+    public void setPhonpe(PhonPe phonpe) {
+        this.phonpe = phonpe;
+    }
 
     public String getTransaction_id() {
         return transaction_id;
