@@ -55,7 +55,7 @@ public class UserProfileActivity extends AppCompatActivity {
     ImageView imgBack, imgProfilePic,imgAddPayMethod;
 
     Button btnInvite;
-    TextView txtReaload,txtUserName, txtUserEmail, txtUserNumber, txtUserCountry, txtUserGender, txtName, txtEmail, txtUserJoin;
+    TextView txtReaload,txtUserName, txtUserEmail, txtUserNumber, txtUserCountry, txtUserGender, txtName, txtEmail, txtUserJoin, txtUserReferCode;
     RecyclerView recyclerPayMethod;
     ProgressBar payMethodProgress;
     LinearLayout layoutReload;
@@ -159,6 +159,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
             txtUserGender.setText(Common.getGender(userProfile.gender));
             txtUserJoin.setText(Common.date(userProfile.acc_created_at));
+            txtUserReferCode.setText(userProfile.referCode);
         }
     }
 
@@ -172,6 +173,7 @@ public class UserProfileActivity extends AppCompatActivity {
         txtUserNumber = findViewById(R.id.txtUserNumber);
         txtUserCountry = findViewById(R.id.txtUserCountry);
         txtUserGender = findViewById(R.id.txtUserGender);
+        txtUserReferCode = findViewById(R.id.txtUserReferCode);
         txtName = findViewById(R.id.txtName);
         txtEmail = findViewById(R.id.txtEmail);
         recyclerPayMethod = findViewById(R.id.recyclerPayMethod);

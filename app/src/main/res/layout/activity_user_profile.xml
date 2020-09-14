@@ -332,6 +332,41 @@
                                 android:layout_height="wrap_content"/>
                         </LinearLayout>
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_margin="@dimen/_5sdp"
+                        android:gravity="center_vertical"
+                        android:weightSum="4"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:padding="@dimen/_5sdp"
+                            android:src="@drawable/refer"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/_50sdp"/>
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_weight="3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:textSize="@dimen/_13sdp"
+                                android:textColor="@color/Black"
+                                android:textStyle="bold"
+                                android:text="Refer Code"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                            <TextView
+                                android:id="@+id/txtUserReferCode"
+                                android:textSize="@dimen/_13sdp"
+                                android:text="0000"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+                        </LinearLayout>
+                    </LinearLayout>
 
                 </LinearLayout>
 

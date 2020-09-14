@@ -1,6 +1,7 @@
 package com.try3x.uttam.Fragments;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +25,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.try3x.uttam.Adapters.BajiPlaceListAdapter;
 import com.try3x.uttam.Adapters.PackagesListAdapter;
+import com.try3x.uttam.AddCoinActivity;
+import com.try3x.uttam.Common.AddCoinDialog;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Listener.OnPackageItemClickListener;
@@ -30,6 +34,7 @@ import com.try3x.uttam.Models.Response.BajiServerBody;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.PackageList;
 import com.try3x.uttam.Models.Packages;
+import com.try3x.uttam.Models.Response.MyCoinResponse;
 import com.try3x.uttam.Models.Response.ServerResponse;
 import com.try3x.uttam.R;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
@@ -51,7 +56,12 @@ public class Baji4 extends Fragment implements OnPackageItemClickListener {
     FirebaseUser mUser;
     BajiPlaceListAdapter bajiPlaceListAdapter;
     private ACProgressPie waitingdialog;
-    public Baji4() {
+    boolean isResultPublish;
+    TextView bajiStatus;
+    private GmailInfo gmailInfo;
+
+    public Baji4(boolean isResultPublish) {
+        this.isResultPublish = isResultPublish;
     }
 
     @Override
@@ -60,6 +70,7 @@ public class Baji4 extends Fragment implements OnPackageItemClickListener {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         Paper.init(getContext());
+        gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
     }
 
     @Nullable
@@ -73,7 +84,16 @@ public class Baji4 extends Fragment implements OnPackageItemClickListener {
         btn4 = view.findViewById(R.id.btn4);
         btn5 = view.findViewById(R.id.btn5);
         btnPlaceBaji = view.findViewById(R.id.btnPlace);
+        bajiStatus = view.findViewById(R.id.bajiStatus);
 
+        if (isResultPublish){
+            bajiStatus.setText("Result Published");
+            bajiStatus.setBackground(getResources().getDrawable(R.drawable.bg_gra_gray));
+            bajiStatus.setTextColor(getResources().getColor(R.color.black));
+
+        }else{
+            bajiStatus.setText("Live Now | Result 06:30pm");
+        }
         bajiServerBody = new BajiServerBody();
         createDialog();
 
@@ -152,51 +172,88 @@ public class Baji4 extends Fragment implements OnPackageItemClickListener {
     }
     private void placeBaji() {
 
-
         if (bajiServerBody.getPackageList().size()>0){
-            final Dialog dialog = new Dialog(getContext());
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCancelable(true);
-            dialog.setContentView(R.layout.layout_fianl_baji_list_dialog);
 
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-            Window window = dialog.getWindow();
-            window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            final float bajiCoin = bajiServerBody.getPackageList().get(0).price;
 
 
-            final RecyclerView recyclerPck = dialog.findViewById(R.id.recyclerPck);
-            Button btnCancel = dialog.findViewById(R.id.btnCancel);
-            Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+            RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                    .getCoin(Common.getKeyHash(getContext()),
+                            gmailInfo.getGmail(),
+                            gmailInfo.user_id,
+                            gmailInfo.access_token)
+                    .enqueue(new Callback<MyCoinResponse>() {
+                        @Override
+                        public void onResponse(Call<MyCoinResponse> call, Response<MyCoinResponse> response) {
+                            if (response.isSuccessful() && response.body()!=null){
+                                if (response.body().coin<bajiCoin){
+                                    //show dialog
+                                    new AddCoinDialog(getContext());
 
-            recyclerPck.setLayoutManager(new LinearLayoutManager(getContext()));
-            recyclerPck.setHasFixedSize(true);
+                                }else {
+                                    final Dialog dialog = new Dialog(getContext());
+                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                    dialog.setCancelable(true);
+                                    dialog.setContentView(R.layout.layout_fianl_baji_list_dialog);
+
+                                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+                                    Window window = dialog.getWindow();
+                                    window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
 
-            bajiPlaceListAdapter = new BajiPlaceListAdapter(getContext(), bajiServerBody.getPackageList(), Baji4.this);
-            recyclerPck.setAdapter(bajiPlaceListAdapter);
+                                    final RecyclerView recyclerPck = dialog.findViewById(R.id.recyclerPck);
+                                    Button btnCancel = dialog.findViewById(R.id.btnCancel);
+                                    Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
 
-            dialog.show();
 
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (dialog.isShowing()){
-                        dialog.dismiss();
-                    }
-                }
-            });
 
-            btnConfirm.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (bajiServerBody.getPackageList().size()>0){
-                        confirmBaji();
-                    }else {
-                        Toast.makeText(getContext(), "Baji List Is Empty", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+                                    recyclerPck.setLayoutManager(new LinearLayoutManager(getContext()));
+                                    recyclerPck.setHasFixedSize(true);
+
+
+                                    bajiPlaceListAdapter = new BajiPlaceListAdapter(getContext(), bajiServerBody.getPackageList(), Baji4.this);
+                                    recyclerPck.setAdapter(bajiPlaceListAdapter);
+                                    Button btnAddCoin = dialog.findViewById(R.id.btnAddCoin);
+                                    btnAddCoin.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            startActivity(new Intent(getContext(), AddCoinActivity.class));
+                                        }
+                                    });
+                                    dialog.show();
+
+                                    btnCancel.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            if (dialog.isShowing()){
+                                                dialog.dismiss();
+                                            }
+                                        }
+                                    });
+
+                                    btnConfirm.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            if (bajiServerBody.getPackageList().size()>0){
+                                                confirmBaji();
+                                            }else {
+                                                Toast.makeText(getContext(), "Baji List Is Empty", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<MyCoinResponse> call, Throwable t) {
+
+                        }
+                    });
+
+
+
         }else {
             Toast.makeText(getContext(), "Please add baji", Toast.LENGTH_SHORT).show();
         }

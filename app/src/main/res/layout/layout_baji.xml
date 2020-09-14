@@ -3,11 +3,12 @@
     android:orientation="vertical"
     android:layout_margin="@dimen/_8sdp"
     android:padding="@dimen/_8sdp"
-    android:background="@drawable/bg_gra_pink"
+    android:background="#72C424DF"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <TextView
+        android:id="@+id/bajiStatus"
         android:textColor="@color/White"
         android:layout_margin="@dimen/_5sdp"
         android:padding="@dimen/_5sdp"
@@ -178,8 +179,8 @@
         android:id="@+id/btnPlace"
         android:textSize="@dimen/_15sdp"
         android:padding="@dimen/_5sdp"
-        android:textColor="@color/DarkRed"
-        android:background="@drawable/gra_bg_green"
+        android:textColor="@color/White"
+        android:background="@drawable/bg_btn_2"
         android:layout_gravity="center_horizontal"
         android:text="Place Now"
         android:layout_width="wrap_content"

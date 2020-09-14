@@ -1,6 +1,7 @@
 package com.try3x.uttam.Common;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -18,6 +19,9 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Common {
+    public static final String APP_UPDATE_REEIVER = "APP_UPDATE_REEIVER";
+    public static final String APP_UPDATE_PROGRESS = "APP_UPDATE_PROGRESS";
+
     public static String getKeyHash(Context ctx) {
         String key = " ";
         PackageInfo info;
@@ -109,5 +113,11 @@ public class Common {
     public static void subscribeNoti(String s) {
         Log.d("SubscribeNoti", s);
         FirebaseMessaging.getInstance().subscribeToTopic(s);
+    }
+
+    public static String getFirstName(String name){
+        String[] part = name.split(" ");
+
+        return part[0];
     }
 }

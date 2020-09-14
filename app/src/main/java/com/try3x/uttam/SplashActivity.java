@@ -3,13 +3,30 @@ package com.try3x.uttam;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -47,13 +64,26 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 import com.try3x.uttam.Common.Common;
+import com.try3x.uttam.Common.FileUtils;
 import com.try3x.uttam.Common.PaperDB;
+import com.try3x.uttam.Models.Apk;
+import com.try3x.uttam.Models.AsyncParam;
+import com.try3x.uttam.Models.Response.AppUpdateResponse;
 import com.try3x.uttam.Models.Response.addUserResponse;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.Response.ReferUserResponse;
 import com.try3x.uttam.Models.UserLogin;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
 import com.try3x.uttam.Retrofit.RetrofitClient;
+import com.try3x.uttam.Services.UpdateServices;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
 
 import cc.cloudist.acplibrary.ACProgressConstant;
 import cc.cloudist.acplibrary.ACProgressPie;
@@ -63,6 +93,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
+    private static final int READ_STORAGE_REQUEST_CODE = 2522;
     String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     private static final int GMAIL_SIGN_IN = 1001;
@@ -86,6 +117,10 @@ public class SplashActivity extends AppCompatActivity {
     private ReferUserResponse referUser;
     private boolean haveReferCode = false;
     private Dialog regDialog;
+    private Dialog updateDialog;
+    private UpdateServices updateServices;
+    LocalBroadcastManager localBroadcastManager;
+    private ProgressDialog mPDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +137,9 @@ public class SplashActivity extends AppCompatActivity {
         // [END config_signin]
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+
+
 
         initViews();
         createDialog();
@@ -150,6 +188,142 @@ public class SplashActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        checkUpdate();
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        localBroadcastManager.registerReceiver(appUpdateReceiver, new IntentFilter(Common.APP_UPDATE_REEIVER));
+        localBroadcastManager.registerReceiver(updateProgressReceiver, new IntentFilter(Common.APP_UPDATE_PROGRESS));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        localBroadcastManager.unregisterReceiver(appUpdateReceiver);
+        localBroadcastManager.unregisterReceiver(updateProgressReceiver);
+    }
+
+    private void checkUpdate() {
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getAppUpdate()
+                .enqueue(new Callback<AppUpdateResponse>() {
+                    @Override
+                    public void onResponse(Call<AppUpdateResponse> call, Response<AppUpdateResponse> response) {
+                        if (response.isSuccessful() && response.body()!=null){
+                            AppUpdateResponse appUpdateResponse = response.body();
+                            if (!appUpdateResponse.isError()){
+                                Apk apk = appUpdateResponse.getApk();
+                                PackageInfo pInfo = null;
+                                try {
+                                    pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
+                                    String version = pInfo.versionName;
+                                    int versionCode = pInfo.versionCode;
+                                    if (apk.vCode<=versionCode){
+                                        moveForward();
+                                    }else {
+                                        showUpdateDialog(apk);
+                                    }
+                                } catch (PackageManager.NameNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }else {
+                                Toast.makeText(SplashActivity.this, appUpdateResponse.error_description, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AppUpdateResponse> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    private void showUpdateDialog(final Apk apk) {
+
+        updateDialog = new Dialog(SplashActivity.this);
+        updateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        updateDialog.setCancelable(false);
+        updateDialog.setContentView(R.layout.dialog_update_layout);
+
+        updateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        Window window = updateDialog.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        Button update = updateDialog.findViewById(R.id.btnUpdate);
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int PERMISSION_ALL = 1;
+                String[] PERMISSIONS = {
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                };
+
+                if (!hasPermissions(SplashActivity.this, PERMISSIONS)) {
+                    ActivityCompat.requestPermissions(SplashActivity.this, PERMISSIONS, PERMISSION_ALL);
+                }else {
+                    startDownload(apk);
+                }
+
+//                if (checkPermission()){
+//                    startDownload(apk);
+//                }else {
+//                    requestPermission();
+//                }
+            }
+        });
+        updateDialog.show();
+    }
+
+    private void startDownload(Apk apk) {
+//       downloadApp downloadApp = new downloadApp();
+//       downloadApp.setContext(SplashActivity.this);
+//       downloadApp.execute(apk);
+        createUpdateProgress();
+        updateServices = new UpdateServices();
+
+        Intent intent = new Intent(SplashActivity.this, updateServices.getClass());
+        intent.putExtra("apk", apk);
+        if (!isMyServiceRunning(updateServices.getClass())) {
+            startService(intent);
+        }else {
+            Toast.makeText(this, "App Is Updating", Toast.LENGTH_SHORT).show();
+        }
+
+
+
+    }
+
+    private void createUpdateProgress() {
+        mPDialog = new ProgressDialog(SplashActivity.this);
+        mPDialog.setMessage("Updating...");
+        mPDialog.setIndeterminate(true);
+        mPDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mPDialog.setCancelable(false);
+
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i ("Service status", "Running");
+                return true;
+            }
+        }
+        Log.i ("Service status", "Not running");
+        return false;
+    }
+
+    private void moveForward() {
 
         if (mAuth.getCurrentUser()!=null){
             btnSignIn.setVisibility(View.GONE);
@@ -158,9 +332,7 @@ public class SplashActivity extends AppCompatActivity {
         }else {
             progressBar.setVisibility(View.GONE);
             btnSignIn.setVisibility(View.VISIBLE);
-
         }
-
     }
 
     private void checkLogin(final FirebaseUser user, final String fcmToken) {
@@ -667,4 +839,81 @@ public class SplashActivity extends AppCompatActivity {
 
 
     }
+
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void requestPermission() {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(SplashActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Toast.makeText(SplashActivity.this, "Write External Storage permission allows us to do store images. Please allow this permission in App Settings.", Toast.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions(SplashActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE_REQUEST_CODE);
+        }
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+
+    public BroadcastReceiver appUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int status = intent.getIntExtra("status", -1);
+            if (status==1){
+                if (mPDialog!=null && !mPDialog.isShowing()){
+                    mPDialog.show();
+                }
+                //start updating
+                Log.d("UpdateStatus", "Started");
+            }else if (status==2){
+                //start updating
+
+                Log.d("UpdateStatus", "Completed");
+            }else if (status==0){
+                //start updating
+                Log.d("UpdateStatus", "Failed");
+            }
+        }
+    };
+
+    public BroadcastReceiver updateProgressReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int progress = intent.getIntExtra("progress", 0);
+            if (mPDialog != null) {
+                if (!mPDialog.isShowing()){
+                    Log.d("UpdateStatus", "dialog  not showing"+progress);
+                    mPDialog.show();
+
+
+                }else {
+                    Log.d("UpdateStatus", "dialog  showing"+progress);
+
+                }
+                mPDialog.setIndeterminate(false);
+                mPDialog.setMax(100);
+                mPDialog.setProgress(progress);
+            }else {
+                Log.d("UpdateStatus", "dialog null"+progress);
+
+                createUpdateProgress();
+            }
+        }
+    };
 }

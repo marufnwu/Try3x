@@ -67,7 +67,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClickListener, PaymentStatusListener {
+public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClickListener, PaymentStatusListener, View.OnClickListener {
 
     RecyclerView recyclerCoinPack;
     ProgressBar progress;
@@ -146,16 +146,14 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
             }
         });*/
 
-        imgPaytm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (coinPackage!=null && coinPackage.price>0){
-                    getTransRef();
-                }else {
-                    Toast.makeText(AddCoinActivity.this, "Please Select Any Package", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+       imgPaytm.setOnClickListener(this);
+        imgGpay.setOnClickListener(this);
+        imgPhonpe.setOnClickListener(this);
+        imgAmazonPay.setOnClickListener(this);
+        imgBhmi.setOnClickListener(this);
+        imgJiomoney.setOnClickListener(this);
+        txtPayAmount.setOnClickListener(this);
+
     }
 
     private void getTransRef() {
@@ -214,7 +212,7 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
                     dismissWaitingDialog();
                     String callback =   "https://try3x.xyz/api/paytm/paytm.paymentCheck.php?ORDERID="+buyCoinTransResponse.transaction_id;
                     Root paytmHash = response.body();
-                    if (paytmHash.body.resultInfo.resultStatus.equals("0000")){
+                    if (paytmHash.body.resultInfo.resultCode.equals("0000")){
                         PaytmOrder paytmOrder = new PaytmOrder(buyCoinTransResponse.transaction_id, "sUqxHf07917146716576", paytmHash.getBody().txnToken, String.valueOf(buyCoinTransResponse.amount), callback);
 
                         TransactionManager transactionManager = new TransactionManager(paytmOrder, new PaytmPaymentTransactionCallback() {
@@ -268,6 +266,7 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
 
                         transactionManager.startTransaction(AddCoinActivity.this, requestCode);
                     }else {
+                        Log.d("Paytm", paytmHash.body.resultInfo.resultCode);
                         Toast.makeText(AddCoinActivity.this, "Payment Initiation Failed", Toast.LENGTH_SHORT).show();
                     }
 
@@ -729,7 +728,7 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
        /* txtPackCoin.setText(String.valueOf(this.coinPackage.coin));
         txtPackName.setText(String.valueOf(this.coinPackage.name));
         txtPackPrice.setText(String.valueOf(this.coinPackage.price));*/
-       txtPayAmount.setText(String.valueOf("Pay: "+this.coinPackage.price+" Rp."));
+       txtPayAmount.setText(String.valueOf("Pay: ₹"+this.coinPackage.price));
         txtPayAmount.setVisibility(View.VISIBLE);
 
     }
@@ -886,5 +885,17 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
         } catch (NoSuchAlgorithmException ignored) {
         }
         return hexString.toString();
+    }
+
+    @Override
+    public void onClick(View view) {
+        int btn = view.getId();
+        if(btn == R.id.txtPayAmount|| btn == R.id.imgPaytm || btn == R.id.imgGpay || btn == R.id.imgPhonpe || btn == R.id.imgAmazonPay || btn == R.id.imgJiomoney || btn == R.id.imgBhmi ){
+            if (coinPackage!=null && coinPackage.price>0){
+                getTransRef();
+            }else {
+                Toast.makeText(AddCoinActivity.this, "Please Select Any Package", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

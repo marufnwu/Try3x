@@ -92,7 +92,6 @@ public class MyCommisionActivity extends AppCompatActivity {
                                 isLoading = false;
 
                                 if (commissionsResponse.items.size()>0){
-                                    Toast.makeText(MyCommisionActivity.this, "Ok", Toast.LENGTH_SHORT).show();
                                     commissionHistoryAdapter = new CommissionHistoryAdapter(MyCommisionActivity.this, commissionsResponse.items);
                                     recyclerCoin.setAdapter(commissionHistoryAdapter);
                                     reloadLay.setVisibility(View.GONE);

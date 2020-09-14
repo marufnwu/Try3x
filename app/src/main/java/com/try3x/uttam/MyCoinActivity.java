@@ -110,7 +110,6 @@ public class MyCoinActivity extends AppCompatActivity {
                                 isLoading = false;
 
                                 if (coinHistoryResponses.items.size()>0){
-                                    Toast.makeText(MyCoinActivity.this, "Ok", Toast.LENGTH_SHORT).show();
                                     coinHistoryAdapter = new CoinHistoryAdapter(MyCoinActivity.this, coinHistoryResponses.items);
                                     recyclerCoin.setAdapter(coinHistoryAdapter);
                                     reloadLay.setVisibility(View.GONE);

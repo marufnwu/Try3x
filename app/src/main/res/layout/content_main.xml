@@ -3,62 +3,80 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    xmlns:tools="http://schemas.android.com/tools"
-      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:weightSum="3"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+    <HorizontalScrollView
+        android:layout_margin="@dimen/_3sdp"
+        android:scrollbarThumbHorizontal="@color/none"
+        android:scrollbars="horizontal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-        <Button
-            android:textColor="@color/Yellow"
-            android:drawableEnd="@drawable/arrow_right"
-            android:background="@drawable/bg_gra_sky"
-            android:textAllCaps="false"
-            android:textSize="@dimen/_10sdp"
-            android:layout_margin="@dimen/_4sdp"
-            android:id="@+id/btnMyCoin"
-            android:layout_weight="1"
-            android:text="@string/my_coin"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/_25sdp"/>
+            <Button
+                android:id="@+id/btnMyCoin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_4sdp"
+                android:background="@drawable/bg_btn_1"
+                android:drawableEnd="@drawable/arrow_right"
+                android:drawablePadding="@dimen/_8sdp"
+                android:paddingStart="@dimen/_8sdp"
+                android:paddingEnd="@dimen/_8sdp"
+                android:text="@string/my_coin"
+                android:textAllCaps="false"
+                android:textColor="@color/deep_blue"
+                android:textSize="@dimen/_13sdp" />
 
-        <Button
-            android:textColor="@color/DarkRed"
-            android:drawableEnd="@drawable/arrow_right"
-            android:background="@drawable/gra_bg_green"
-            android:textAllCaps="false"
-            android:textSize="@dimen/_10sdp"
-            android:layout_margin="@dimen/_4sdp"
-            android:id="@+id/btnCommission"
-            android:layout_weight="1"
-            android:text="@string/commission"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/_25sdp"/>
+            <Button
+                android:layout_gravity="center_vertical"
+                android:paddingTop="@dimen/_3sdp"
+                android:paddingBottom="@dimen/_3sdp"
+                android:drawablePadding="@dimen/_8sdp"
+                android:paddingEnd="@dimen/_8sdp"
+                android:paddingStart="@dimen/_8sdp"
+                android:textColor="@color/deep_blue"
+                android:textSize="@dimen/_13sdp"
 
-        <Button
+                android:drawableEnd="@drawable/arrow_right"
+                android:background="@drawable/bg_btn_1"
 
-            android:textColor="@color/GreenYellow"
-            android:drawableEnd="@drawable/arrow_right"
-            android:background="@drawable/bg_gra_pink"
-            android:textAllCaps="false"
-            android:textSize="@dimen/_10sdp"
-            android:layout_margin="@dimen/_4sdp"
-            android:id="@+id/btnwithdrawable"
-            android:layout_weight="1"
-            android:text="@string/withdrawable"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/_25sdp"/>
-    </LinearLayout>
+                android:textAllCaps="false"
+                android:layout_margin="@dimen/_4sdp"
+                android:id="@+id/btnCommission"
+                android:text="@string/commission"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:layout_gravity="center_vertical"
+                android:paddingTop="@dimen/_3sdp"
+                android:paddingBottom="@dimen/_3sdp"
+                android:drawablePadding="@dimen/_8sdp"
+                android:paddingEnd="@dimen/_8sdp"
+                android:paddingStart="@dimen/_8sdp"
+                android:textColor="@color/deep_blue"
+                android:textSize="@dimen/_13sdp"
+                android:drawableEnd="@drawable/arrow_right"
+                android:background="@drawable/bg_btn_1"
+                android:textAllCaps="false"
+                android:layout_margin="@dimen/_4sdp"
+                android:id="@+id/btnwithdrawable"
+                android:text="@string/withdrawable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </HorizontalScrollView>
 
 
     <LinearLayout
         android:layout_margin="@dimen/_5sdp"
-        android:padding="@dimen/_8sdp"
-        android:background="@drawable/bg_gra_viewpager"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -66,7 +84,7 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/tab_layout_background"
+            android:background="@drawable/bg_tab_layout"
             app:tabMode="scrollable"
             app:tabBackground="@drawable/tab_layout_selector"
             app:tabSelectedTextColor="@color/Teal"
@@ -75,11 +93,48 @@
             app:tabIndicatorHeight="0dp"
             app:tabRippleColor="@null" />
 
-        <com.try3x.uttam.Custom.MyViewpager
-            android:id="@+id/gameViewPager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:name="com.try3x.uttam.Custom.MyViewpager"/>
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <com.try3x.uttam.Custom.MyViewpager
+               android:id="@+id/gameViewPager"
+               android:layout_width="match_parent"
+               android:layout_height="@dimen/_200sdp"
+               android:name="com.try3x.uttam.Custom.MyViewpager"/>
+
+           <Button
+               android:id="@+id/btnResult"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_below="@id/gameViewPager"
+               android:layout_marginTop="8dp"
+               android:background="@drawable/bg_btn_1"
+               android:text="See Result"
+               android:textAllCaps="false"
+               android:textColor="@color/deep_blue"
+               android:textSize="@dimen/_14sdp" />
+
+           <com.smarteist.autoimageslider.SliderView
+               android:layout_marginTop="@dimen/_8sdp"
+               android:layout_below="@+id/btnResult"
+               android:id="@+id/imageSlider"
+               android:layout_width="match_parent"
+               android:layout_height="@dimen/_170sdp"
+               app:sliderAnimationDuration="600"
+               app:sliderAutoCycleDirection="back_and_forth"
+               app:sliderAutoCycleEnabled="false"
+               app:sliderIndicatorAnimationDuration="600"
+               app:sliderIndicatorGravity="center_horizontal|bottom"
+               app:sliderIndicatorMargin="15dp"
+               app:sliderIndicatorOrientation="horizontal"
+               app:sliderIndicatorPadding="3dp"
+               app:sliderIndicatorRadius="2dp"
+               app:sliderIndicatorSelectedColor="#5A5A5A"
+               app:sliderIndicatorUnselectedColor="#FFF"
+               app:sliderScrollTimeInSec="1"
+               app:sliderStartAutoCycle="false" />
+
+       </RelativeLayout>
     </LinearLayout>
 
 

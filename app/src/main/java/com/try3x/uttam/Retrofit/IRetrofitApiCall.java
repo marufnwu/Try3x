@@ -4,6 +4,7 @@ import com.try3x.uttam.Models.PayMethodInfo;
 import com.try3x.uttam.Models.Paytm.Checksum;
 import com.try3x.uttam.Models.Paytm.PaytmHash;
 import com.try3x.uttam.Models.Paytm.Root;
+import com.try3x.uttam.Models.Response.AppUpdateResponse;
 import com.try3x.uttam.Models.Response.BajiInfoResponse;
 import com.try3x.uttam.Models.Response.BuyCoinTransResponse;
 import com.try3x.uttam.Models.Response.CoinHistoryResponse;
@@ -12,7 +13,10 @@ import com.try3x.uttam.Models.Response.MyCommissionsResponse;
 import com.try3x.uttam.Models.Response.PaymentInfoResponse;
 import com.try3x.uttam.Models.Response.PaymentMethodResponse;
 import com.try3x.uttam.Models.Response.PayoutHistoryResponse;
+import com.try3x.uttam.Models.Response.ResultListResponse;
+import com.try3x.uttam.Models.Response.ResultStatusResponse;
 import com.try3x.uttam.Models.Response.SinglePayMethodResponse;
+import com.try3x.uttam.Models.Response.SlideResponse;
 import com.try3x.uttam.Models.Response.UserPayMethodListResponse;
 import com.try3x.uttam.Models.Response.addUserResponse;
 import com.try3x.uttam.Models.Response.BajiServerBody;
@@ -302,4 +306,20 @@ public interface IRetrofitApiCall {
             @Field("uEmail") String uEmail
 
     );
+
+    @POST("baji.bajiResultPunlishedORNot.php")
+    Call<ResultStatusResponse> getBajiResultStatus( );
+
+     @POST("helper.getLatestUpdate.php")
+    Call<AppUpdateResponse> getAppUpdate( );
+
+     @POST("helper.getSlides.php")
+    Call<SlideResponse> getBannerSlide( );
+
+    @POST("baji.getResult.php")
+    Call<ResultListResponse> getResultList(
+
+    );
+
+
 }

@@ -11,8 +11,8 @@ android {
         applicationId "com.try3x.uttam"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -91,5 +91,5 @@ dependencies {
 
     implementation 'com.paytm.appinvokesdk:appinvokesdk:1.3'
 
-
+    implementation 'com.github.smarteist:autoimageslider:1.3.9'
 }
