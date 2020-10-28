@@ -19,6 +19,7 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.google.gson.Gson;
+import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.MainActivity;
 import com.try3x.uttam.MyBajiListActivity;
 import com.try3x.uttam.MyCoinActivity;
@@ -26,6 +27,7 @@ import com.try3x.uttam.MyCommisionActivity;
 import com.try3x.uttam.MyWithrawbleActivity;
 import com.try3x.uttam.PayoutActivity;
 import com.try3x.uttam.R;
+import com.try3x.uttam.SplashActivity;
 import com.try3x.uttam.UserProfileActivity;
 
 import java.io.IOException;
@@ -75,25 +77,12 @@ public class NotificationUtil {
             String activity = notificationData.actionActivity;
             Intent resultIntent = null;
             if (activity!=null){
-                if (activity.equals("MainActivity")){
-                    resultIntent = new Intent(context, MainActivity.class);
-                }else if (activity.equals("MyBajiListActivity")){
-                    resultIntent = new Intent(context, MyBajiListActivity.class);
-                }else if (activity.equals("MyCoinActivity")){
-                    resultIntent = new Intent(context, MyCoinActivity.class);
-                }else if (activity.equals("MyCommisionActivity")){
-                    resultIntent = new Intent(context, MyCommisionActivity.class);
-                }else if (activity.equals("MyWithrawbleActivity")){
-                    resultIntent = new Intent(context, MyWithrawbleActivity.class);
-                }else if (activity.equals("PayoutActivity")){
-                    resultIntent = new Intent(context, PayoutActivity.class);
-                }else if (activity.equals("UserProfileActivity")){
-                    resultIntent = new Intent(context, UserProfileActivity.class);
-                }else {
-                    resultIntent = new Intent(context, MainActivity.class);
-                }
+                resultIntent = new Intent(context, SplashActivity.class);
+                resultIntent.putExtra(Common.ACTIVITY, activity);
+                resultIntent.putExtra(Common.ACTIVITY_CREATED_BY_NOTI, true);
 
             }
+
 
             //resultIntent.putExtra("id", notificationData.id);
             // Create the TaskStackBuilder and add the intent, which inflates the back stack
@@ -103,9 +92,9 @@ public class NotificationUtil {
              resultPendingIntent =
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         }else {
-            Log.d("intentSelect", "Mainactivity");
+            Log.d("intentSelect", "Splash Activity");
 
-            Intent resultIntent = new Intent(context, MainActivity.class);
+            Intent resultIntent = new Intent(context, SplashActivity.class);
             // Create the TaskStackBuilder and add the intent, which inflates the back stack
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
             stackBuilder.addNextIntentWithParentStack(resultIntent);
@@ -131,19 +120,20 @@ public class NotificationUtil {
         }
         Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
+        mBuilder.setSmallIcon(getNotificationIcon(mBuilder));
+
         if (iconBitmap == null){
 
             Log.d("NotificationLog", "iconBitmap null");
 
             //show without image
-          notification =   mBuilder.setSmallIcon(icon)
+          notification =   mBuilder
                     .setContentTitle(tittle)
                     .setContentText(message)
                     .setStyle(new NotificationCompat.BigTextStyle()
                             .bigText(message))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setAutoCancel(true)
-
                     .build();
           /* if (notificationData.notiClearAble==0){
                notification.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -154,7 +144,7 @@ public class NotificationUtil {
             Log.d("NotificationLog", "iconBitmap not null");
 
 
-            notification = mBuilder.setSmallIcon(icon)
+            notification = mBuilder
                     .setTicker(tittle)
                     .setWhen(0)
                     .setContentTitle(tittle)
@@ -219,5 +209,15 @@ public class NotificationUtil {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
 
+    }
+
+    private int getNotificationIcon(NotificationCompat.Builder notificationBuilder) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            notificationBuilder.setColor(context.getColor(R.color.red));
+            return R.drawable.ic_not_icon;
+
+        }
+        return R.mipmap.ic_launcher;
     }
 }

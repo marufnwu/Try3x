@@ -1,6 +1,7 @@
 package com.try3x.uttam.Notification;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -12,7 +13,7 @@ public class NotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        // Check if message contains a data payload.
+        Log.d("Notification", "Recevied");
         if (remoteMessage.getData().size() > 0) {
 
             Map<String, String> data = remoteMessage.getData();
@@ -40,21 +41,25 @@ public class NotificationService extends FirebaseMessagingService {
 
     private void handleData(Map<String, String> data) {
         NotificationData notificationData = new NotificationData();
+        if (data.get("tittle")!=null && data.get("description")!=null && data.get("imgUrl")!=null && data.get("notiClearAble")!=null && data.get("action")!=null && data.get("notiType")!=null)
+        {
+            notificationData.tittle = data.get("tittle");
+            notificationData.description = data.get("description");
+            notificationData.imgUrl = data.get("imgUrl");
+            notificationData.notiClearAble = Integer.parseInt(data.get("notiClearAble"));
+            notificationData.action = Integer.parseInt(data.get("action"));
+            notificationData.notiType = Integer.parseInt(data.get("notiType"));
+            notificationData.actionUrl = data.get("actionUrl");
+            notificationData.actionActivity = data.get("actionActivity");
 
-        notificationData.tittle = data.get("tittle");
-        notificationData.description = data.get("description");
-        notificationData.imgUrl = data.get("imgUrl");
-        notificationData.notiClearAble = Integer.parseInt(data.get("notiClearAble"));
-        notificationData.action = Integer.parseInt(data.get("action"));
-        notificationData.notiType = Integer.parseInt(data.get("notiType"));
-        notificationData.actionUrl = data.get("actionUrl");
-        notificationData.actionActivity = data.get("actionActivity");
+            //Intent resultIntent  = new Intent(getApplicationContext(), MainActivity.class);
 
-        //Intent resultIntent  = new Intent(getApplicationContext(), MainActivity.class);
+            NotificationUtil notificationUtil = new NotificationUtil(getApplicationContext());
 
-        NotificationUtil notificationUtil = new NotificationUtil(getApplicationContext());
-
-        notificationUtil.displayNotification(notificationData);
+            notificationUtil.displayNotification(notificationData);
+        }else {
+            Log.d("Notification", "Null Data Found");
+        }
 
 
 

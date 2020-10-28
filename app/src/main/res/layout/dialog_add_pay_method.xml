@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"/>
 
         <TextView
+            android:id="@+id/txtName1"
          android:textColor="@color/White"
         android:textSize="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_8sdp"
@@ -35,16 +36,15 @@
         android:inputType="phone"
         android:id="@+id/payNum1"
         android:padding="@dimen/_5sdp"
-        android:drawablePadding="@dimen/_5sdp"
-        android:drawableLeft="@drawable/rupee_pay"
         android:textSize="@dimen/_13sdp"
-        android:background="@drawable/edt_bg"
+        android:background="@drawable/edit_bg"
         android:layout_margin="@dimen/_8sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
 
     <TextView
+        android:id="@+id/txtName2"
         android:textColor="@color/White"
         android:textSize="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_8sdp"
@@ -58,9 +58,8 @@
         android:id="@+id/payNum2"
         android:padding="@dimen/_5sdp"
         android:drawablePadding="@dimen/_5sdp"
-        android:drawableLeft="@drawable/rupee_pay"
         android:textSize="@dimen/_13sdp"
-        android:background="@drawable/edt_bg"
+        android:background="@drawable/edit_bg"
         android:layout_margin="@dimen/_8sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -81,7 +80,7 @@
             android:layout_height="wrap_content"/>
 
         <Button
-            android:id="@+id/btnAdd"
+            android:id="@+id/btnPayout"
             android:layout_margin="@dimen/_8sdp"
             android:textSize="@dimen/_13sdp"
             android:textColor="@color/Black"

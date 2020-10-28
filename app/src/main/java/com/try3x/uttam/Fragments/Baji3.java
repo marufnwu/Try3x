@@ -60,6 +60,9 @@ public class Baji3 extends Fragment implements OnPackageItemClickListener {
     TextView bajiStatus;
     private GmailInfo gmailInfo;
 
+    public Baji3() {
+    }
+
     public Baji3(boolean isResultPublish) {
         this.isResultPublish = isResultPublish;
     }
@@ -91,7 +94,7 @@ public class Baji3 extends Fragment implements OnPackageItemClickListener {
             bajiStatus.setTextColor(getResources().getColor(R.color.black));
 
         }else{
-            bajiStatus.setText("Live Now | Result 04:00pm");
+            bajiStatus.setText("Live Now | Result 06:00pm");
         }
 
         bajiServerBody = new BajiServerBody();
@@ -355,10 +358,14 @@ public class Baji3 extends Fragment implements OnPackageItemClickListener {
     @Override
     public void onItemClick(int pos, int id, float price, String name, int btnId) {
 
-        if (btnId==0){
+       Log.d("Item Pos", ""+pos);
+       Log.d("Item Size", ""+bajiServerBody.getPackageList().size());
+
+        if (btnId==0 &&  bajiServerBody.getPackageList().size()>0){
             bajiServerBody.getPackageList().remove(pos);
             if (bajiPlaceListAdapter!=null){
                 bajiPlaceListAdapter.notifyItemRemoved(pos);
+                bajiPlaceListAdapter.notifyItemRangeRemoved(pos, bajiServerBody.getPackageList().size());
             }
         }else {
             Packages packages = new Packages();

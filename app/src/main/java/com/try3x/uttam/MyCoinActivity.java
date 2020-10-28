@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -27,6 +30,7 @@ import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Models.Response.CoinHistoryResponse;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.Response.MyCoinResponse;
+import com.try3x.uttam.Models.User;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
 import com.try3x.uttam.Retrofit.RetrofitClient;
 
@@ -56,12 +60,15 @@ public class MyCoinActivity extends AppCompatActivity {
     private CoinHistoryResponse coinHistoryResponses;
     private CoinHistoryAdapter coinHistoryAdapter;
     private TextView txtAddCoin;
+    private Button btnInvite;
+    private boolean isActivityCreatedByNoti;
+    private ImageView imgLiveChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_coin);
-
+        isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);
         initviews();
         Paper.init(this);
         mAuth = FirebaseAuth.getInstance();
@@ -148,15 +155,18 @@ public class MyCoinActivity extends AppCompatActivity {
     private void initviews() {
         txtCoin  = findViewById(R.id.txtCoin);
         imgReload = findViewById(R.id.imgReload);
+        btnInvite = findViewById(R.id.btnInvite);
 
         reloadLay = findViewById(R.id.layoutReload);
         recyclerCoin = findViewById(R.id.recyclerCoin);
         recyclerCoin.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerCoin.setLayoutManager(layoutManager);
+        recyclerCoin.setLayoutManager(layoutManager);
 
         postListProgress = findViewById(R.id.progress);
         txtAddCoin = findViewById(R.id.txtAddCoin);
+        imgLiveChat = findViewById(R.id.imgLiveChat);
 
 
         txtAddCoin.setOnClickListener(new View.OnClickListener() {
@@ -166,6 +176,25 @@ public class MyCoinActivity extends AppCompatActivity {
             }
         });
 
+        btnInvite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                User user = Paper.book().read(PaperDB.USER_PROFILE);
+                if (user!=null && user.referCode!=null){
+                    invite(MyCoinActivity.this, user.referCode);
+                }else {
+                    Toast.makeText(MyCoinActivity.this, "Something Wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        Common.setShakeAnimation(imgLiveChat, getApplicationContext());
+        imgLiveChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Common.openLiveChat(getApplicationContext());
+            }
+        });
     }
 
 
@@ -288,13 +317,13 @@ public class MyCoinActivity extends AppCompatActivity {
     }
 
     private void showWaitingDialog() {
-        if (dialog!=null && !dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && !dialog.isShowing()){
             dialog.show();
         }
     }
 
     private void dismissWaitingDialog() {
-        if (dialog!=null && dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && dialog.isShowing()){
             dialog.dismiss();
         }
     }
@@ -350,8 +379,34 @@ public class MyCoinActivity extends AppCompatActivity {
     }
 
     private void stopSpinReload(ImageView reloadImage){
-        if (reloadImage!=null){
+        if (reloadImage!=null && reloadImage.getAnimation()!=null){
             reloadImage.getAnimation().cancel();
+        }
+    }
+
+    public static void invite(Context context, String referCode){
+        /*Create an ACTION_SEND Intent*/
+        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        /*This will be the actual content you wish you share.*/
+        String shareBody = "Use My Code To Refer Box => " +referCode+"\n"+
+                "রেফার কোডে আমার কোডটি ব্যবহার করুন => " +referCode+"\n"+
+                "\n" +
+                "Download the app now=> https://www.try3x.com";
+        /*The type of the content is text, obviously.*/
+        intent.setType("text/plain");
+        /*Applying information Subject and Body.*/
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject");
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        /*Fire!*/
+        context.startActivity(Intent.createChooser(intent, "Share Using"));
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (isActivityCreatedByNoti){
+            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
     }
 }

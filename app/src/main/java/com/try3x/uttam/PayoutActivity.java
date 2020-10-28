@@ -6,9 +6,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,13 +31,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.paytm.pg.merchant.PaytmChecksum;
 import com.try3x.uttam.Adapters.PayoutAdapter;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
+import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.PayMethodInfo;
+import com.try3x.uttam.Models.PaymentMethod;
 import com.try3x.uttam.Models.Paytm.Checksum;
 import com.try3x.uttam.Models.Response.MyCoinResponse;
 import com.try3x.uttam.Models.Response.PayoutHistoryResponse;
@@ -82,12 +88,13 @@ public class PayoutActivity extends AppCompatActivity {
     LinearLayout layoutReload;
     private PayoutAdapter payoutAdapter;
     private LinearLayoutManager layoutManager;
+    private boolean isActivityCreatedByNoti;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payout);
-
+        isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);
        /* try {
             requestPayment();
         } catch (Exception e) {
@@ -130,9 +137,9 @@ public class PayoutActivity extends AppCompatActivity {
                 }
                 int coin = Math.round(Float.parseFloat(coinStr));
                 int rupee = Math.round(Float.parseFloat(rupeStr));
-                if (coin>=100 && rupee>=95){
+                if (coin>=200 && rupee>=190){
                     if (withrawableCoin>=coin){
-                        selectPaymethod(coin, rupee);
+                        selectPaytmPayMethod(coin, rupee);
                     }else {
                         Toast.makeText(PayoutActivity.this, "You Have Not Much Coin", Toast.LENGTH_SHORT).show();
                     }
@@ -156,7 +163,7 @@ public class PayoutActivity extends AppCompatActivity {
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         final Spinner spinner = payMethodDialog.findViewById(R.id.spinnerPaymethod);
         Button btnCancel = payMethodDialog.findViewById(R.id.btnCancel);
-        final Button payout = payMethodDialog.findViewById(R.id.btnAdd);
+        final Button payout = payMethodDialog.findViewById(R.id.btnPayout);
 
         final EditText edtPhn1 = payMethodDialog.findViewById(R.id.payNum1);
 
@@ -270,6 +277,190 @@ public class PayoutActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void selectPaytmPayMethod(final int coin, final int rupee){
+
+        showWaitingDialog();
+
+        final Dialog payMethodDialog = new Dialog(PayoutActivity.this);
+        payMethodDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        payMethodDialog.setCancelable(true);
+        payMethodDialog.setContentView(R.layout.dialog_paytm_pay_method);
+
+        payMethodDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        Window window = payMethodDialog.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        final EditText edtNum1 = payMethodDialog.findViewById(R.id.payNum1);
+        final EditText edtNum2 = payMethodDialog.findViewById(R.id.payNum2);
+
+        TextView btnPayout = payMethodDialog.findViewById(R.id.btnPayout);
+        TextView btnCancel = payMethodDialog.findViewById(R.id.btnCancel);
+        ImageView ImgWpContact = payMethodDialog.findViewById(R.id.ImgWpContact);
+
+        final ImageView imgBanner = payMethodDialog.findViewById(R.id.imgBanner);
+
+        ImgWpContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openLiveChat();
+            }
+        });
+
+        payMethodDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                getBanner(imgBanner);
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                payMethodDialog.dismiss();
+            }
+        });
+
+        btnPayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                    String num1 = edtNum1.getText().toString();
+                    String num2 = edtNum2.getText().toString();
+
+
+                    if (num1.equals(num2)){
+                        String regx = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}$";
+                        if (num1.matches(regx)){
+                            showWaitingDialog();
+                            RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                                    .paymentPaytmRequest(
+                                            Common.getKeyHash(PayoutActivity.this),
+                                            gmailInfo.gmail,
+                                            gmailInfo.user_id,
+                                            gmailInfo.access_token,
+                                            num1,
+                                            coin,
+                                            rupee
+                                    )
+                                    .enqueue(new Callback<ServerResponse>() {
+                                        @Override
+                                        public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                                            dismissWaitingDialog();
+                                            if (response.isSuccessful() && response.body()!=null){
+                                                ServerResponse serverResponse = response.body();
+                                                Toast.makeText(PayoutActivity.this, serverResponse.error_description, Toast.LENGTH_SHORT).show();
+
+                                                if (!serverResponse.isError()){
+                                                    payMethodDialog.dismiss();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<ServerResponse> call, Throwable t) {
+                                            dismissWaitingDialog();
+                                            Toast.makeText(PayoutActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }else {
+                            Toast.makeText(PayoutActivity.this, "Number Not Valid", Toast.LENGTH_SHORT).show();
+                        }
+                    }else {
+                        Toast.makeText(PayoutActivity.this, "Number Not Matched", Toast.LENGTH_SHORT).show();
+
+                    }
+
+            }
+        });
+
+        payMethodDialog.show();
+    }
+
+    public void  openLiveChat(){
+        String contact = "+918585807175"; // use country code with your phone number
+        String url = "https://api.whatsapp.com/send?phone=" + contact;
+        try {
+            PackageManager pm = getApplicationContext().getPackageManager();
+            pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        } catch (PackageManager.NameNotFoundException e) {
+            Toast.makeText(PayoutActivity.this, "Whatsapp app not installed in your phone", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    private void getBanner(final ImageView imgBanner) {
+        imgBanner.setVisibility(View.GONE);
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getActivityBanner("PaytmPayoutDialog")
+                .enqueue(new Callback<ActivityBanner>() {
+                    @Override
+                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {
+                        dismissWaitingDialog();
+                        if (response.isSuccessful() && response.body()!=null){
+                            final ActivityBanner activityBanner = response.body();
+                            if (!activityBanner.error){
+                                if (activityBanner.imageUrl!=null){
+                                    imgBanner.setVisibility(View.VISIBLE);
+                                    Glide.with(PayoutActivity.this)
+                                            .load(activityBanner.imageUrl)
+                                            .into(imgBanner);
+
+                                    imgBanner.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            if (activityBanner.actionType==1){
+                                                //open url
+                                                if (activityBanner.actionUrl!=null){
+                                                    String url = activityBanner.actionUrl;
+                                                    String linkHost = Uri.parse(url).getHost();
+                                                    Uri uri = Uri.parse(url);
+
+                                                    if (linkHost==null){
+                                                        return;
+                                                    }
+
+                                                    if (linkHost.equals("play.google.com")){
+                                                        String appId = uri.getQueryParameter("id");
+
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                        intent.setData(Uri.parse("market://details?id="+appId));
+                                                        startActivity(intent);
+
+                                                    }else if(linkHost.equals("www.youtube.com")){
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        intent.setPackage("com.google.android.youtube");
+                                                        startActivity(intent);
+
+
+                                                    }else if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                                        startActivity(intent);
+
+                                                    }
+                                                }
+                                            }else if (activityBanner.actionType==2){
+                                                //open activity
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ActivityBanner> call, Throwable t) {
+                        dismissWaitingDialog();
+                    }
+                });
     }
     private void getPayoutList() {
         showWaitingDialog();
@@ -441,8 +632,8 @@ public class PayoutActivity extends AppCompatActivity {
                             if (!myCoinResponse.isError()){
                                 withrawableCoin = myCoinResponse.coin;
                                 txtCoin.setText(String.valueOf(myCoinResponse.coin));
-                                if (myCoinResponse.coin>5){
-                                    txtRupee.setText(String.valueOf(myCoinResponse.coin-5));
+                                if (myCoinResponse.coin>10){
+                                    txtRupee.setText(String.valueOf(myCoinResponse.coin-10));
                                 }
                             }else {
                                 Toast.makeText(PayoutActivity.this, myCoinResponse.getError_description(), Toast.LENGTH_SHORT).show();
@@ -486,13 +677,13 @@ public class PayoutActivity extends AppCompatActivity {
     }
 
     private void showWaitingDialog() {
-        if (dialog!=null && !dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && !dialog.isShowing()){
             dialog.show();
         }
     }
 
     private void dismissWaitingDialog() {
-        if (dialog!=null && dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && dialog.isShowing()){
             dialog.dismiss();
         }
     }
@@ -621,6 +812,15 @@ public class PayoutActivity extends AppCompatActivity {
 
     private void stopSpinReload(ImageView reloadImage){
         reloadImage.getAnimation().cancel();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (isActivityCreatedByNoti){
+            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        }
     }
 
 }

@@ -6,7 +6,7 @@ buildscript {
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.0.0"
+        classpath 'com.android.tools.build:gradle:4.1.0'
         // (if not, add it).
         classpath 'com.google.gms:google-services:4.3.3'
 
@@ -23,6 +23,12 @@ allprojects {
         maven { url  "https://phonepe.bintray.com/PhonePeIntentSDK" }
         maven {
             url "https://artifactory.paytm.in/libs-release-local"
+        }
+        maven {
+            url "https://s3-ap-southeast-1.amazonaws.com/godel-release/godel/"
+        }
+        repositories {
+            maven { url 'https://maven.cashfree.com/release'}
         }
 
 

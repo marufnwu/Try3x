@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -31,7 +32,6 @@ import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.PayMethodInfo;
 import com.try3x.uttam.Models.PaymentMethod;
-import com.try3x.uttam.Models.Response.MyCoinResponse;
 import com.try3x.uttam.Models.Response.PaymentMethodResponse;
 import com.try3x.uttam.Models.Response.ServerResponse;
 import com.try3x.uttam.Models.Response.SinglePayMethodResponse;
@@ -52,7 +52,7 @@ import retrofit2.Response;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    ImageView imgBack, imgProfilePic,imgAddPayMethod;
+    ImageView imgBack, imgProfilePic,imgAddPayMethod,imgReferCopy;
 
     Button btnInvite;
     TextView txtReaload,txtUserName, txtUserEmail, txtUserNumber, txtUserCountry, txtUserGender, txtName, txtEmail, txtUserJoin, txtUserReferCode;
@@ -69,12 +69,13 @@ public class UserProfileActivity extends AppCompatActivity {
     private int methodSelected = 0;
     private List<PayMethodInfo> payMethodInfoList =new ArrayList<>();
     private PaymentMethodAdapter methodAdapter;
+    private boolean isActivityCreatedByNoti;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-
+        isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);
         initViews();
         Paper.init(this);
         mAuth = FirebaseAuth.getInstance();
@@ -182,6 +183,8 @@ public class UserProfileActivity extends AppCompatActivity {
         txtUserJoin = findViewById(R.id.txtUserJoin);
         imgAddPayMethod = findViewById(R.id.imgAddPayMethod);
 
+        imgReferCopy = findViewById(R.id.imgReferCopy);
+
         imgAddPayMethod.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -200,10 +203,47 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
+        btnInvite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                User user = Paper.book().read(PaperDB.USER_PROFILE);
+                if (user!=null && user.referCode!=null){
+                    invite(UserProfileActivity.this, user.referCode);
+                }else {
+                    Toast.makeText(UserProfileActivity.this, "Something Wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
+        imgReferCopy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String stringYouExtracted = txtUserReferCode.getText().toString();
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                android.content.ClipData clip = android.content.ClipData.newPlainText("Refer Code", stringYouExtracted);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(UserProfileActivity.this, "Refer Code Copied", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
-
+    public static void invite(Context context, String referCode){
+        /*Create an ACTION_SEND Intent*/
+        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        /*This will be the actual content you wish you share.*/
+        String shareBody = "Use My Code To Refer Box => " +referCode+"\n"+
+                "রেফার কোডে আমার কোডটি ব্যবহার করুন => " +referCode+"\n"+
+                "\n" +
+                "Download the app now=> https://www.try3x.com";
+        /*The type of the content is text, obviously.*/
+        intent.setType("text/plain");
+        /*Applying information Subject and Body.*/
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject");
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        /*Fire!*/
+        context.startActivity(Intent.createChooser(intent, "Share Using"));
+    }
 
 
     private void showAddPayMethodDialog() {
@@ -217,10 +257,12 @@ public class UserProfileActivity extends AppCompatActivity {
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         final Spinner spinner = payMethodDialog.findViewById(R.id.spinnerPaymethod);
         Button btnCancel = payMethodDialog.findViewById(R.id.btnCancel);
-        final Button btnAdd = payMethodDialog.findViewById(R.id.btnAdd);
+        final Button btnAdd = payMethodDialog.findViewById(R.id.btnPayout);
 
         final EditText edtPhn1 = payMethodDialog.findViewById(R.id.payNum1);
         final EditText edtPhn2 = payMethodDialog.findViewById(R.id.payNum2);
+        final TextView txtName1 = payMethodDialog.findViewById(R.id.txtName1);
+        final TextView txtName2 = payMethodDialog.findViewById(R.id.txtName2);
 
         payMethodDialog.show();
         showWaitingDialog();
@@ -257,7 +299,9 @@ public class UserProfileActivity extends AppCompatActivity {
                                 payMethodInfo = null;
                                 methodSelected = pos;
                                 if (pos>0){
-
+                                    String text = spinner.getSelectedItem().toString();
+                                    txtName1.setText("Enter "+text+" Number");
+                                    txtName2.setText("Enter "+text+" Number Again");
                                     showWaitingDialog();
                                     edtPhn1.setEnabled(true);
                                     edtPhn2.setEnabled(true);
@@ -408,14 +452,22 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void showWaitingDialog() {
-        if (dialog!=null && !dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && !dialog.isShowing()){
             dialog.show();
         }
     }
 
     private void dismissWaitingDialog() {
-        if (dialog!=null && dialog.isShowing()){
+        if (!isFinishing() && dialog!=null && dialog.isShowing()){
             dialog.dismiss();
+        }
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (isActivityCreatedByNoti){
+            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
     }
 }

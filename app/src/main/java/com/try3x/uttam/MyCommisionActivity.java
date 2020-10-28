@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,13 +20,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.try3x.uttam.Adapters.CommissionHistoryAdapter;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
+import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.Response.MyCoinResponse;
 import com.try3x.uttam.Models.Response.MyCommissionsResponse;
+import com.try3x.uttam.Models.Response.ServerResponse;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
 import com.try3x.uttam.Retrofit.RetrofitClient;
 
@@ -45,7 +49,7 @@ public class MyCommisionActivity extends AppCompatActivity {
     private ACProgressPie dialog;
     private LinearLayout reloadLay;
     private RecyclerView recyclerCoin;
-
+    private  TextView txtAddToMycoin;
     int pastVisibleItem, visibleItemCount, totalItemCount, previousTotal = 0;
 
     private int PAGE = 1, PAGE_SIZE = 30, TOTAL_PAGE = 0;
@@ -54,12 +58,14 @@ public class MyCommisionActivity extends AppCompatActivity {
     private LinearLayoutManager layoutManager;
     private MyCommissionsResponse commissionsResponse;
     private CommissionHistoryAdapter commissionHistoryAdapter;
+    private ImageView imgBanner,imgLiveChat;
+    private boolean isActivityCreatedByNoti;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_commision);
-
+        isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);
         initviews();
         Paper.init(this);
         mAuth = FirebaseAuth.getInstance();
@@ -68,8 +74,76 @@ public class MyCommisionActivity extends AppCompatActivity {
         gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
 
         getCommissionList();
+        getBanner();
     }
+    private void getBanner() {
+        imgBanner.setVisibility(View.GONE);
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getActivityBanner("MyCommisionActivity")
+                .enqueue(new Callback<ActivityBanner>() {
+                    @Override
+                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {
+                        if (response.isSuccessful() && response.body()!=null){
+                            final ActivityBanner activityBanner = response.body();
+                            if (!activityBanner.error){
+                                if (activityBanner.imageUrl!=null){
+                                    imgBanner.setVisibility(View.VISIBLE);
+                                    Glide.with(MyCommisionActivity.this)
+                                            .load(activityBanner.imageUrl)
+                                            .into(imgBanner);
 
+                                    imgBanner.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            if (activityBanner.actionType==1){
+                                                //open url
+                                                if (activityBanner.actionUrl!=null){
+                                                    String url = activityBanner.actionUrl;
+                                                    String linkHost = Uri.parse(url).getHost();
+                                                    Uri uri = Uri.parse(url);
+
+                                                    if (linkHost==null){
+                                                        return;
+                                                    }
+
+                                                    if (linkHost.equals("play.google.com")){
+                                                        String appId = uri.getQueryParameter("id");
+
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                        intent.setData(Uri.parse("market://details?id="+appId));
+                                                        startActivity(intent);
+
+                                                    }else if(linkHost.equals("www.youtube.com")){
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        intent.setPackage("com.google.android.youtube");
+                                                        startActivity(intent);
+
+
+                                                    }else if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                                        startActivity(intent);
+
+                                                    }
+                                                }
+                                            }else if (activityBanner.actionType==2){
+                                                //open activity
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ActivityBanner> call, Throwable t) {
+
+                    }
+                });
+    }
 
     private void getCommissionList() {
         showWaitingDialog();
@@ -129,8 +203,10 @@ public class MyCommisionActivity extends AppCompatActivity {
 
     private void initviews() {
         txtCoin  = findViewById(R.id.txtCoin);
+        txtAddToMycoin  = findViewById(R.id.txtAddToMycoin);
         imgReload = findViewById(R.id.imgReload);
-
+        imgBanner = findViewById(R.id.imgBanner);
+        imgLiveChat = findViewById(R.id.imgLiveChat);
         reloadLay = findViewById(R.id.layoutReload);
         recyclerCoin = findViewById(R.id.recyclerCoin);
         recyclerCoin.setHasFixedSize(true);
@@ -138,6 +214,50 @@ public class MyCommisionActivity extends AppCompatActivity {
         recyclerCoin.setLayoutManager(layoutManager);
 
         postListProgress = findViewById(R.id.progress);
+
+        txtAddToMycoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                float commission = Float.parseFloat(txtCoin.getText().toString());
+                if (commission>0){
+                    showWaitingDialog();
+                    RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                            .commissionToMyCoin(
+                                    Common.getKeyHash(MyCommisionActivity.this),
+                                    gmailInfo.gmail,
+                                    gmailInfo.user_id,
+                                    gmailInfo.access_token,
+                                    commission
+                            )
+                            .enqueue(new Callback<ServerResponse>() {
+                                @Override
+                                public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                                    dismissWaitingDialog();
+                                    if (response.isSuccessful() && response.body()!=null){
+                                        ServerResponse serverResponse = response.body();
+                                        Toast.makeText(MyCommisionActivity.this, ""+serverResponse.error_description, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ServerResponse> call, Throwable t) {
+                                    Log.d("Retrofit", t.getMessage());
+                                    dismissWaitingDialog();
+                                    Toast.makeText(MyCommisionActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }else {
+                    Toast.makeText(MyCommisionActivity.this, "Not Enough Coin", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        Common.setShakeAnimation(imgLiveChat, getApplicationContext());
+        imgLiveChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Common.openLiveChat(getApplicationContext());
+            }
+        });
 
     }
 
@@ -261,13 +381,13 @@ public class MyCommisionActivity extends AppCompatActivity {
     }
 
     private void showWaitingDialog() {
-        if (dialog!=null && !dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && !dialog.isShowing()){
             dialog.show();
         }
     }
 
     private void dismissWaitingDialog() {
-        if (dialog!=null && dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && dialog.isShowing()){
             dialog.dismiss();
         }
     }
@@ -308,19 +428,32 @@ public class MyCommisionActivity extends AppCompatActivity {
     }
 
     private void startSpinReload(ImageView reloadImage){
-        txtCoin.setText("00");
-        RotateAnimation rotateAnimation = new RotateAnimation(0, 360f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f);
+        if (reloadImage!=null && reloadImage.getAnimation()!=null ) {
+            txtCoin.setText("00");
+            RotateAnimation rotateAnimation = new RotateAnimation(0, 360f,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
 
-        rotateAnimation.setInterpolator(new LinearInterpolator());
-        rotateAnimation.setDuration(500);
-        rotateAnimation.setRepeatCount(Animation.INFINITE);
+            rotateAnimation.setInterpolator(new LinearInterpolator());
+            rotateAnimation.setDuration(500);
+            rotateAnimation.setRepeatCount(Animation.INFINITE);
 
-        reloadImage.startAnimation(rotateAnimation);
+            reloadImage.startAnimation(rotateAnimation);
+        }
     }
 
     private void stopSpinReload(ImageView reloadImage){
-        reloadImage.getAnimation().cancel();
+        if (reloadImage!=null && reloadImage.getAnimation()!=null ){
+            reloadImage.getAnimation().cancel();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (isActivityCreatedByNoti){
+            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        }
     }
 }

@@ -44,7 +44,7 @@ public class CommissionHistoryAdapter extends RecyclerView.Adapter<CommissionHis
 
         }
 
-        holder.txtComment.setText(commission.coinByUserName+" "+commission.comment);
+        holder.txtComment.setText(commission.comment);
         holder.txtAmount.setText(String.valueOf(commission.amount));
         holder.txtDate.setText(commission.getDate());
         holder.txtTime.setText(commission.getTime());

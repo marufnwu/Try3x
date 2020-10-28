@@ -5,21 +5,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.try3x.uttam.Adapters.MyBajiListAdapter;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Listener.OnClaimClickListener;
+import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.Response.BajiInfoResponse;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.MyBajiList;
@@ -42,8 +47,8 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
     FirebaseUser mUser;
     int currPage = 1;
     int perPage= 5;
-    private LinearLayoutManager layoutManager;
     MyBajiListAdapter myBajiListAdapter;
+    private LinearLayoutManager layoutManager;
     private ACProgressPie dialog;
     private MyBajiList myBajiList;
     int pastVisibleItem, visibleItemCount, totalItemCount, previousTotal = 0;
@@ -56,12 +61,14 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
     private ProgressBar postListProgress;
     LinearLayout layoutReload;
     TextView txtTotalBaji, txtTotalWin, txtTodayBaji, txtToadyWin;
+    ImageView imgBanner, imgLiveChat;
+    private boolean isActivityCreatedByNoti;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_baji_list);
-
+        isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);
 
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
@@ -84,16 +91,94 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
         txtToadyWin = findViewById(R.id.txtTodayBajiWin);
         txtTodayBaji = findViewById(R.id.txtTodayBajiPlace);
 
+        imgBanner = findViewById(R.id.imgBanner);
+        imgLiveChat = findViewById(R.id.imgLiveChat);
+        Common.setShakeAnimation(imgLiveChat, getApplicationContext());
+        imgLiveChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Common.openLiveChat(getApplicationContext());
+            }
+        });
 
         initRecyclerPagination();
 
         if (mAuth!=null && mUser!=null){
             getMyBajiList();
 
-            getMyBajiInfo();
+            //getMyBajiInfo();
         }
-    }
 
+        getDynamicBanner(imgBanner, "MyBajiListActivity");
+    }
+    private void getDynamicBanner(final ImageView imgBanner, String keyword) {
+        imgBanner.setVisibility(View.GONE);
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getActivityBanner(keyword)
+                .enqueue(new Callback<ActivityBanner>() {
+                    @Override
+                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {
+                        if (response.isSuccessful() && response.body()!=null){
+                            final ActivityBanner activityBanner = response.body();
+                            if (!activityBanner.error){
+                                if (activityBanner.imageUrl!=null){
+                                    imgBanner.setVisibility(View.VISIBLE);
+                                    Glide.with(getApplicationContext())
+                                            .load(activityBanner.imageUrl)
+                                            .into(imgBanner);
+
+                                    imgBanner.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            if (activityBanner.actionType==1){
+                                                //open url
+                                                if (activityBanner.actionUrl!=null){
+                                                    String url = activityBanner.actionUrl;
+                                                    String linkHost = Uri.parse(url).getHost();
+                                                    Uri uri = Uri.parse(url);
+
+                                                    if (linkHost==null){
+                                                        return;
+                                                    }
+
+                                                    if (linkHost.equals("play.google.com")){
+                                                        String appId = uri.getQueryParameter("id");
+
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                        intent.setData(Uri.parse("market://details?id="+appId));
+                                                        startActivity(intent);
+
+                                                    }else if(linkHost.equals("www.youtube.com")){
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        intent.setPackage("com.google.android.youtube");
+                                                        startActivity(intent);
+
+
+                                                    }else if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                                        startActivity(intent);
+
+                                                    }
+                                                }
+                                            }else if (activityBanner.actionType==2){
+                                                //open activity
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ActivityBanner> call, Throwable t) {
+
+                    }
+                });
+    }
     private void getMyBajiInfo() {
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
                 .getMyBajiInfo(
@@ -142,6 +227,15 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
         if (gmailInfo==null){
             Toast.makeText(this, "Login Again", Toast.LENGTH_SHORT).show();
             finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (isActivityCreatedByNoti){
+            finish();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
     }
 
@@ -303,22 +397,23 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
     }
 
     private void showWaitingDialog() {
-        if (dialog!=null && !dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && !dialog.isShowing()){
             dialog.show();
         }
     }
 
     private void dismissWaitingDialog() {
-        if (dialog!=null && dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && dialog.isShowing()){
             dialog.dismiss();
         }
     }
+
+
 
     @Override
     public void onClick(int id, int pos) {
         showWaitingDialog();
         claimPos = pos;
-
         if (gmailInfo==null){
             Toast.makeText(this, "Login Again", Toast.LENGTH_SHORT).show();
             return;
@@ -359,5 +454,8 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
                         dismissWaitingDialog();
                     }
                 });
+
     }
+
+
 }

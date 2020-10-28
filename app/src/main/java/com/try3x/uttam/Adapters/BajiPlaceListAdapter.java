@@ -1,6 +1,7 @@
 package com.try3x.uttam.Adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class BajiPlaceListAdapter extends RecyclerView.Adapter<BajiPlaceListAdap
        holder.imgRemove.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
+               Log.d("Item Rec", ""+position);
                onPackageItemClickListener.onItemClick(position, packages.id, packages.price, "name", 0);
            }
        });

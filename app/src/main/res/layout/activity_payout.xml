@@ -46,7 +46,7 @@
                <TextView
                    android:textColor="@color/White"
                    android:textSize="@dimen/_10sdp"
-                   android:text="Coin (Min 100)"
+                   android:text="Coin (Min 200)"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"/>
                <TextView
@@ -80,7 +80,7 @@
              <TextView
                  android:textColor="@color/White"
                  android:textSize="@dimen/_10sdp"
-                 android:text="Rupee (Min 95)"
+                 android:text="Rupee (Min 190)"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"/>
              <TextView

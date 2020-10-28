@@ -9,8 +9,11 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -40,6 +43,7 @@ import com.try3x.uttam.Fragments.Baji2;
 import com.try3x.uttam.Fragments.Baji3;
 import com.try3x.uttam.Fragments.Baji4;
 import com.try3x.uttam.Fragments.Baji5;
+import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.Response.ResultStatusResponse;
 import com.try3x.uttam.Models.Response.SlideResponse;
 import com.try3x.uttam.Models.ResultStatus;
@@ -60,18 +64,20 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    LinearLayout layMyBaji,layAddCoin,layMycoin,layWithdraw,layCommission;
+    LinearLayout layMyBaji,layAddCoin,layMycoin,layWithdraw,layCommission, layTransaction;
     private static final String TOPIC_ALL_USER = "ALL_USERS";
     TabLayout tabLayout;
     MyViewpager viewpagerBaji;
     Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult;
     User user;
     private NavigationView navigationView;
-    ImageView imgDrawer;
+    ImageView imgDrawer,imgChat;
     private DrawerLayout drawer;
     private ACProgressPie dialog;
     private SliderView imageSlider;
     private TextView txtUName;
+    private PackageInfo pInfo;
+    GmailInfo gmailInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,14 +86,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Paper.init(this);
         user = Paper.book().read(PaperDB.USER_PROFILE);
+        gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
 
         drawer = findViewById(R.id.drawer_layout);
         //navigationView = findViewById(R.id.nav_view);
 
         initview();
-        addInfoToNav();
         initViewpager();
-        //getBannerSlider();
+        addInfoToNav();
+
+        getBannerSlider();
 
       /*  navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -110,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         });*/
 
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_ALL_USER);
+        setAppUpdateHistory();
     }
 
     private void getBannerSlider() {
@@ -162,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout layMycoin = findViewById(R.id.layMycoin);
         LinearLayout layWithdraw = findViewById(R.id.layWithdraw);
         LinearLayout layCommission = findViewById(R.id.layCommission);
+        LinearLayout layTransaction = findViewById(R.id.layTransaction);
+        LinearLayout layProfile = findViewById(R.id.layProfile);
 
         Glide.with(this)
                 .load(user.getPhoto_url())
@@ -174,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         name.setText(user.name);
         mail.setText(user.email);
 
-        txtUName.setText("Hi! "+Common.getFirstName(user.name));
+
 
         imgPro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,6 +226,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, MyBajiListActivity.class));
+            }
+        });
+        layTransaction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, TransactionActivity.class));
+            }
+        });
+
+        layProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
             }
         });
 
@@ -322,7 +346,8 @@ public class MainActivity extends AppCompatActivity {
         btnMyCoin = findViewById(R.id.btnMyCoin);
         imgDrawer = findViewById(R.id.imgDrawer);
         imageSlider = findViewById(R.id.imageSlider);
-        txtUName = findViewById(R.id.txtUName);
+        imgChat = findViewById(R.id.imgChat);
+
 
         imgDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -357,6 +382,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), ResultListActivity.class));
             }
         });
+
+        imgChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openLiveChat();
+            }
+        });
     }
     private void createDialog() {
         dialog = new ACProgressPie.Builder(this)
@@ -367,16 +399,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showWaitingDialog() {
-        if (dialog!=null && !dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && !dialog.isShowing()){
             dialog.show();
         }
     }
 
     private void dismissWaitingDialog() {
-        if (dialog!=null && dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && dialog.isShowing()){
             dialog.dismiss();
         }
     }
 
+    public void  openLiveChat(){
+        String contact = "+918585807175"; // use country code with your phone number
+        String url = "https://api.whatsapp.com/send?phone=" + contact;
+        try {
+            PackageManager pm = getApplicationContext().getPackageManager();
+            pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        } catch (PackageManager.NameNotFoundException e) {
+            Toast.makeText(MainActivity.this, "Whatsapp app not installed in your phone", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
 
+    private void setAppUpdateHistory(){
+        try {
+            pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
+
+            String version = pInfo.versionName;
+            int versionCode = pInfo.versionCode;
+
+            RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                    .appUpdateHistory(
+                          gmailInfo.gmail,
+                            gmailInfo.user_id,
+                            version,
+                            String.valueOf(versionCode)
+                    )
+                    .enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+
+                        }
+                    });
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

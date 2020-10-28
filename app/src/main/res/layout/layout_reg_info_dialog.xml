@@ -59,7 +59,6 @@
             android:text="India"
             android:enabled="false"
             android:layout_marginBottom="@dimen/_10sdp"
-            android:id="@+id/edtCountry"
             android:padding="8dp"
             android:textSize="@dimen/_14sdp"
             android:drawablePadding="15dp"
@@ -78,7 +77,7 @@
             <com.rilixtech.widget.countrycodepicker.CountryCodePicker
                 android:id="@+id/cpp"
                 app:ccp_showFullName="false"
-                app:ccp_hideNameCode="true"
+                app:ccp_hideNameCode="false"
                 android:textColor="#989595"
                 android:padding="8dp"
                 android:layout_margin="10dp"
@@ -207,5 +206,9 @@
             android:text="Continue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+        <include
+            layout="@layout/dynamic_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </ScrollView>

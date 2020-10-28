@@ -6,6 +6,7 @@
     android:background="@drawable/bg_gra_pink"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <TextView
         android:textColor="@color/White"
         android:textSize="@dimen/_13sdp"
@@ -61,7 +62,7 @@
             android:layout_height="wrap_content"/>
 
         <Button
-            android:id="@+id/btnAdd"
+            android:id="@+id/btnPayout"
             android:layout_margin="@dimen/_8sdp"
             android:textSize="@dimen/_13sdp"
             android:textColor="@color/Black"

@@ -15,21 +15,28 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:hardwareAccelerated="false"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup, usesCleartextTraffic">
-        <activity android:name=".ResultListActivity"
+        <activity android:name=".ResultVideoActivity"></activity>
+        <activity
+            android:name=".TransactionActivity"
+            android:label="Transactions"
+            android:theme="@style/custom_theme" />
+        <activity
+            android:name=".ResultListActivity"
             android:label="Baji Result"
-            android:theme="@style/custom_theme"></activity>
-        <!-- Keep it false in production environment -->
+            android:theme="@style/custom_theme" /> <!-- Keep it false in production environment -->
         <meta-data
             android:name="com.phonepe.android.sdk.Debuggable"
-            android:value="true" /> <!-- Keep it false in production environment -->
+            android:value="false" /> <!-- Keep it false in production environment -->
         <meta-data
             android:name="com.phonepe.android.sdk.isUAT"
             android:value="true" />
@@ -61,8 +68,8 @@
         <activity android:name=".AddCoinActivity" />
         <activity android:name=".MyWithrawbleActivity" />
         <activity android:name=".MyCommisionActivity" />
-        <activity android:name=".MyCoinActivity" />
-        <activity android:name=".MyBajiListActivity" />
+        <activity android:name=".MyCoinActivity"/>
+        <activity android:name=".MyBajiListActivity"/>
         <activity
             android:name=".SplashActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">

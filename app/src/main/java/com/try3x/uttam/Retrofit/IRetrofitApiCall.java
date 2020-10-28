@@ -1,9 +1,12 @@
 package com.try3x.uttam.Retrofit;
 
+import com.try3x.uttam.Models.ActivityBanner;
+import com.try3x.uttam.Models.CFToken;
 import com.try3x.uttam.Models.PayMethodInfo;
 import com.try3x.uttam.Models.Paytm.Checksum;
 import com.try3x.uttam.Models.Paytm.PaytmHash;
 import com.try3x.uttam.Models.Paytm.Root;
+import com.try3x.uttam.Models.RazorPayOrder;
 import com.try3x.uttam.Models.Response.AppUpdateResponse;
 import com.try3x.uttam.Models.Response.BajiInfoResponse;
 import com.try3x.uttam.Models.Response.BuyCoinTransResponse;
@@ -17,6 +20,7 @@ import com.try3x.uttam.Models.Response.ResultListResponse;
 import com.try3x.uttam.Models.Response.ResultStatusResponse;
 import com.try3x.uttam.Models.Response.SinglePayMethodResponse;
 import com.try3x.uttam.Models.Response.SlideResponse;
+import com.try3x.uttam.Models.Response.TransactionResponse;
 import com.try3x.uttam.Models.Response.UserPayMethodListResponse;
 import com.try3x.uttam.Models.Response.addUserResponse;
 import com.try3x.uttam.Models.Response.BajiServerBody;
@@ -25,6 +29,7 @@ import com.try3x.uttam.Models.Response.MyCoinResponse;
 import com.try3x.uttam.Models.PackageList;
 import com.try3x.uttam.Models.Response.ReferUserResponse;
 import com.try3x.uttam.Models.Response.ServerResponse;
+import com.try3x.uttam.Models.ResultVideo;
 import com.try3x.uttam.Models.UserLogin;
 
 import retrofit2.Call;
@@ -122,6 +127,16 @@ public interface IRetrofitApiCall {
     );
 
     @FormUrlEncoded
+    @POST("coin.commissionToMyCoin.php")
+    Call<ServerResponse> commissionToMyCoin(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uId,
+            @Field("token") String token,
+            @Field("commission") float commission
+    );
+
+    @FormUrlEncoded
     @POST("coin.getCoinHistory.php")
     Call<CoinHistoryResponse> getCoinHistory(
             @Field("sha1") String sha1,
@@ -190,7 +205,8 @@ public interface IRetrofitApiCall {
             @Field("token") String token,
             @Field("amount") float amount,
             @Field("coin_pack_id") int coin_pack_id,
-            @Field("coin") int coin
+            @Field("coin") int coin,
+            @Field("order_id") String razor_orderId
     );
 
     @FormUrlEncoded
@@ -266,6 +282,17 @@ public interface IRetrofitApiCall {
             @Field("coin") int coin,
             @Field("rupee") int rupee
     );
+    @FormUrlEncoded
+    @POST("payment.paymentPaytmRequest.php")
+    Call<ServerResponse> paymentPaytmRequest(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uId,
+            @Field("token") String token,
+            @Field("pay_num") String pay_num,
+            @Field("coin") int coin,
+            @Field("rupee") int rupee
+    );
 
     @FormUrlEncoded
     @POST("payment.getPayoutList.php")
@@ -322,4 +349,55 @@ public interface IRetrofitApiCall {
     );
 
 
+    @FormUrlEncoded
+    @POST("paytm/paytm.paymentCheck.php")
+    Call<String> paytmPaymentStatus(
+        @Field("ORDERID") String oderid
+    );
+
+    @FormUrlEncoded
+    @POST("payment.getTransactionList.php")
+    Call<TransactionResponse> getTransactionList(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uId,
+            @Field("token") String token,
+            @Field("isPaging") boolean isPaging,
+            @Field("currPage") int currPage,
+            @Field("itemPage") int itemPage
+    );
+    @POST("settings.getPaytmMid.php")
+    Call<ServerResponse>getPaytmMid();
+    @FormUrlEncoded
+    @POST("helper.getActivityBanner.php")
+    Call<ActivityBanner>getActivityBanner(
+            @Field("activity") String activity    );
+
+
+    @FormUrlEncoded
+    @POST("helper.updateHistory.php")
+    Call<String> appUpdateHistory(
+            @Field("email") String email,
+            @Field("u_id") String uId,
+            @Field("verion_name") String verion_name,
+            @Field("version_code") String version_code
+
+    );
+
+
+    @POST("baji.getResultVideo.php")
+    Call<ResultVideo> getResultVideo();
+
+    @FormUrlEncoded
+    @POST("cashfree/cashfree.generateToken.php")
+    Call<CFToken> generateCFToken(
+            @Field("orderId") String orderid,
+            @Field("amount") float amount
+    );
+
+    @FormUrlEncoded
+    @POST("razorpay/razorpay.createOrder.php")
+    Call<RazorPayOrder> generateRazorpayOrder(
+            @Field("amount") int amount
+    );
 }

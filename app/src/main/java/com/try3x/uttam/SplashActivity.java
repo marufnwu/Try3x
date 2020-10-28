@@ -38,11 +38,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -66,6 +68,7 @@ import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.FileUtils;
 import com.try3x.uttam.Common.PaperDB;
+import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.Apk;
 import com.try3x.uttam.Models.AsyncParam;
 import com.try3x.uttam.Models.Response.AppUpdateResponse;
@@ -121,11 +124,15 @@ public class SplashActivity extends AppCompatActivity {
     private UpdateServices updateServices;
     LocalBroadcastManager localBroadcastManager;
     private ProgressDialog mPDialog;
+    String activity = null;
+    boolean isActivityCreatedByNoti = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        activity = getIntent().getStringExtra(Common.ACTIVITY);
+        isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);
         mAuth = FirebaseAuth.getInstance();
         Paper.init(this);
 
@@ -154,13 +161,13 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showWaitingDialog() {
-        if (dialog!=null && !dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && !dialog.isShowing()){
             dialog.show();
         }
     }
 
     private void dismissWaitingDialog() {
-        if (dialog!=null && dialog.isShowing()){
+        if (!isFinishing() &&dialog!=null && dialog.isShowing()){
             dialog.dismiss();
         }
     }
@@ -222,6 +229,8 @@ public class SplashActivity extends AppCompatActivity {
                                     pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
                                     String version = pInfo.versionName;
                                     int versionCode = pInfo.versionCode;
+
+                                    Log.d("versionCode", "App "+versionCode+" Server "+apk.vCode);
                                     if (apk.vCode<=versionCode){
                                         moveForward();
                                     }else {
@@ -248,7 +257,12 @@ public class SplashActivity extends AppCompatActivity {
 
         updateDialog = new Dialog(SplashActivity.this);
         updateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        updateDialog.setCancelable(false);
+        if (apk.mandatory){
+            updateDialog.setCancelable(false);
+        }else {
+            updateDialog.setCancelable(true);
+        }
+
         updateDialog.setContentView(R.layout.dialog_update_layout);
 
         updateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -257,6 +271,21 @@ public class SplashActivity extends AppCompatActivity {
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         Button update = updateDialog.findViewById(R.id.btnUpdate);
+        TextView txtDesc = updateDialog.findViewById(R.id.txtDesc);
+        ImageView imgLiveChat = updateDialog.findViewById(R.id.imgLiveChat);
+        ImageView imgDynamic = updateDialog.findViewById(R.id.imgDynamic);
+
+        getDynamicBanner(imgDynamic, "UpdateDialog");
+        imgLiveChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Common.openLiveChat(getApplicationContext());
+            }
+        });
+
+        if (apk.desc!=null && apk.desc.length()>5){
+            txtDesc.setText(apk.desc);
+        }
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -414,6 +443,16 @@ public class SplashActivity extends AppCompatActivity {
         final EditText edtReferBy = regDialog.findViewById(R.id.edtReferBy);
 
         Button btnContinue = regDialog.findViewById(R.id.btnContinue);
+        ImageView imgLiveChat = regDialog.findViewById(R.id.imgLiveChat);
+        ImageView imgDynamic = regDialog.findViewById(R.id.imgDynamic);
+
+        getDynamicBanner(imgDynamic, "SignupDialog");
+        imgLiveChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Common.openLiveChat(getApplicationContext());
+            }
+        });
 
         edtEmail.setText(user.getEmail());
 
@@ -690,6 +729,75 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
+    private void getDynamicBanner(final ImageView imgBanner, String keyword) {
+        imgBanner.setVisibility(View.GONE);
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getActivityBanner(keyword)
+                .enqueue(new Callback<ActivityBanner>() {
+                    @Override
+                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {
+                        if (response.isSuccessful() && response.body()!=null){
+                            final ActivityBanner activityBanner = response.body();
+                            if (!activityBanner.error){
+                                if (activityBanner.imageUrl!=null){
+                                    imgBanner.setVisibility(View.VISIBLE);
+                                    Glide.with(getApplicationContext())
+                                            .load(activityBanner.imageUrl)
+                                            .into(imgBanner);
+
+                                    imgBanner.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            if (activityBanner.actionType==1){
+                                                //open url
+                                                if (activityBanner.actionUrl!=null){
+                                                    String url = activityBanner.actionUrl;
+                                                    String linkHost = Uri.parse(url).getHost();
+                                                    Uri uri = Uri.parse(url);
+
+                                                    if (linkHost==null){
+                                                        return;
+                                                    }
+
+                                                    if (linkHost.equals("play.google.com")){
+                                                        String appId = uri.getQueryParameter("id");
+
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                        intent.setData(Uri.parse("market://details?id="+appId));
+                                                        startActivity(intent);
+
+                                                    }else if(linkHost.equals("www.youtube.com")){
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        intent.setPackage("com.google.android.youtube");
+                                                        startActivity(intent);
+
+
+                                                    }else if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                                        startActivity(intent);
+
+                                                    }
+                                                }
+                                            }else if (activityBanner.actionType==2){
+                                                //open activity
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ActivityBanner> call, Throwable t) {
+
+                    }
+                });
+    }
+
     private void addUserToDB(final FirebaseUser user, final String name, final String phone, final int gender, final int paymentMethod, final String payid, final String fcmToken, boolean haveRefer, String referCode) {
         showWaitingDialog();
 
@@ -744,7 +852,35 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void gotoMainActivity() {
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        Intent intent = null;
+        Context context = SplashActivity.this;
+        if (activity!=null){
+            if (activity.equals("MainActivity")){
+                intent = new Intent(context, MainActivity.class);
+            }else if (activity.equals("MyBajiListActivity")){
+                intent = new Intent(context, MyBajiListActivity.class);
+            }else if (activity.equals("MyCoinActivity")){
+                intent = new Intent(context, MyCoinActivity.class);
+            }else if (activity.equals("MyCommisionActivity")){
+                intent = new Intent(context, MyCommisionActivity.class);
+            }else if (activity.equals("MyWithrawbleActivity")){
+                intent = new Intent(context, MyWithrawbleActivity.class);
+            }else if (activity.equals("PayoutActivity")){
+                intent = new Intent(context, PayoutActivity.class);
+            }else if (activity.equals("UserProfileActivity")){
+                intent = new Intent(context, UserProfileActivity.class);
+            }else if (activity.equals("AddCoinActivity")){
+                intent = new Intent(context, AddCoinActivity.class);
+            }else if (activity.equals("ResultListActivity")){
+                intent = new Intent(context, ResultListActivity.class);
+            }else {
+                intent = new Intent(context, MainActivity.class);
+            }
+
+        }else {
+            intent = new Intent(context, MainActivity.class);
+        }
+        intent.putExtra(Common.ACTIVITY_CREATED_BY_NOTI, isActivityCreatedByNoti);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();

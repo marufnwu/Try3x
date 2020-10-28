@@ -94,7 +94,7 @@ public class MyBajiListAdapter extends RecyclerView.Adapter<MyBajiListAdapter.My
         }
 
         holder.txtPrice.setText(String.valueOf(baji.package_price));
-        holder.txtBtn.setText(baji.btn);
+
         holder.txtClaim.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,7 +103,16 @@ public class MyBajiListAdapter extends RecyclerView.Adapter<MyBajiListAdapter.My
             }
         });
 
-        holder.txtPack.setText(baji.package_name);
+        if (baji.btn.equals("btn1")){
+            holder.txtBtn.setImageDrawable(ctx.getDrawable(R.drawable.heart));
+        }else if (baji.btn.equals("btn2")){
+            holder.txtBtn.setImageDrawable(ctx.getDrawable(R.drawable.speads));
+        }else if (baji.btn.equals("btn3")){
+            holder.txtBtn.setImageDrawable(ctx.getDrawable(R.drawable.diamond));
+        }else if (baji.btn.equals("btn4")){
+            holder.txtBtn.setImageDrawable(ctx.getDrawable(R.drawable.club));
+        }
+        //holder.txtPack.setText(baji.package_name);
 
     }
 
@@ -114,8 +123,8 @@ public class MyBajiListAdapter extends RecyclerView.Adapter<MyBajiListAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView txtDate, txtPrice, txtBajiNo, txtClaim, txtBtn, txtPack;
-        ImageView imgWin, imgResultPub, imgClaim;
+        TextView txtDate, txtPrice, txtBajiNo, txtClaim, txtPack;
+        ImageView imgWin, imgResultPub, imgClaim, txtBtn;
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -130,7 +139,7 @@ public class MyBajiListAdapter extends RecyclerView.Adapter<MyBajiListAdapter.My
             imgWin = itemView.findViewById(R.id.imgWin);
             imgResultPub = itemView.findViewById(R.id.imgResultPub);
             imgClaim = itemView.findViewById(R.id.imgClaim);
-            txtPack = itemView.findViewById(R.id.txtPack);
+            //txtPack = itemView.findViewById(R.id.txtPack);
         }
     }
 }

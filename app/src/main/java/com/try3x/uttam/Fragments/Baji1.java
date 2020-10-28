@@ -34,6 +34,7 @@ import com.try3x.uttam.Common.AddCoinDialog;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Listener.OnPackageItemClickListener;
+import com.try3x.uttam.Models.Baji;
 import com.try3x.uttam.Models.Response.BajiServerBody;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.PackageList;
@@ -64,6 +65,10 @@ public class Baji1 extends Fragment implements OnPackageItemClickListener {
     boolean isResultPublish;
     TextView bajiStatus;
     private GmailInfo gmailInfo;
+
+    public Baji1() {
+
+    }
 
     public Baji1(boolean isResultPublish) {
         this.isResultPublish = isResultPublish;
@@ -377,10 +382,11 @@ public class Baji1 extends Fragment implements OnPackageItemClickListener {
     @Override
     public void onItemClick(int pos, int id, float price, String name, int btnId) {
 
-       if (btnId==0){
+       if (btnId==0 && bajiServerBody.getPackageList().size()>0){
            bajiServerBody.getPackageList().remove(pos);
            if (bajiPlaceListAdapter!=null){
                bajiPlaceListAdapter.notifyItemRemoved(pos);
+               bajiPlaceListAdapter.notifyItemRangeRemoved(pos, bajiServerBody.getPackageList().size());
            }
        }else {
            Packages packages = new Packages();
@@ -390,8 +396,6 @@ public class Baji1 extends Fragment implements OnPackageItemClickListener {
            packages.name = name;
            if (btnId==R.id.btn1){
                packages.btn = "btn1";
-           }else if (btnId==R.id.btn2){
-               packages.btn = "btn2";
            }else if (btnId==R.id.btn2){
                packages.btn = "btn2";
            }else if (btnId==R.id.btn3){
