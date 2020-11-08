@@ -2,12 +2,14 @@ package com.try3x.uttam.Retrofit;
 
 import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.CFToken;
+import com.try3x.uttam.Models.GameSlot;
 import com.try3x.uttam.Models.PayMethodInfo;
 import com.try3x.uttam.Models.Paytm.Checksum;
 import com.try3x.uttam.Models.Paytm.PaytmHash;
 import com.try3x.uttam.Models.Paytm.Root;
 import com.try3x.uttam.Models.RazorPayOrder;
 import com.try3x.uttam.Models.Response.AppUpdateResponse;
+import com.try3x.uttam.Models.Response.BajiBtnResponse;
 import com.try3x.uttam.Models.Response.BajiInfoResponse;
 import com.try3x.uttam.Models.Response.BuyCoinTransResponse;
 import com.try3x.uttam.Models.Response.CoinHistoryResponse;
@@ -400,4 +402,10 @@ public interface IRetrofitApiCall {
     Call<RazorPayOrder> generateRazorpayOrder(
             @Field("amount") int amount
     );
+
+    @POST("baji.getBaji.php")
+    Call<GameSlot> getGameSlot();
+
+    @POST("baji.getBabjiBtns.php")
+    Call<BajiBtnResponse> getBajiBtn();
 }

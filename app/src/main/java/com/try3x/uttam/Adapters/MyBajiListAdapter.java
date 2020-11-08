@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Listener.OnClaimClickListener;
 import com.try3x.uttam.Models.Baji;
@@ -111,6 +112,10 @@ public class MyBajiListAdapter extends RecyclerView.Adapter<MyBajiListAdapter.My
             holder.txtBtn.setImageDrawable(ctx.getDrawable(R.drawable.diamond));
         }else if (baji.btn.equals("btn4")){
             holder.txtBtn.setImageDrawable(ctx.getDrawable(R.drawable.club));
+        }else {
+            if (baji.btn_icon!=null){
+                Glide.with(ctx).load(baji.btn_icon).into(holder.txtBtn);
+            }
         }
         //holder.txtPack.setText(baji.package_name);
 

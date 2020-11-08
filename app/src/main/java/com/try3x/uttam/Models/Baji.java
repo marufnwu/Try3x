@@ -17,7 +17,7 @@ public class Baji {
 
     public String baji;
 
-    public String win_btn;
+    public String win_btn, btn_id, btn_name, btn_icon;
 
     public String user_id;
 

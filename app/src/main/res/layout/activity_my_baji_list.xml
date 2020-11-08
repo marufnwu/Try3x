@@ -232,7 +232,7 @@
                            android:layout_gravity="center_horizontal"
                            android:textSize="@dimen/_10sdp"
                            android:textColor="@color/White"
-                           android:text="Baji No."
+                           android:text="Baji ID"
                            android:layout_width="wrap_content"
                            android:layout_height="wrap_content"/>
                    </LinearLayout>

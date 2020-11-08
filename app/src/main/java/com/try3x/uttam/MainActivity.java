@@ -1,24 +1,18 @@
 package com.try3x.uttam;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -35,20 +29,17 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.smarteist.autoimageslider.SliderView;
 import com.try3x.uttam.Adapters.BajiViewpagerAdapter;
 import com.try3x.uttam.Adapters.BannerSliderAdapter;
-import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Custom.MyViewpager;
 import com.try3x.uttam.Fragments.Baji1;
-import com.try3x.uttam.Fragments.Baji2;
-import com.try3x.uttam.Fragments.Baji3;
-import com.try3x.uttam.Fragments.Baji4;
-import com.try3x.uttam.Fragments.Baji5;
+import com.try3x.uttam.Fragments.GameSlotView;
+import com.try3x.uttam.Models.GameSlot;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.Response.ResultStatusResponse;
 import com.try3x.uttam.Models.Response.SlideResponse;
 import com.try3x.uttam.Models.ResultStatus;
+import com.try3x.uttam.Models.Slot;
 import com.try3x.uttam.Models.User;
-import com.try3x.uttam.Models.UserLogin;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
 import com.try3x.uttam.Retrofit.RetrofitClient;
 
@@ -278,6 +269,40 @@ public class MainActivity extends AppCompatActivity {
 
     private void createViepager(ResultStatus resultStatus) {
 
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getGameSlot()
+                .enqueue(new Callback<GameSlot>() {
+                    @Override
+                    public void onResponse(Call<GameSlot> call, Response<GameSlot> response) {
+                        if (response.isSuccessful() && response.body()!=null){
+                            GameSlot gameSlot = response.body();
+                            if (!gameSlot.error){
+                                List<Slot> slots = gameSlot.slots;
+                                if (slots.size()>0){
+                                    List<Fragment> fragments = new ArrayList<>();
+                                    List<String> titles = new ArrayList<>();
+                                    for (Slot slot : slots){
+                                        GameSlotView gameSlotView = new GameSlotView(slot);
+                                        fragments.add(gameSlotView);
+                                        titles.add(slot.name);
+                                    }
+
+                                    BajiViewpagerAdapter bajiViewpagerAdapter = new BajiViewpagerAdapter(getSupportFragmentManager(), fragments, titles);
+                                    viewpagerBaji.setAdapter(bajiViewpagerAdapter);
+                                    tabLayout.setupWithViewPager(viewpagerBaji);
+
+                                    viewpagerBaji.setMyScroller();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<GameSlot> call, Throwable t) {
+
+                    }
+                });
+
         List<Boolean> resultPublish = new ArrayList<>();
         if (resultStatus.getBaji1()==0){
             resultPublish.add(false);
@@ -314,27 +339,26 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        List<Fragment> fragments = new ArrayList<>();
-        fragments.add(new Baji1(resultPublish.get(0)));
+        //List<Fragment> fragments = new ArrayList<>();
+        //List<String> titles = new ArrayList<>();
+       /* fragments.add(new Baji1(resultPublish.get(0)));
         fragments.add(new Baji2(resultPublish.get(1)));
         fragments.add(new Baji3(resultPublish.get(2)));
         fragments.add(new Baji4(resultPublish.get(3)));
-        fragments.add(new Baji5(resultPublish.get(4)));
+        fragments.add(new Baji5(resultPublish.get(4)));*/
 
-        List<String> titles = new ArrayList<>();
-        titles.add("Baji 1");
+
+
+
+       /* titles.add("Baji 1");
         titles.add("Baji 2");
         titles.add("Baji 3");
         titles.add("Baji 4");
-        titles.add("Baji 5");
+        titles.add("Baji 5");*/
 
 
 
-        BajiViewpagerAdapter bajiViewpagerAdapter = new BajiViewpagerAdapter(getSupportFragmentManager(), fragments, titles);
-        viewpagerBaji.setAdapter(bajiViewpagerAdapter);
-        tabLayout.setupWithViewPager(viewpagerBaji);
 
-        viewpagerBaji.setMyScroller();
     }
 
     private void initview() {
