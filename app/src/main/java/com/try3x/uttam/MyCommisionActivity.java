@@ -5,15 +5,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -21,17 +25,30 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.try3x.uttam.Adapters.CommissionHistoryAdapter;
+import com.try3x.uttam.Adapters.ReferUserListAdapter;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.GmailInfo;
+import com.try3x.uttam.Models.ReferUser;
 import com.try3x.uttam.Models.Response.MyCoinResponse;
 import com.try3x.uttam.Models.Response.MyCommissionsResponse;
+import com.try3x.uttam.Models.Response.ReferUserListResponse;
 import com.try3x.uttam.Models.Response.ServerResponse;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
 import com.try3x.uttam.Retrofit.RetrofitClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cc.cloudist.acplibrary.ACProgressConstant;
 import cc.cloudist.acplibrary.ACProgressPie;
@@ -60,6 +77,8 @@ public class MyCommisionActivity extends AppCompatActivity {
     private CommissionHistoryAdapter commissionHistoryAdapter;
     private ImageView imgBanner,imgLiveChat;
     private boolean isActivityCreatedByNoti;
+    List<ReferUser> referUserList = new ArrayList<>();
+    private ReferUserListAdapter referUserListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +89,47 @@ public class MyCommisionActivity extends AppCompatActivity {
         Paper.init(this);
         mAuth = FirebaseAuth.getInstance();
         createDialog();
-        initRecyclerPagination();
+        //initRecyclerPagination();
         gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
 
-        getCommissionList();
+
+        //getCommissionList();
+        //sendReferClaim(" ", pos);
+        getReferUserLsit();
         getBanner();
     }
+
+    private void getReferUserLsit() {
+        showWaitingDialog();
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getReferUserList(
+                        Common.getKeyHash(MyCommisionActivity.this),
+                        gmailInfo.gmail,
+                        gmailInfo.user_id
+
+                )
+                .enqueue(new Callback<ReferUserListResponse>() {
+                    @Override
+                    public void onResponse(Call<ReferUserListResponse> call, Response<ReferUserListResponse> response) {
+                        dismissWaitingDialog();
+                        if (response.isSuccessful() && response.body()!=null){
+                            ReferUserListResponse referUserResponse = response.body();
+                            if (!referUserResponse.error) {
+                                List<ReferUser> referUser = referUserResponse.users;
+                                referUserList.addAll(referUser);
+                                referUserListAdapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ReferUserListResponse> call, Throwable t) {
+                        dismissWaitingDialog();
+                    }
+                });
+
+    }
+
     private void getBanner() {
         imgBanner.setVisibility(View.GONE);
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
@@ -215,6 +269,9 @@ public class MyCommisionActivity extends AppCompatActivity {
 
         postListProgress = findViewById(R.id.progress);
 
+        referUserListAdapter = new ReferUserListAdapter( getApplicationContext(), referUserList);
+        recyclerCoin.setAdapter(referUserListAdapter);
+
         txtAddToMycoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -256,6 +313,13 @@ public class MyCommisionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Common.openLiveChat(getApplicationContext());
+            }
+        });
+
+        referUserListAdapter.setOnRedemReferClickListener(new ReferUserListAdapter.OnRedemReferClickListener() {
+            @Override
+            public void OnClick(String referId, int pos) {
+                sendReferClaim(referId, pos);
             }
         });
 
@@ -455,5 +519,79 @@ public class MyCommisionActivity extends AppCompatActivity {
             finish();
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
+    }
+
+    private void sendReferClaim(final String referId, final int pos){
+        showWaitingDialog();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        GoogleSignIn.getLastSignedInAccount(getApplicationContext()).getIdToken();
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient.silentSignIn().addOnCompleteListener(new OnCompleteListener<GoogleSignInAccount>() {
+            @Override
+            public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                String token  = task.getResult().getIdToken();
+                Log.d("idToken", task.getResult().getIdToken());
+
+                RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                        .redemRefer(
+                                Common.getKeyHash(getApplicationContext()),
+                                gmailInfo.gmail,
+                                gmailInfo.user_id,
+                                token,
+                                referId
+                        )
+                        .enqueue(new Callback<ServerResponse>() {
+                            @Override
+                            public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                                dismissWaitingDialog();
+                                if (response.isSuccessful() && response.body()!=null){
+                                    ServerResponse serverResponse = response.body();
+                                   final Dialog noticeDialog = new Dialog(MyCommisionActivity.this);
+                                    noticeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                    noticeDialog.setCancelable(false);
+                                    noticeDialog.setContentView(R.layout.dialog_notice);
+
+                                    noticeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+                                    Window window = noticeDialog.getWindow();
+                                    window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    TextView txtTitle = noticeDialog.findViewById(R.id.txtTitle);
+                                    TextView txtMsg = noticeDialog.findViewById(R.id.txtMsg);
+                                    Button btnOk = noticeDialog.findViewById(R.id.btnOk);
+
+                                    if (!serverResponse.error){
+                                        txtTitle.setText("Congratulation!!");
+                                        referUserList.get(pos).claim = true;
+                                        referUserListAdapter.notifyDataSetChanged();
+                                    }else {
+                                        txtTitle.setText("Attention!!");
+                                    }
+                                    txtMsg.setText(serverResponse.error_description);
+                                    btnOk.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            noticeDialog.dismiss();
+                                        }
+                                    });
+                                    noticeDialog.show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ServerResponse> call, Throwable t) {
+                                dismissWaitingDialog();
+                            }
+                        });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                dismissWaitingDialog();
+            }
+        });
     }
 }

@@ -18,6 +18,8 @@ import com.try3x.uttam.Models.Response.MyCommissionsResponse;
 import com.try3x.uttam.Models.Response.PaymentInfoResponse;
 import com.try3x.uttam.Models.Response.PaymentMethodResponse;
 import com.try3x.uttam.Models.Response.PayoutHistoryResponse;
+import com.try3x.uttam.Models.Response.PayoutInfoResponse;
+import com.try3x.uttam.Models.Response.ReferUserListResponse;
 import com.try3x.uttam.Models.Response.ResultListResponse;
 import com.try3x.uttam.Models.Response.ResultStatusResponse;
 import com.try3x.uttam.Models.Response.SinglePayMethodResponse;
@@ -221,6 +223,17 @@ public interface IRetrofitApiCall {
     );
 
     @FormUrlEncoded
+    @POST("settings.getPayoutInfo.php")
+    Call<PayoutInfoResponse> getPayoutInfo(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uId,
+            @Field("token") String token
+    );
+
+
+
+    @FormUrlEncoded
     @POST("money.addBuyCoin.php")
     Call<ServerResponse> addBuyCoin(
             @Field("sha1") String sha1,
@@ -408,4 +421,65 @@ public interface IRetrofitApiCall {
 
     @POST("baji.getBabjiBtns.php")
     Call<BajiBtnResponse> getBajiBtn();
+
+    @FormUrlEncoded
+    @POST("account.getReferUserList.php")
+    Call<ReferUserListResponse> getReferUserList(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uid
+    );
+
+    @FormUrlEncoded
+    @POST("account.redemRefer.php")
+    Call<ServerResponse> redemRefer(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uid,
+            @Field("token") String token,
+            @Field("referId") String referId
+
+    );
+
+    //Game 2
+
+    @POST("baji2.getBaji.php")
+    Call<GameSlot> getGameSlot2();
+
+    @POST("baji2.getBabjiBtns.php")
+    Call<BajiBtnResponse> getBajiBtn2();
+
+    @GET("helper.game2.getPackages.php")
+    Call<PackageList> getGame2Packages();
+
+
+    @POST("baji.game2.placeBaji.php")
+    Call<ServerResponse> placeGame2Baji(
+            @Body BajiServerBody bajiServerBody
+    );
+
+    @FormUrlEncoded
+    @POST("baji.game2.getMyBajiList.php")
+    Call<MyBajiList> getGame2MyBajiList(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uId,
+            @Field("isPaging") boolean isPaging,
+            @Field("currPage") int currPage,
+            @Field("itemPage") int itemPage
+
+    );
+
+    @FormUrlEncoded
+    @POST("coin.game2.bajiClaim.php")
+    Call<ServerResponse> claimGame2Baji(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uId,
+            @Field("token") String token,
+            @Field("baji_id") int id
+
+
+    );
+
 }

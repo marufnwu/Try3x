@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.paytm.pg.merchant.PaytmChecksum;
 import com.try3x.uttam.Adapters.PayoutAdapter;
+import com.try3x.uttam.Common.CapthaDialog;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Models.ActivityBanner;
@@ -44,6 +45,7 @@ import com.try3x.uttam.Models.PaymentMethod;
 import com.try3x.uttam.Models.Paytm.Checksum;
 import com.try3x.uttam.Models.Response.MyCoinResponse;
 import com.try3x.uttam.Models.Response.PayoutHistoryResponse;
+import com.try3x.uttam.Models.Response.PayoutInfoResponse;
 import com.try3x.uttam.Models.Response.ServerResponse;
 import com.try3x.uttam.Models.Response.UserPayMethodListResponse;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
@@ -71,6 +73,7 @@ import retrofit2.Response;
 public class PayoutActivity extends AppCompatActivity {
     TextView txtSendRequest,  txtRupee;
     TextView txtCoin;
+    TextView txtMinCoin, txtMinRupee;
     private ACProgressPie dialog;
     private FirebaseAuth mAuth;
     private GmailInfo gmailInfo;
@@ -80,12 +83,12 @@ public class PayoutActivity extends AppCompatActivity {
     private PayMethodInfo selectedPayMethodInfo;
     int pastVisibleItem, visibleItemCount, totalItemCount, previousTotal = 0;
 
-
+    Button btnReload;
     private int PAGE = 1, PAGE_SIZE = 30, TOTAL_PAGE = 0;
     boolean isLoading = true;
     RecyclerView recyclerPayout;
     private ProgressBar progress, progress_horizontal;
-    LinearLayout layoutReload;
+    LinearLayout layoutReload, layPayoutReload, layPayout;
     private PayoutAdapter payoutAdapter;
     private LinearLayoutManager layoutManager;
     private boolean isActivityCreatedByNoti;
@@ -105,26 +108,57 @@ public class PayoutActivity extends AppCompatActivity {
         gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
         createDialog();
         initView();
+        //getPayoutInfo();
         getPayoutList();
 
     }
 
+    private void getPayoutInfo() {
+        layPayout.setVisibility(View.GONE);
+        layPayoutReload.setVisibility(View.GONE);
+        //showWaitingDialog();
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getPayoutInfo(
+                        Common.getKeyHash(getApplicationContext()),
+                        gmailInfo.gmail,
+                        gmailInfo.user_id,
+                        gmailInfo.access_token
+                )
+                .enqueue(new Callback<PayoutInfoResponse>() {
+                    @Override
+                    public void onResponse(Call<PayoutInfoResponse> call, Response<PayoutInfoResponse> response) {
+                        dismissWaitingDialog();
+                        if (response.isSuccessful() && response.body()!=null){
+                            PayoutInfoResponse  payoutInfoResponse = response.body();
+                            if (!payoutInfoResponse.error){
+                                layPayout.setVisibility(View.VISIBLE);
+                                layPayoutReload.setVisibility(View.GONE);
 
+                                txtMinCoin.setText("Coin (Min "+String.valueOf(payoutInfoResponse.minPayout)+")");
+                                txtMinRupee.setText("Rupee (Min "+String.valueOf(payoutInfoResponse.minPayout-payoutInfoResponse.payoutFee)+")");
+                                getWithrableAmount(payoutInfoResponse.minPayout, payoutInfoResponse.payoutFee);
+                                initPayoutClickButton(
+                                        payoutInfoResponse.minPayout,
+                                        payoutInfoResponse.minPayout-payoutInfoResponse.payoutFee
+                                );
 
-    private void initView() {
-        txtSendRequest = findViewById(R.id.txtSendRequest);
-        txtCoin = findViewById(R.id.edtCoin);
-        txtRupee = findViewById(R.id.txtRupee);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerPayout = findViewById(R.id.recyclerPayout);
-        progress = findViewById(R.id.progress);
-        layoutReload  = findViewById(R.id.layoutReload);
-        progress_horizontal  = findViewById(R.id.progress_horizontal);
-        recyclerPayout.setLayoutManager(layoutManager);
-        initRecyclerPagination();
+                                return;
+                            }
+                        }
+                        layPayout.setVisibility(View.GONE);
+                        layPayoutReload.setVisibility(View.VISIBLE);
+                    }
 
+                    @Override
+                    public void onFailure(Call<PayoutInfoResponse> call, Throwable t) {
+                        dismissWaitingDialog();
+                        layPayout.setVisibility(View.GONE);
+                        layPayoutReload.setVisibility(View.VISIBLE);
+                    }
+                });
+    }
 
-
+    private void initPayoutClickButton(final int minCoin, final int minRupee) {
         txtSendRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -137,16 +171,80 @@ public class PayoutActivity extends AppCompatActivity {
                 }
                 int coin = Math.round(Float.parseFloat(coinStr));
                 int rupee = Math.round(Float.parseFloat(rupeStr));
-                if (coin>=200 && rupee>=190){
+                if (coin>=minCoin && rupee>=minRupee){
                     if (withrawableCoin>=coin){
-                        selectPaytmPayMethod(coin, rupee);
+                        //selectPaytmPayMethod(coin, rupee);
+                        //selectPaymethod(coin, rupee);
+                        showCaptcha(coin ,rupee);
                     }else {
                         Toast.makeText(PayoutActivity.this, "You Have Not Much Coin", Toast.LENGTH_SHORT).show();
                     }
                 }else {
-                    Toast.makeText(PayoutActivity.this, "Please Enter Valid Amount", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PayoutActivity.this, "You Have Not Much Coin", Toast.LENGTH_SHORT).show();
                 }
 
+            }
+        });
+
+
+    }
+
+
+    private void initView() {
+        txtSendRequest = findViewById(R.id.txtSendRequest);
+        txtCoin = findViewById(R.id.edtCoin);
+        txtRupee = findViewById(R.id.txtRupee);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerPayout = findViewById(R.id.recyclerPayout);
+        progress = findViewById(R.id.progress);
+        layoutReload  = findViewById(R.id.layoutReload);
+        layPayoutReload  = findViewById(R.id.layPayoutReload);
+        layPayout  = findViewById(R.id.layPayout);
+
+        txtMinCoin  = findViewById(R.id.txtMinCoin);
+        txtMinRupee  = findViewById(R.id.txtMinRupee);
+        btnReload  = findViewById(R.id.btnReload);
+
+        progress_horizontal  = findViewById(R.id.progress_horizontal);
+        recyclerPayout.setLayoutManager(layoutManager);
+
+        btnReload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getPayoutInfo();
+            }
+        });
+
+        initRecyclerPagination();
+
+
+
+
+
+
+    }
+
+    private void showCaptcha(final int coin, final int rupee) {
+
+        final CapthaDialog capthaDialog = new CapthaDialog(PayoutActivity.this);
+        capthaDialog.init();
+        capthaDialog.showDialog();
+        capthaDialog.setOnCaptchaDialogListener(new CapthaDialog.OnCaptchaDialogListener() {
+            @Override
+            public void onResultOk() {
+                selectPaytmPayMethod(coin, rupee);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onToast(String message) {
+
+                Toast.makeText(PayoutActivity.this, message, Toast.LENGTH_LONG).show();
+                capthaDialog.hideDialog();
             }
         });
     }
@@ -326,13 +424,12 @@ public class PayoutActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                    String num1 = edtNum1.getText().toString();
-                    String num2 = edtNum2.getText().toString();
+                    String num1 = edtNum1.getText().toString().trim();
+                    String num2 = edtNum2.getText().toString().trim();
 
 
-                    if (num1.equals(num2)){
-                        String regx = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}$";
-                        if (num1.matches(regx)){
+                    if (num1.equals(num2) && num1.length()==10 && android.util.Patterns.PHONE.matcher(num1).matches()){
+
                             showWaitingDialog();
                             RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
                                     .paymentPaytmRequest(
@@ -364,9 +461,7 @@ public class PayoutActivity extends AppCompatActivity {
                                             Toast.makeText(PayoutActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
-                        }else {
-                            Toast.makeText(PayoutActivity.this, "Number Not Valid", Toast.LENGTH_SHORT).show();
-                        }
+
                     }else {
                         Toast.makeText(PayoutActivity.this, "Number Not Matched", Toast.LENGTH_SHORT).show();
 
@@ -463,7 +558,7 @@ public class PayoutActivity extends AppCompatActivity {
                 });
     }
     private void getPayoutList() {
-        showWaitingDialog();
+        //showWaitingDialog();
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
                 .getPayoutList(Common.getKeyHash(
                         PayoutActivity.this),
@@ -611,7 +706,7 @@ public class PayoutActivity extends AppCompatActivity {
                 });
 
     }
-    private void getWithrableAmount() {
+    private void getWithrableAmount(final int minPayout, final int payoutFee) {
         progress_horizontal.setVisibility(View.VISIBLE);
         txtCoin.setText("00");
         txtRupee.setText("00");
@@ -632,8 +727,8 @@ public class PayoutActivity extends AppCompatActivity {
                             if (!myCoinResponse.isError()){
                                 withrawableCoin = myCoinResponse.coin;
                                 txtCoin.setText(String.valueOf(myCoinResponse.coin));
-                                if (myCoinResponse.coin>10){
-                                    txtRupee.setText(String.valueOf(myCoinResponse.coin-10));
+                                if (myCoinResponse.coin>payoutFee){
+                                    txtRupee.setText(String.valueOf(myCoinResponse.coin-payoutFee));
                                 }
                             }else {
                                 Toast.makeText(PayoutActivity.this, myCoinResponse.getError_description(), Toast.LENGTH_SHORT).show();
@@ -665,7 +760,8 @@ public class PayoutActivity extends AppCompatActivity {
         }
         dismissWaitingDialog();
         withrawableCoin = 0;
-        getWithrableAmount();
+        //getWithrableAmount();
+        getPayoutInfo();
     }
     private void createDialog() {
         dialog = new ACProgressPie.Builder(this)

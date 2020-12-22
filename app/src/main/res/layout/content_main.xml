@@ -31,7 +31,7 @@
                 android:paddingEnd="@dimen/_8sdp"
                 android:text="@string/my_coin"
                 android:textAllCaps="false"
-                android:textColor="@color/deep_blue"
+                android:textColor="@color/MidnightBlue"
                 android:textSize="@dimen/_13sdp" />
 
             <Button
@@ -41,7 +41,7 @@
                 android:drawablePadding="@dimen/_8sdp"
                 android:paddingEnd="@dimen/_8sdp"
                 android:paddingStart="@dimen/_8sdp"
-                android:textColor="@color/deep_blue"
+                android:textColor="@color/MidnightBlue"
                 android:textSize="@dimen/_13sdp"
 
                 android:drawableEnd="@drawable/arrow_right"
@@ -61,7 +61,7 @@
                 android:drawablePadding="@dimen/_8sdp"
                 android:paddingEnd="@dimen/_8sdp"
                 android:paddingStart="@dimen/_8sdp"
-                android:textColor="@color/deep_blue"
+                android:textColor="@color/MidnightBlue"
                 android:textSize="@dimen/_13sdp"
                 android:drawableEnd="@drawable/arrow_right"
                 android:background="@drawable/bg_btn_1"
@@ -75,68 +75,125 @@
     </HorizontalScrollView>
 
 
-    <LinearLayout
-        android:layout_margin="@dimen/_5sdp"
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_margin="@dimen/_5sdp"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_tab_layout"
-            app:tabMode="scrollable"
-            app:tabBackground="@drawable/tab_layout_selector"
-            app:tabSelectedTextColor="@color/Teal"
-            app:tabPaddingStart="@dimen/_10sdp"
-            app:tabPaddingEnd="@dimen/_10sdp"
-            app:tabIndicatorHeight="0dp"
-            app:tabRippleColor="@null" />
+            android:layout_height="wrap_content">
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_tab_layout"
+                app:tabMode="scrollable"
+                app:tabBackground="@drawable/tab_layout_selector"
+                app:tabSelectedTextColor="@color/Teal"
+                app:tabPaddingStart="@dimen/_10sdp"
+                app:tabPaddingEnd="@dimen/_10sdp"
+                app:tabIndicatorHeight="0dp"
+                app:tabRippleColor="@null" />
 
-       <RelativeLayout
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content">
-           <com.try3x.uttam.Custom.MyViewpager
-               android:id="@+id/gameViewPager"
-               android:layout_width="match_parent"
-               android:layout_height="@dimen/_200sdp"
-               android:name="com.try3x.uttam.Custom.MyViewpager"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.try3x.uttam.Custom.MyViewpager
+                    android:id="@+id/gameViewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_200sdp"
+                    android:name="com.try3x.uttam.Custom.MyViewpager">
+                </com.try3x.uttam.Custom.MyViewpager>
 
-           <Button
-               android:background="@drawable/bg_btn_green"
-               android:elevation="@dimen/_3sdp"
-               android:id="@+id/btnResult"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:layout_below="@id/gameViewPager"
-               android:layout_marginTop="8dp"
-               android:text="See Result"
-               android:textAllCaps="false"
-               android:textColor="@color/black"
-               android:textSize="@dimen/_16sdp" />
+                <LinearLayout
+                    android:id="@+id/layAlert"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:background="@color/Pink"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_200sdp">
 
-           <com.smarteist.autoimageslider.SliderView
-               android:layout_marginTop="@dimen/_8sdp"
-               android:layout_below="@+id/btnResult"
-               android:id="@+id/imageSlider"
-               android:layout_width="match_parent"
-               android:layout_height="@dimen/_170sdp"
-               app:sliderAnimationDuration="600"
-               app:sliderAutoCycleDirection="back_and_forth"
-               app:sliderAutoCycleEnabled="false"
-               app:sliderIndicatorAnimationDuration="600"
-               app:sliderIndicatorGravity="center_horizontal|bottom"
-               app:sliderIndicatorMargin="15dp"
-               app:sliderIndicatorOrientation="horizontal"
-               app:sliderIndicatorPadding="3dp"
-               app:sliderIndicatorRadius="2dp"
-               app:sliderIndicatorSelectedColor="#5A5A5A"
-               app:sliderIndicatorUnselectedColor="#FFF"
-               app:sliderScrollTimeInSec="1"
-               app:sliderStartAutoCycle="false" />
+                    <ImageView
+                        android:src="@drawable/warning"
+                        android:layout_width="@dimen/_60sdp"
+                        android:layout_height="@dimen/_60sdp"/>
+                    <TextView
+                        android:fontFamily="@font/nondon"
+                        android:elevation="@dimen/_10sdp"
+                        android:textColor="@color/MidnightBlue"
+                        android:layout_margin="@dimen/_8sdp"
+                        android:gravity="center"
+                        android:textSize="@dimen/_15sdp"
+                        android:text="আজকের সব গুলো গেমের রেজাল্ট পাবলিশ হয়ে গেছে।
+রাত ১২ টার পর থেকে আবার নতুন গেম চালু হবে।"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
 
-       </RelativeLayout>
-    </LinearLayout>
+                    <Button
+                        android:id="@+id/btnReloadBaji"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:paddingEnd="@dimen/_8sdp"
+                        android:paddingStart="@dimen/_8sdp"
+                        android:textSize="@dimen/_13sdp"
+                        android:textColor="@color/white"
+                        android:background="@drawable/update_btn_1"
+                        android:textAllCaps="false"
+                        android:text="Reload Baji"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <Button
+                    android:background="@drawable/bg_btn_green"
+                    android:elevation="@dimen/_3sdp"
+                    android:id="@+id/btnResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/gameViewPager"
+                    android:layout_marginTop="8dp"
+                    android:text="See Result"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16sdp" />
+
+                <Button
+                    android:background="@drawable/bg_btn_green"
+                    android:elevation="@dimen/_3sdp"
+                    android:id="@+id/btnGame2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/btnResult"
+                    android:layout_marginTop="8dp"
+                    android:text="See Result"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16sdp" />
+
+                <com.smarteist.autoimageslider.SliderView
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_below="@+id/btnGame2"
+                    android:id="@+id/imageSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_170sdp"
+                    app:sliderAnimationDuration="600"
+                    app:sliderAutoCycleDirection="back_and_forth"
+                    app:sliderAutoCycleEnabled="false"
+                    app:sliderIndicatorAnimationDuration="600"
+                    app:sliderIndicatorGravity="center_horizontal|bottom"
+                    app:sliderIndicatorMargin="15dp"
+                    app:sliderIndicatorOrientation="horizontal"
+                    app:sliderIndicatorPadding="3dp"
+                    app:sliderIndicatorRadius="2dp"
+                    app:sliderIndicatorSelectedColor="#5A5A5A"
+                    app:sliderIndicatorUnselectedColor="#FFF"
+                    app:sliderScrollTimeInSec="1"
+                    app:sliderStartAutoCycle="false" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
 
 
 

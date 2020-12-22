@@ -21,7 +21,16 @@
            android:text="Live Now"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"/>
-
+       <TextView
+           android:background="@drawable/bg_recy_head"
+           android:id="@+id/txtResultTime"
+           android:textColor="@color/White"
+           android:layout_margin="@dimen/_5sdp"
+           android:padding="@dimen/_5sdp"
+           android:textSize="@dimen/_12sdp"
+           android:text="Result At: 11:30:00"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"/>
        <TextView
            android:id="@+id/bajiId"
            android:textColor="@color/Black"
@@ -31,6 +40,8 @@
            android:text="ID #11"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"/>
+
+
    </LinearLayout>
 
    <HorizontalScrollView

@@ -235,6 +235,7 @@ public class SplashActivity extends AppCompatActivity {
                                         moveForward();
                                     }else {
                                         showUpdateDialog(apk);
+                                        //moveForward();
                                     }
                                 } catch (PackageManager.NameNotFoundException e) {
                                     e.printStackTrace();
@@ -271,10 +272,15 @@ public class SplashActivity extends AppCompatActivity {
         window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         Button update = updateDialog.findViewById(R.id.btnUpdate);
+        Button cancel = updateDialog.findViewById(R.id.btnCancel);
         TextView txtDesc = updateDialog.findViewById(R.id.txtDesc);
         ImageView imgLiveChat = updateDialog.findViewById(R.id.imgLiveChat);
         ImageView imgDynamic = updateDialog.findViewById(R.id.imgDynamic);
-
+        if (apk.mandatory){
+            cancel.setVisibility(View.GONE);
+        }else {
+            cancel.setVisibility(View.VISIBLE);
+        }
         getDynamicBanner(imgDynamic, "UpdateDialog");
         imgLiveChat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,6 +313,14 @@ public class SplashActivity extends AppCompatActivity {
 //                }else {
 //                    requestPermission();
 //                }
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateDialog.dismiss();
+                moveForward();
             }
         });
         updateDialog.show();
@@ -693,27 +707,27 @@ public class SplashActivity extends AppCompatActivity {
                 }
 
 
-                if (edtPayId.getText().toString().length()<4){
+                /*if (edtPayId.getText().toString().length()<4){
                     error = true;
                     edtPayId.setError("Enter Valid Payid");
-                }
+                }*/
                 if (!isGenderSelected){
                     error =true;
                     Toast.makeText(SplashActivity.this, "Select Gender", Toast.LENGTH_SHORT).show();
                 }
 
-                if (!isPayMethodSelected){
+               /* if (!isPayMethodSelected){
                     error = true;
                     Toast.makeText(SplashActivity.this, "Select Payment Method", Toast.LENGTH_SHORT).show();
-                }
+                }*/
 
                 if (!phonIsValid){
                     error = true;
                     edtPhone.setError("Enter Valid Phone");
                 }
-                String referBy = edtReferBy.getText().toString();
+                String referBy = edtReferBy.getText().toString().trim();
                 if (haveReferCode){
-                    if (edtReferBy.getText().toString().length()<6){
+                    if (referBy.isEmpty()){
                         error = true;
                         edtReferBy.setError("Enter Refer Code");
                     }
@@ -813,8 +827,8 @@ public class SplashActivity extends AppCompatActivity {
                 user.getPhotoUrl().toString(),
                 phone,
                 gender,
-                paymentMethod,
-                payid,
+                0, //paymentMethod not need anymore so we passed dummy value for overcome error
+                " ", //payid not need anymore so we passed dummy value for overcome error
                 haveRefer,
                 fcmToken,
                 referCode

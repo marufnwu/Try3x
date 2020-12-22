@@ -2,6 +2,7 @@ package com.try3x.uttam.Retrofit;
 
 import android.util.Log;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -23,8 +24,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitClient {
     private static final String TAG = "RetrofitClient";
-    //public static String BASEURI = "http://192.168.191.1:8081/try3x/api/";
-    public static String BASEURI = "http://try3x.xyz/api/";
+    public static String BASEURI = "http://192.168.0.101/try3x/api/";
+   // public static String BASEURI = "http://try3x.xyz/api/";
     public static final String HEADER_CACHE_CONTROL = "Cache-Control";
     public static final String HEADER_PRAGMA = "Pragma";
 
@@ -132,4 +133,5 @@ public class RetrofitClient {
         httpLoggingInterceptor.setLevel( HttpLoggingInterceptor.Level.BODY);
         return httpLoggingInterceptor;
     }
+
 }

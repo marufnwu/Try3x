@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,17 +17,19 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
-import com.shreyaspatil.EasyUpiPayment.EasyUpiPayment;
 import com.try3x.uttam.Adapters.CoinHistoryAdapter;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
+import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.Response.CoinHistoryResponse;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.Response.MyCoinResponse;
@@ -60,9 +63,13 @@ public class MyCoinActivity extends AppCompatActivity {
     private CoinHistoryResponse coinHistoryResponses;
     private CoinHistoryAdapter coinHistoryAdapter;
     private TextView txtAddCoin;
-    private Button btnInvite;
+    private Button btnInvite, btnCopy;
     private boolean isActivityCreatedByNoti;
     private ImageView imgLiveChat;
+    private ImageView imgBanner;
+    private TextView edtReferCode;
+    private User userProfile;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,31 +77,41 @@ public class MyCoinActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_coin);
         isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);
         initviews();
+
         Paper.init(this);
+        userProfile = Paper.book().read(PaperDB.USER_PROFILE);
         mAuth = FirebaseAuth.getInstance();
         createDialog();
         initRecyclerPagination();
         gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
 
-        getCoinList();
+        //getCoinList();
 
 
-        requestPayment();
+        //requestPayment();
+        setReferCode();
+        getBanner();
 
 
     }
 
-    private void requestPayment() {
-        final EasyUpiPayment easyUpiPayment = new EasyUpiPayment.Builder()
-                .with(this)
-                .setPayeeVpa("EXAMPLE@VPA")
-                .setPayeeName("PAYEE_NAME")
-                .setTransactionId("UNIQUE_TRANSACTION_ID")
-                .setTransactionRefId("UNIQUE_TRANSACTION_REF_ID")
-                .setDescription("DESCRIPTION_OR_SMALL_NOT")
-                .setAmount("AMOUNT_IN_DECIMAL_XX.XX")
-                .build();
+    private void setReferCode() {
+        if (userProfile!=null && userProfile.referCode!=null){
+            edtReferCode.setText(userProfile.referCode);
+
+            btnCopy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String stringYouExtracted = edtReferCode.getText().toString();
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("Refer Code", stringYouExtracted);
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(MyCoinActivity.this, "Refer Code Copied", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
+
 
     private void getCoinList() {
         showWaitingDialog();
@@ -167,6 +184,9 @@ public class MyCoinActivity extends AppCompatActivity {
         postListProgress = findViewById(R.id.progress);
         txtAddCoin = findViewById(R.id.txtAddCoin);
         imgLiveChat = findViewById(R.id.imgLiveChat);
+        imgBanner = findViewById(R.id.imgBanner);
+        btnCopy = findViewById(R.id.btnCopy);
+        edtReferCode = findViewById(R.id.edtReferCode);
 
 
         txtAddCoin.setOnClickListener(new View.OnClickListener() {
@@ -382,6 +402,77 @@ public class MyCoinActivity extends AppCompatActivity {
         if (reloadImage!=null && reloadImage.getAnimation()!=null){
             reloadImage.getAnimation().cancel();
         }
+    }
+
+    private void getBanner() {
+        imgBanner.setVisibility(View.GONE);
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getActivityBanner("MyCoinActivity")
+                .enqueue(new Callback<ActivityBanner>() {
+                    @Override
+                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {
+                        if (response.isSuccessful() && response.body()!=null){
+                            final ActivityBanner activityBanner = response.body();
+                            if (!activityBanner.error){
+                                if (activityBanner.imageUrl!=null){
+                                    imgBanner.setVisibility(View.VISIBLE);
+                                    if(!MyCoinActivity.this.isFinishing()){
+                                        Glide.with(MyCoinActivity.this)
+                                                .load(activityBanner.imageUrl)
+                                                .into(imgBanner);
+
+                                        imgBanner.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                if (activityBanner.actionType==1){
+                                                    //open url
+                                                    if (activityBanner.actionUrl!=null){
+                                                        String url = activityBanner.actionUrl;
+                                                        String linkHost = Uri.parse(url).getHost();
+                                                        Uri uri = Uri.parse(url);
+
+                                                        if (linkHost==null){
+                                                            return;
+                                                        }
+
+                                                        if (linkHost.equals("play.google.com")){
+                                                            String appId = uri.getQueryParameter("id");
+
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                            intent.setData(Uri.parse("market://details?id="+appId));
+                                                            startActivity(intent);
+
+                                                        }else if(linkHost.equals("www.youtube.com")){
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                            intent.setPackage("com.google.android.youtube");
+                                                            startActivity(intent);
+
+
+                                                        }else if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                                            startActivity(intent);
+
+                                                        }
+                                                    }
+                                                }else if (activityBanner.actionType==2){
+                                                    //open activity
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ActivityBanner> call, Throwable t) {
+
+                    }
+                });
     }
 
     public static void invite(Context context, String referCode){

@@ -44,7 +44,18 @@
                     android:layout_height="@dimen/_40sdp"/>
 
                 <ImageView
+                    android:id="@+id/imgChckUpdate"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:layout_toRightOf="@id/imgDrawer"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:src="@drawable/checkupdate"
+                    android:layout_width="@dimen/_40sdp"
+                    android:layout_height="@dimen/_40sdp"/>
+
+                <ImageView
+                    android:layout_toRightOf="@id/imgChckUpdate"
                     android:id="@+id/imgChat"
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true"

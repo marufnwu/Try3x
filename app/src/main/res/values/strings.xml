@@ -14,8 +14,5 @@ Use the version\n
 আরও ভাল অভিজ্ঞতার জন্য নতুন
 ভার্ষানটি ব্যবহার করুন</string>
 
-    <string name="invite_text_desc">Refer &amp; Earn Coin
-আপনার বন্ধুকে ইনষ্টল করান,সে যতোবার টাকা তুলবে আপনি ৫ টাকা করে কমিশন পাবেন। আনলিমিটেড কমিশন।।
-
-Install your friend, every time he withdraws money, you will get a commission of 5 rupees. Unlimited Commission.</string>
+    <string name="invite_text_desc">আপনি আপনার বন্ধুকে যদি গেমটি রেফার করেন,তবে তিনি যতোবার টাকা তুলবেন আপনি ততোবার Rs: 250 (সর্বোচ্চ)  করে কমিশন পাবেন।আনলিমিটেড কমিশন</string>
 </resources>

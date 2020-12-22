@@ -9,6 +9,8 @@
     tools:context=".PayoutActivity">
 
     <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/layPayout"
         android:padding="@dimen/_8sdp"
         android:layout_margin="@dimen/_8sdp"
         android:background="@drawable/bg_gra_orange"
@@ -43,12 +45,14 @@
                 android:layout_weight="2"
                android:layout_width="0dp"
                android:layout_height="wrap_content">
+
                <TextView
-                   android:textColor="@color/White"
-                   android:textSize="@dimen/_10sdp"
-                   android:text="Coin (Min 200)"
+                   android:id="@+id/txtMinCoin"
                    android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"/>
+                   android:layout_height="wrap_content"
+                   android:text="Coin (Min 500)"
+                   android:textColor="@color/White"
+                   android:textSize="@dimen/_10sdp" />
                <TextView
                    android:inputType="numberDecimal"
                    android:id="@+id/edtCoin"
@@ -77,12 +81,14 @@
              android:layout_weight="2"
              android:layout_width="0dp"
              android:layout_height="wrap_content">
+
              <TextView
-                 android:textColor="@color/White"
-                 android:textSize="@dimen/_10sdp"
-                 android:text="Rupee (Min 190)"
+                 android:id="@+id/txtMinRupee"
                  android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"/>
+                 android:layout_height="wrap_content"
+                 android:text="Rupee (Min 480)"
+                 android:textColor="@color/White"
+                 android:textSize="@dimen/_10sdp" />
              <TextView
                  android:id="@+id/txtRupee"
                  android:textSize="@dimen/_18sdp"
@@ -112,6 +118,37 @@
             android:layout_height="wrap_content"/>
 
 
+    </LinearLayout>
+    <LinearLayout
+        android:visibility="visible"
+        android:id="@+id/layPayoutReload"
+        android:padding="@dimen/_8sdp"
+        android:layout_margin="@dimen/_8sdp"
+        android:background="@drawable/bg_gra_orange"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textSize="@dimen/_13sdp"
+            android:textColor="@color/White"
+            android:gravity="center"
+            android:text="Somethings went wrong! \n Maybe Server error or Internet connection error. \n Please Hit RELOAD button to continue PAYOUT."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnReload"
+            android:paddingEnd="@dimen/_8sdp"
+            android:paddingStart="@dimen/_8sdp"
+            android:textSize="@dimen/_15sdp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_btn_1"
+            android:layout_margin="@dimen/_8sdp"
+            android:layout_gravity="center"
+            android:text="RELOAD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
     <RelativeLayout
         android:background="@drawable/bg_gra_1"

@@ -214,7 +214,7 @@ public class NotificationUtil {
     private int getNotificationIcon(NotificationCompat.Builder notificationBuilder) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            notificationBuilder.setColor(context.getColor(R.color.red));
+            //notificationBuilder.setColor(context.getResources().getColor(R.color.OrangeRed));
             return R.drawable.ic_not_icon;
 
         }

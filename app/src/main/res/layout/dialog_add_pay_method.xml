@@ -37,7 +37,7 @@
         android:id="@+id/payNum1"
         android:padding="@dimen/_5sdp"
         android:textSize="@dimen/_13sdp"
-        android:background="@drawable/edit_bg"
+        android:background="@color/white"
         android:layout_margin="@dimen/_8sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -59,7 +59,7 @@
         android:padding="@dimen/_5sdp"
         android:drawablePadding="@dimen/_5sdp"
         android:textSize="@dimen/_13sdp"
-        android:background="@drawable/edit_bg"
+        android:background="@color/white"
         android:layout_margin="@dimen/_8sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

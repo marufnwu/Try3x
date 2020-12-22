@@ -113,15 +113,16 @@
             android:layout_height="wrap_content"/>
 
         <Button
-            android:layout_marginBottom="@dimen/_10sdp"
             android:id="@+id/btnSelectPayMethod"
-            android:textColor="#989595"
-            android:textAllCaps="false"
-            android:textSize="@dimen/_14sdp"
-            android:text="Select Payment Method"
-            android:background="@drawable/spinner_bg"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:background="@drawable/spinner_bg"
+            android:text="Select Payment Method"
+            android:textAllCaps="false"
+            android:textColor="#989595"
+            android:textSize="@dimen/_14sdp"
+            android:visibility="gone" />
 
 
         <EditText

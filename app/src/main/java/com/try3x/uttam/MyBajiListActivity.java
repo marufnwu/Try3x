@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.try3x.uttam.Adapters.MyBajiListAdapter;
+import com.try3x.uttam.Common.CapthaDialog;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Listener.OnClaimClickListener;
@@ -408,10 +409,39 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
         }
     }
 
+    private void showCaptcha(final int id, final int pos) {
+
+        final CapthaDialog capthaDialog = new CapthaDialog(MyBajiListActivity.this);
+        capthaDialog.init();
+        capthaDialog.showDialog();
+        capthaDialog.setOnCaptchaDialogListener(new CapthaDialog.OnCaptchaDialogListener() {
+            @Override
+            public void onResultOk() {
+                claimBaji(id, pos);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onToast(String message) {
+
+                Toast.makeText(MyBajiListActivity.this, message, Toast.LENGTH_LONG).show();
+                capthaDialog.hideDialog();
+            }
+        });
+    }
 
 
     @Override
     public void onClick(int id, int pos) {
+       showCaptcha(id, pos);
+
+    }
+
+    private void claimBaji(int id, int pos){
         showWaitingDialog();
         claimPos = pos;
         if (gmailInfo==null){
@@ -428,7 +458,7 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
                         gmailInfo.user_id,
                         gmailInfo.access_token,
                         id
-                 )
+                )
                 .enqueue(new Callback<ServerResponse>() {
                     @Override
                     public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
@@ -454,7 +484,6 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
                         dismissWaitingDialog();
                     }
                 });
-
     }
 
 

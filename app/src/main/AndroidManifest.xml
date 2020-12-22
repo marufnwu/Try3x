@@ -15,8 +15,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:hardwareAccelerated="true"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -25,7 +25,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup, usesCleartextTraffic">
-        <activity android:name=".ResultVideoActivity"></activity>
+        <activity android:name=".Game2.Game2Activity"
+            android:label="Game 2"
+            android:theme="@style/custom_theme"></activity>
+        <activity
+            android:name=".AppUpdateActivity"
+            android:label="App Update"
+            android:theme="@style/custom_theme" />
+        <activity android:name=".ResultVideoActivity" />
+        <activity android:name=".Game2.MyBajiListActivity" />
         <activity
             android:name=".TransactionActivity"
             android:label="Transactions"
@@ -68,8 +76,8 @@
         <activity android:name=".AddCoinActivity" />
         <activity android:name=".MyWithrawbleActivity" />
         <activity android:name=".MyCommisionActivity" />
-        <activity android:name=".MyCoinActivity"/>
-        <activity android:name=".MyBajiListActivity"/>
+        <activity android:name=".MyCoinActivity" />
+        <activity android:name=".MyBajiListActivity" />
         <activity
             android:name=".SplashActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">

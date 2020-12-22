@@ -31,8 +31,8 @@ import com.try3x.uttam.Adapters.BajiViewpagerAdapter;
 import com.try3x.uttam.Adapters.BannerSliderAdapter;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Custom.MyViewpager;
-import com.try3x.uttam.Fragments.Baji1;
 import com.try3x.uttam.Fragments.GameSlotView;
+import com.try3x.uttam.Game2.Game2Activity;
 import com.try3x.uttam.Models.GameSlot;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.Response.ResultStatusResponse;
@@ -55,25 +55,26 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    LinearLayout layMyBaji,layAddCoin,layMycoin,layWithdraw,layCommission, layTransaction;
+    LinearLayout layMyBaji,layAddCoin,layMycoin,layWithdraw,layCommission, layTransaction, layAlert;
     private static final String TOPIC_ALL_USER = "ALL_USERS";
     TabLayout tabLayout;
     MyViewpager viewpagerBaji;
-    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult;
+    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji, btnGame2;
     User user;
     private NavigationView navigationView;
-    ImageView imgDrawer,imgChat;
+    ImageView imgDrawer,imgChat, imgUpdate;
     private DrawerLayout drawer;
     private ACProgressPie dialog;
+    GmailInfo gmailInfo;
+
     private SliderView imageSlider;
     private TextView txtUName;
     private PackageInfo pInfo;
-    GmailInfo gmailInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        changeStatusBarColor(R.color.red);
+        changeStatusBarColor(getResources().getColor(R.color.OrangeRed));
         setContentView(R.layout.activity_main);
         Paper.init(this);
         user = Paper.book().read(PaperDB.USER_PROFILE);
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         //navigationView = findViewById(R.id.nav_view);
 
         initview();
-        initViewpager();
+
         addInfoToNav();
 
         getBannerSlider();
@@ -251,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
                             if(!ResultStatusResponse.error){
                                 ResultStatus resultStatus = ResultStatusResponse.resultStatus;
 
-                                createViepager(resultStatus);
+                                //createViepager(resultStatus);
                             }
                         }
                     }
@@ -267,77 +268,88 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void createViepager(ResultStatus resultStatus) {
-
+    private void createViepager(/*ResultStatus resultStatus*/) {
+        layAlert.setVisibility(View.GONE);
+        showWaitingDialog();
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
                 .getGameSlot()
                 .enqueue(new Callback<GameSlot>() {
                     @Override
                     public void onResponse(Call<GameSlot> call, Response<GameSlot> response) {
+                        dismissWaitingDialog();
+                        List<Fragment> fragments = new ArrayList<>();
+                        List<String> titles = new ArrayList<>();
                         if (response.isSuccessful() && response.body()!=null){
                             GameSlot gameSlot = response.body();
                             if (!gameSlot.error){
                                 List<Slot> slots = gameSlot.slots;
                                 if (slots.size()>0){
-                                    List<Fragment> fragments = new ArrayList<>();
-                                    List<String> titles = new ArrayList<>();
+                                    layAlert.setVisibility(View.GONE);
                                     for (Slot slot : slots){
-                                        GameSlotView gameSlotView = new GameSlotView(slot);
+                                        GameSlotView gameSlotView = GameSlotView.getInstance(slot);
                                         fragments.add(gameSlotView);
                                         titles.add(slot.name);
                                     }
+
 
                                     BajiViewpagerAdapter bajiViewpagerAdapter = new BajiViewpagerAdapter(getSupportFragmentManager(), fragments, titles);
                                     viewpagerBaji.setAdapter(bajiViewpagerAdapter);
                                     tabLayout.setupWithViewPager(viewpagerBaji);
 
                                     viewpagerBaji.setMyScroller();
+
+                                    return;
+
                                 }
                             }
                         }
+
+                        layAlert.setVisibility(View.VISIBLE);
+
+
                     }
 
                     @Override
                     public void onFailure(Call<GameSlot> call, Throwable t) {
-
+                        dismissWaitingDialog();
                     }
                 });
 
-        List<Boolean> resultPublish = new ArrayList<>();
-        if (resultStatus.getBaji1()==0){
-            resultPublish.add(false);
-        }else {
-            resultPublish.add(true);
-
-        }
-
-        if (resultStatus.getBaji2()==0){
-            resultPublish.add(false);
-        }else {
-            resultPublish.add(true);
-
-        }
-
-        if (resultStatus.getBaji3()==0){
-            resultPublish.add(false);
-        }else {
-            resultPublish.add(true);
-
-        }
-
-        if (resultStatus.getBaji4()==0){
-            resultPublish.add(false);
-        }else {
-            resultPublish.add(true);
-
-        }
-
-        if (resultStatus.getBaji5()==0){
-            resultPublish.add(false);
-        }else {
-            resultPublish.add(true);
-
-        }
+//        List<Boolean> resultPublish = new ArrayList<>();
+//        if (resultStatus.getBaji1()==0){
+//            resultPublish.add(false);
+//        }else {
+//            resultPublish.add(true);
+//
+//        }
+//
+//        if (resultStatus.getBaji2()==0){
+//            resultPublish.add(false);
+//        }else {
+//            resultPublish.add(true);
+//
+//        }
+//
+//        if (resultStatus.getBaji3()==0){
+//            resultPublish.add(false);
+//        }else {
+//            resultPublish.add(true);
+//
+//        }
+//
+//        if (resultStatus.getBaji4()==0){
+//            resultPublish.add(false);
+//        }else {
+//            resultPublish.add(true);
+//
+//        }
+//
+//        if (resultStatus.getBaji5()==0){
+//            resultPublish.add(false);
+//        }else {
+//            resultPublish.add(true);
+//
+//        }
 
         //List<Fragment> fragments = new ArrayList<>();
         //List<String> titles = new ArrayList<>();
@@ -367,11 +379,21 @@ public class MainActivity extends AppCompatActivity {
         btnCommission = findViewById(R.id.btnCommission);
         btnWithdrawable = findViewById(R.id.btnwithdrawable);
         btnResult = findViewById(R.id.btnResult);
+        btnGame2 = findViewById(R.id.btnGame2);
         btnMyCoin = findViewById(R.id.btnMyCoin);
+        btnReloadBaji = findViewById(R.id.btnReloadBaji);
         imgDrawer = findViewById(R.id.imgDrawer);
         imageSlider = findViewById(R.id.imageSlider);
         imgChat = findViewById(R.id.imgChat);
+        imgUpdate = findViewById(R.id.imgChckUpdate);
+        layAlert = findViewById(R.id.layAlert);
 
+        btnReloadBaji.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createViepager();
+            }
+        });
 
         imgDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -413,7 +435,36 @@ public class MainActivity extends AppCompatActivity {
                 openLiveChat();
             }
         });
+
+        imgUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), AppUpdateActivity.class));
+
+            }
+        });
+
+        btnGame2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), Game2Activity.class));
+
+            }
+        });
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        createViepager();
+    }
+
     private void createDialog() {
         dialog = new ACProgressPie.Builder(this)
                 .ringColor(Color.WHITE)

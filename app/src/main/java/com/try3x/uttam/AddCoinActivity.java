@@ -23,30 +23,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.cashfree.pg.CFPaymentService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.instamojo.android.Instamojo;
 import com.paytm.pgsdk.PaytmOrder;
 import com.paytm.pgsdk.PaytmPGService;
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback;
 import com.paytm.pgsdk.TransactionManager;
-import com.payumoney.core.PayUmoneyConfig;
-import com.payumoney.core.PayUmoneySdkInitializer;
-import com.payumoney.core.entity.TransactionResponse;
-import com.payumoney.sdkui.ui.utils.PayUmoneyFlowManager;
-import com.phonepe.intent.sdk.api.PhonePe;
-import com.phonepe.intent.sdk.api.PhonePeInitException;
-import com.phonepe.intent.sdk.api.ShowPhonePeCallback;
-import com.phonepe.intent.sdk.api.TransactionRequest;
-import com.phonepe.intent.sdk.api.TransactionRequestBuilder;
+
 import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
-import com.shreyaspatil.EasyUpiPayment.EasyUpiPayment;
-import com.shreyaspatil.EasyUpiPayment.listener.PaymentStatusListener;
-import com.shreyaspatil.EasyUpiPayment.model.PaymentApp;
-import com.shreyaspatil.EasyUpiPayment.model.TransactionDetails;
+
 import com.try3x.uttam.Adapters.CoinPackAdapter;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
@@ -82,15 +69,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.cashfree.pg.CFPaymentService.PARAM_APP_ID;
-import static com.cashfree.pg.CFPaymentService.PARAM_CUSTOMER_EMAIL;
-import static com.cashfree.pg.CFPaymentService.PARAM_CUSTOMER_PHONE;
-import static com.cashfree.pg.CFPaymentService.PARAM_NOTIFY_URL;
-import static com.cashfree.pg.CFPaymentService.PARAM_ORDER_AMOUNT;
-import static com.cashfree.pg.CFPaymentService.PARAM_ORDER_CURRENCY;
-import static com.cashfree.pg.CFPaymentService.PARAM_ORDER_ID;
 
-public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClickListener, PaymentStatusListener, View.OnClickListener, ShowPhonePeCallback, PaymentResultListener {
+public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClickListener, View.OnClickListener, PaymentResultListener {
 
     RecyclerView recyclerCoinPack;
     ProgressBar progress;
@@ -122,8 +102,6 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
         setContentView(R.layout.activity_add_coin);
         isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);
         Checkout.preload(getApplicationContext());
-        PhonePe.init(this);
-        Instamojo.getInstance().initialize(this, Instamojo.Environment.TEST);
         initView();
         Paper.init(this);
         gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
@@ -314,7 +292,7 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
 
     }
 
-    private void cashFree(final BuyCoinTransResponse buyCoinTransResponse) {
+    /*private void cashFree(final BuyCoinTransResponse buyCoinTransResponse) {
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
                 .generateCFToken(buyCoinTransResponse.transaction_id, buyCoinTransResponse.amount)
                 .enqueue(new Callback<CFToken>() {
@@ -346,7 +324,7 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
 
                     }
                 });
-    }
+    }*/
 
     private void paytmAllInAll(final BuyCoinTransResponse buyCoinTransResponse) {
 
@@ -553,78 +531,6 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
     }
 
 
-    private void startPhonPe(BuyCoinTransResponse response) {
-        String salt = "8289e078-be0b-484d-ae60-052f117f8deb";
-        int saltIndex = 1;
-
-
-        String apiEndPoint = "/v4/debit";
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("merchantId", "M2306160483220675579140"); //String. Mandatory
-        data.put("transactionId", response.transaction_ref); //String. Mandatory.
-        data.put("amount", 1000); //Long. Mandatory
-        data.put("merchantOrderId", response.transaction_id);
-        data.put("message", "Messeage from merchant");
-        data.put("paymentScope", "ALL_UPI_APPS");
-
-        //Note: Don't pass this if you are passing userAuthToken.
-        data.put("merchantUserId", "U123456789"); //String. Mandatory. Needed for linking
-
-        byte[] byteStr = new byte[0];
-        try {
-            byteStr = new Gson().toJson(data).getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String base64 = Base64.encodeToString(byteStr, Base64.DEFAULT);
-
-        String checksum = sha256(base64 + apiEndPoint + salt) + "###" + saltIndex;
-
-        HashMap<String, String> headers = new HashMap();
-        headers.put("X-CALLBACK-URL","https://www.demoMerchant.com");  // Merchant server URL
-        headers.put("X-CALL-MODE","POST");
-
-        //Log.d("Hash Server", response.phonpe.checksum);
-        //Log.d("Hash Client", checksum);
-        TransactionRequest debitRequest = new TransactionRequestBuilder()
-                .setData(base64)
-                .setChecksum(checksum)
-                .setUrl(apiEndPoint)
-                .setHeaders(headers)
-                .build();
-
-       /* TransactionRequest debitRequest = new TransactionRequestBuilder()
-                .setData(response.phonpe.base64)
-                .setChecksum(response.phonpe.checksum)
-                .setUrl(response.phonpe.apiEndPoint)
-                .setHeaders(headers)
-                .build();*/
-
-        try {
-            if(PhonePe.isAppInstalled()) {
-                try {
-                    startActivityForResult(PhonePe.getTransactionIntent(debitRequest), DEBIT_REQUEST_CODE);
-                } catch(PhonePeInitException e){
-                   Log.d("PhonPeErr", e.getMessage());
-                    Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            } else {
-                startActivityForResult(PhonePe.getImplicitIntent(this, debitRequest), DEBIT_REQUEST_CODE);
-            }
-        } catch (PhonePeInitException e) {
-            Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_LONG).show();
-
-
-        }
-
-      /*  try {
-            startActivityForResult(PhonePe.getTransactionIntent( debitRequest),DEBIT_REQUEST_CODE);
-        } catch(PhonePeInitException e){
-        }*/
-
-        dismissWaitingDialog();
-
-    }
     public static String sha256(String base) {
         try{
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -643,156 +549,9 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
         }
     }
 
-    private void getHash(BuyCoinTransResponse buyCoinTransResponse) {
-        //String hashSequence = key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt;
-        final String txnId = buyCoinTransResponse.transaction_id;
-        final float amount = buyCoinTransResponse.amount;
-        final String productinfo = coinPackage.name;
-        final String firstname = gmailInfo.getUser_id();
-        final String email = gmailInfo.getGmail();
-        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
-                .payRequestHash(
-                        txnId, amount, productinfo, firstname, email
-                )
-                .enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful() && response.body()!=null){
-                            setupPayment(response.body(), txnId, amount, productinfo, firstname, email);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                            dismissWaitingDialog();
-                            Log.d("Retrofit", t.getMessage());
-                    }
-                });
 
 
 
-    }
-
-    private void setupPayment(String hash, String txnId, float amount, String productinfo, String firstname, String email) {
-        PayUmoneyConfig payUmoneyConfig = PayUmoneyConfig.getInstance();
-
-
-        String udf1 = "";
-        String udf2 = "";
-        String udf3 = "";
-        String udf4 = "";
-        String udf5 = "";
-        String udf6 = "";
-        String udf7 = "";
-        String udf8 = "";
-        String udf9 = "";
-        String udf10 = "";
-        PayUmoneySdkInitializer.PaymentParam.Builder builder = new PayUmoneySdkInitializer.PaymentParam.Builder();
-        builder.setAmount(String.valueOf(amount))                          // Payment amount
-                .setTxnId(txnId)                                             // Transaction ID
-                .setPhone("9062686255")                                           // User Phone number
-                .setProductName(productinfo)                   // Product Name or description
-                .setFirstName(firstname)                              // User First name
-                .setEmail(email)                                            // User Email ID
-                .setsUrl("https://try3x.xyz/api/paymentSuccess.php")                    // Success URL (surl)
-                .setfUrl("https://try3x.xyz/api/paymentFailed.php")                     //Failure URL (furl)
-                .setUdf1(udf1)
-                .setUdf2(udf2)
-                .setUdf3(udf3)
-                .setUdf4(udf4)
-                .setUdf5(udf5)
-                .setUdf6(udf6)
-                .setUdf7(udf7)
-                .setUdf8(udf8)
-                .setUdf9(udf9)
-                .setUdf10(udf10)
-                .setIsDebug(false)                              // Integration environment - true (Debug)/ false(Production)
-                .setKey("HTS9ppAl")                        // Merchant key
-                .setMerchantId("7215795");             // Merchant ID
-
-
-        //declare paymentParam object
-        PayUmoneySdkInitializer.PaymentParam paymentParam = null;
-        try {
-            paymentParam = builder.build();
-           paymentParam.setMerchantHash(hash);
-            Log.d("Sha512 Server", hash);
-            //calculateServerSideHashAndInitiatePayment1(paymentParam, txnId, amount, productinfo, firstname, email);
-          //paymentParam = calculateServerSideHashAndInitiatePayment1(paymentParam, txnId, amount, productinfo, firstname, email);
-            dismissWaitingDialog();
-            PayUmoneyFlowManager.startPayUMoneyFlow(paymentParam,
-                    this, R.style.AppTheme_default, false);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d("Fuck", e.getMessage()+user.phone);
-        }
-        //set the hash
-
-
-    }
-
-
-
-    private void fetchPaymnetInfo(final BuyCoinTransResponse buyCoinTransResponse) {
-
-        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
-                .getPaymentInfo(
-                        Common.getKeyHash(this),
-                        gmailInfo.gmail,
-                        gmailInfo.user_id,
-                        gmailInfo.access_token
-                )
-                .enqueue(new Callback<PaymentInfoResponse>() {
-                    @Override
-                    public void onResponse(Call<PaymentInfoResponse> call, Response<PaymentInfoResponse> response) {
-                        if (response.isSuccessful() && response.body()!=null){
-                            PaymentInfoResponse paymentInfoResponse = response.body();
-                            if (!paymentInfoResponse.isError()){
-                                startPayment(buyCoinTransResponse, paymentInfoResponse);
-                            }else {
-                                Toast.makeText(AddCoinActivity.this, ""+paymentInfoResponse.error_description, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        dismissWaitingDialog();
-                    }
-
-                    @Override
-                    public void onFailure(Call<PaymentInfoResponse> call, Throwable t) {
-                        dismissWaitingDialog();
-                        Log.e("RetrofitError", t.getMessage());
-                    }
-                });
-    }
-
-    private void startPayment(BuyCoinTransResponse buyCoinTransResponse, PaymentInfoResponse paymentInfoResponse) {
-        dismissWaitingDialog();
-
-
-        trans_ref = null;
-        amount = 0;
-
-        if (paymentInfoResponse.getPayment_info().size()<1){
-            return;
-        }
-        Toast.makeText(this, buyCoinTransResponse.transaction_ref, Toast.LENGTH_SHORT).show();
-
-        final EasyUpiPayment easyUpiPayment = new EasyUpiPayment.Builder()
-                .with(this)
-                .setPayeeVpa(paymentInfoResponse.getPayment_info().get(0).getAccount_id())
-                .setPayeeName("Try3x")
-                .setTransactionId(buyCoinTransResponse.transaction_id)
-                .setTransactionRefId(buyCoinTransResponse.getTransaction_ref())
-                .setDescription("Buy Coin")
-                .setAmount(String.valueOf(buyCoinTransResponse.amount))
-                .build();
-
-        easyUpiPayment.setPaymentStatusListener(this);
-        easyUpiPayment.setDefaultPaymentApp(PaymentApp.PAYTM);
-        trans_ref = buyCoinTransResponse.transaction_ref;
-        amount = buyCoinTransResponse.amount;
-        easyUpiPayment.startPayment();
-    }
 
     private void addBuyCoin(String ref, float price) {
 
@@ -923,60 +682,6 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
 
     }
 
-    @Override
-    public void onTransactionCompleted(TransactionDetails transactionDetails) {
-        coinPackage = null;
-        String response = new Gson().toJson(transactionDetails);
-        Toast.makeText(this, "onCompleted", Toast.LENGTH_SHORT).show();
-        Log.d("UpiPayment", "OnComplete");
-        Log.d("UpiPayment", "OnComplete: "+response);
-       /* Toast.makeText(this, "Status: "+transactionDetails.getStatus()+" amount: "+transactionDetails.getAmount(), Toast.LENGTH_LONG).show();
-        if (transactionDetails.getStatus().equals("success")){
-            addBuyCoin(transactionDetails.getTransactionRefId(), Float.parseFloat(transactionDetails.getAmount()));
-        }*/
-    }
-
-    @Override
-    public void onTransactionSuccess() {
-        clearSelectItem();
-
-        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
-
-        if (trans_ref!=null && amount>0){
-            addBuyCoin(trans_ref, amount);
-        }
-
-    }
-
-    @Override
-    public void onTransactionSubmitted() {
-        clearSelectItem();
-
-        Toast.makeText(this, "Submitted", Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Override
-    public void onTransactionFailed() {
-        clearSelectItem();
-
-        Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Override
-    public void onTransactionCancelled() {
-
-        Toast.makeText(this, "Cancel", Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Override
-    public void onAppNotFound() {
-        clearSelectItem();
-        Toast.makeText(this, "App not found", Toast.LENGTH_SHORT).show();
-
-    }
 
     public void clearSelectItem(){
         coinPackage = null;
@@ -1018,33 +723,7 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
 
 
         }
-        // Result Code is -1 send from Payumoney activity
-        Log.d("MainActivity", "request code " + requestCode + " resultcode " + resultCode);
-        if (requestCode == PayUmoneyFlowManager.REQUEST_CODE_PAYMENT && resultCode == RESULT_OK && data != null) {
-            TransactionResponse transactionResponse = data.getParcelableExtra( PayUmoneyFlowManager.INTENT_EXTRA_TRANSACTION_RESPONSE );
-            String bal = new Gson().toJson(transactionResponse);
-            Log.d("PayMentResult", bal);
-            if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
 
-                if(transactionResponse.getTransactionStatus().equals( TransactionResponse.TransactionStatus.SUCCESSFUL )){
-                    //Success Transaction
-                    Log.d("PayMentResult", "Success");
-                } else{
-                    //Failure Transaction
-                    Log.d("PayMentResult", "Faild");
-                }
-
-                // Response from Payumoney
-                String payuResponse = transactionResponse.getPayuResponse();
-
-                // Response from SURl and FURL
-                String merchantResponse = transactionResponse.getTransactionDetails();
-            }  /*else if (resultModel != null && resultModel.getError() != null) {
-                Log.d("AddCoinActivity", "Error response : " + resultModel.getError().getTransactionResponse());
-            }*/ else {
-                Log.d("AddCoinActivity", "Both objects are null!");
-            }
-        }
 
         if (requestCode == DEBIT_REQUEST_CODE) {
 
@@ -1057,33 +736,7 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
     }
 
 
-    private PayUmoneySdkInitializer.PaymentParam calculateServerSideHashAndInitiatePayment1(final PayUmoneySdkInitializer.PaymentParam paymentParam, String txid,
-                                                                                            float amount, String productinfo, String firstname, String email) {
 
-        StringBuilder stringBuilder = new StringBuilder();
-        HashMap<String, String> params = paymentParam.getParams();
-        stringBuilder.append("HTS9ppAl" + "|");
-        stringBuilder.append(txid + "|");
-        stringBuilder.append(amount + "|");
-        stringBuilder.append(productinfo + "|");
-        stringBuilder.append(firstname + "|");
-        stringBuilder.append(email + "|");
-        stringBuilder.append("" + "|");
-        stringBuilder.append("" + "|");
-        stringBuilder.append("" + "|");
-        stringBuilder.append("" + "|");
-        stringBuilder.append("" + "||||||");
-
-
-        stringBuilder.append("W4aG3jVEHf");
-
-        String hash = hashCal(stringBuilder.toString());
-        Log.d("Sha512 Client", hash);
-        Log.d("Sha512 Client", stringBuilder.toString());
-        paymentParam.setMerchantHash(hash);
-
-        return paymentParam;
-    }
     public static String hashCal(String str) {
         byte[] hashseq = str.getBytes();
         StringBuilder hexString = new StringBuilder();
@@ -1216,10 +869,6 @@ public class AddCoinActivity extends AppCompatActivity implements OnCoinPackClic
         }
     }
 
-    @Override
-    public void onResponse(boolean b) {
-
-    }
 
     @Override
     public void onPaymentSuccess(String s) {
