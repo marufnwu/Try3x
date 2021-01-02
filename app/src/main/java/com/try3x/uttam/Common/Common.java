@@ -183,4 +183,11 @@ public class Common {
     public static void setShakeAnimation(ImageView img, Context context){
         img.startAnimation(AnimationUtils.loadAnimation(context,R.anim.shake));
     }
+
+    public static int getRandomViews(){
+        int max = 9126383;
+        int min = 8562;
+
+        return (int )(Math.random() * max + min);
+    }
 }

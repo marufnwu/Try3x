@@ -887,6 +887,10 @@ public class SplashActivity extends AppCompatActivity {
                 intent = new Intent(context, AddCoinActivity.class);
             }else if (activity.equals("ResultListActivity")){
                 intent = new Intent(context, ResultListActivity.class);
+            }else if (activity.equals("game2.ResultListActivity")){
+                intent = new Intent(context, com.try3x.uttam.Game2.ResultListActivity.class);
+            }else if (activity.equals("game2.MyBajiListActivity")){
+                intent = new Intent(context, com.try3x.uttam.Game2.MyBajiListActivity.class);
             }else {
                 intent = new Intent(context, MainActivity.class);
             }

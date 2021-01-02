@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_margin="@dimen/_8sdp"
     android:padding="@dimen/_8sdp"
-    android:background="#72C424DF"
+    android:background="#AF4CAA"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -216,6 +216,7 @@
             android:layout_height="@dimen/_30sdp"/>
     </FrameLayout>
     <Button
+
         android:id="@+id/btnPlace"
         android:textSize="@dimen/_15sdp"
         android:padding="@dimen/_5sdp"

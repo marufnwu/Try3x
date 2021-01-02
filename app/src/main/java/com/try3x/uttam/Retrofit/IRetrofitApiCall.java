@@ -481,5 +481,12 @@ public interface IRetrofitApiCall {
 
 
     );
+    @POST("baji.game2.getResult.php")
+    Call<ResultListResponse> getGame2ResultList(
+
+    );
+
+    @POST("baji.game2.getResultVideo.php")
+    Call<ResultVideo> getGame2ResultVideo();
 
 }

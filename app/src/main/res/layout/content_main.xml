@@ -76,6 +76,7 @@
 
 
     <ScrollView
+        android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -158,22 +159,11 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/_16sdp" />
 
-                <Button
-                    android:background="@drawable/bg_btn_green"
-                    android:elevation="@dimen/_3sdp"
-                    android:id="@+id/btnGame2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/btnResult"
-                    android:layout_marginTop="8dp"
-                    android:text="See Result"
-                    android:textAllCaps="false"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_16sdp" />
 
                 <com.smarteist.autoimageslider.SliderView
+
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:layout_below="@+id/btnGame2"
+                    android:layout_below="@+id/btnResult"
                     android:id="@+id/imageSlider"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_170sdp"
@@ -191,8 +181,35 @@
                     app:sliderScrollTimeInSec="1"
                     app:sliderStartAutoCycle="false" />
 
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_3sdp"
+                    android:layout_below="@+id/imageSlider"
+                    android:id="@+id/laySecondGame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <include
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        layout="@layout/activity_game2"/>
+
+                    <ImageView
+                        android:layout_marginBottom="@dimen/_8sdp"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        android:scaleType="fitXY"
+                        android:id="@+id/imgBanner"
+                        android:visibility="visible"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_160sdp"/>
+                </LinearLayout>
+
+
+
             </RelativeLayout>
         </LinearLayout>
+
     </ScrollView>
 
 

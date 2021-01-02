@@ -28,6 +28,11 @@
         <activity android:name=".Game2.Game2Activity"
             android:label="Game 2"
             android:theme="@style/custom_theme"></activity>
+
+
+        <activity android:name=".Game2.ResultListActivity"
+            android:label="Game 2"
+            android:theme="@style/custom_theme"></activity>
         <activity
             android:name=".AppUpdateActivity"
             android:label="App Update"

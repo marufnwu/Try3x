@@ -24,8 +24,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitClient {
     private static final String TAG = "RetrofitClient";
-    public static String BASEURI = "http://192.168.0.101/try3x/api/";
-   // public static String BASEURI = "http://try3x.xyz/api/";
+    //public static String BASEURI = "http://192.168.0.101/try3x/api/";
+    //public static String BASEURI = "http://sh203.bigrock.tempwebhost.net/~try3xbty/api/";
+    public static String BASEURI = "https://try3x.xyz/api/";
     public static final String HEADER_CACHE_CONTROL = "Cache-Control";
     public static final String HEADER_PRAGMA = "Pragma";
 

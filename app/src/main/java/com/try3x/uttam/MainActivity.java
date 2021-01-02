@@ -12,13 +12,23 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +42,8 @@ import com.try3x.uttam.Adapters.BannerSliderAdapter;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Custom.MyViewpager;
 import com.try3x.uttam.Fragments.GameSlotView;
-import com.try3x.uttam.Game2.Game2Activity;
+import com.try3x.uttam.Fragments.GameSlotView2;
+import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.GameSlot;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.Response.ResultStatusResponse;
@@ -54,12 +65,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
-
+    ScrollView mScrollView;
+    LinearLayout laySecondGame;
     LinearLayout layMyBaji,layAddCoin,layMycoin,layWithdraw,layCommission, layTransaction, layAlert;
     private static final String TOPIC_ALL_USER = "ALL_USERS";
     TabLayout tabLayout;
     MyViewpager viewpagerBaji;
-    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji, btnGame2;
+    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji;
     User user;
     private NavigationView navigationView;
     ImageView imgDrawer,imgChat, imgUpdate;
@@ -70,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
     private SliderView imageSlider;
     private TextView txtUName;
     private PackageInfo pInfo;
+
+    //Game 2
+    LinearLayout game2layAlert;
+    TabLayout game2tabLayout;
+    MyViewpager game2viewpagerBaji;
+    Button game2btnGame2Bajilist, game2btnResult;
+    ImageView imgBanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         addInfoToNav();
 
         getBannerSlider();
+        getBanner();
 
       /*  navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -109,10 +129,112 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mScrollView.post(new Runnable() {
+                    public void run() {
+                        mScrollView.smoothScrollTo(0, laySecondGame.getBottom());
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mScrollView.smoothScrollTo(laySecondGame.getBottom(), View.FOCUS_UP);
+                            }
+                        }, 1000);
+                    }
+                });
+            }
+        }, 2000);
+
+
+
+//        mScrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                mScrollView.post(new Runnable() {
+//                    public void run() {
+//                        mScrollView.fullScroll(View.FOCUS_DOWN);
+//
+//                    }
+//                });
+//            }
+//        });
+
+
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_ALL_USER);
         setAppUpdateHistory();
     }
 
+    private void getBanner() {
+        imgBanner.setVisibility(View.GONE);
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getActivityBanner("MainActivity")
+                .enqueue(new Callback<ActivityBanner>() {
+                    @Override
+                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {
+                        if (response.isSuccessful() && response.body()!=null){
+                            final ActivityBanner activityBanner = response.body();
+                            if (!activityBanner.error){
+                                if (activityBanner.imageUrl!=null){
+                                    imgBanner.setVisibility(View.VISIBLE);
+                                    if(!MainActivity.this.isFinishing()){
+                                        Glide.with(MainActivity.this)
+                                                .load(activityBanner.imageUrl)
+                                                .into(imgBanner);
+
+                                        imgBanner.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                if (activityBanner.actionType==1){
+                                                    //open url
+                                                    if (activityBanner.actionUrl!=null){
+                                                        String url = activityBanner.actionUrl;
+                                                        String linkHost = Uri.parse(url).getHost();
+                                                        Uri uri = Uri.parse(url);
+
+                                                        if (linkHost==null){
+                                                            return;
+                                                        }
+
+                                                        if (linkHost.equals("play.google.com")){
+                                                            String appId = uri.getQueryParameter("id");
+
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                            intent.setData(Uri.parse("market://details?id="+appId));
+                                                            startActivity(intent);
+
+                                                        }else if(linkHost.equals("www.youtube.com")){
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                            intent.setPackage("com.google.android.youtube");
+                                                            startActivity(intent);
+
+
+                                                        }else if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                                            startActivity(intent);
+
+                                                        }
+                                                    }
+                                                }else if (activityBanner.actionType==2){
+                                                    //open activity
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ActivityBanner> call, Throwable t) {
+
+                    }
+                });
+    }
     private void getBannerSlider() {
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
                 .getBannerSlide()
@@ -372,6 +494,56 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+    private void createGame2Viepager() {
+        game2layAlert.setVisibility(View.GONE);
+        showWaitingDialog();
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getGameSlot2()
+                .enqueue(new Callback<GameSlot>() {
+                    @Override
+                    public void onResponse(Call<GameSlot> call, Response<GameSlot> response) {
+                        dismissWaitingDialog();
+                        List<Fragment> fragments = new ArrayList<>();
+                        List<String> titles = new ArrayList<>();
+                        if (response.isSuccessful() && response.body()!=null){
+                            GameSlot gameSlot = response.body();
+                            if (!gameSlot.error){
+                                List<Slot> slots = gameSlot.slots;
+                                if (slots.size()>0){
+                                    game2layAlert.setVisibility(View.GONE);
+                                    for (Slot slot : slots){
+                                        GameSlotView2 gameSlotView = GameSlotView2.getInstance(slot);
+                                        fragments.add(gameSlotView);
+                                        titles.add(slot.name);
+                                    }
+
+
+                                    BajiViewpagerAdapter bajiViewpagerAdapter = new BajiViewpagerAdapter(getSupportFragmentManager(), fragments, titles);
+                                    game2viewpagerBaji.setAdapter(bajiViewpagerAdapter);
+                                    game2tabLayout.setupWithViewPager(game2viewpagerBaji);
+
+                                    game2viewpagerBaji.setMyScroller();
+
+                                    return;
+
+                                }
+                            }
+                        }
+
+                        game2layAlert.setVisibility(View.VISIBLE);
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<GameSlot> call, Throwable t) {
+                        dismissWaitingDialog();
+                    }
+                });
+
+
+
+    }
 
     private void initview() {
         tabLayout = findViewById(R.id.tabLayout);
@@ -379,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
         btnCommission = findViewById(R.id.btnCommission);
         btnWithdrawable = findViewById(R.id.btnwithdrawable);
         btnResult = findViewById(R.id.btnResult);
-        btnGame2 = findViewById(R.id.btnGame2);
+
         btnMyCoin = findViewById(R.id.btnMyCoin);
         btnReloadBaji = findViewById(R.id.btnReloadBaji);
         imgDrawer = findViewById(R.id.imgDrawer);
@@ -388,10 +560,17 @@ public class MainActivity extends AppCompatActivity {
         imgUpdate = findViewById(R.id.imgChckUpdate);
         layAlert = findViewById(R.id.layAlert);
 
+        mScrollView = findViewById(R.id.scrollview);
+        laySecondGame = findViewById(R.id.laySecondGame);
+        imgBanner = findViewById(R.id.imgBanner);
+
+        initGame2View();
+
         btnReloadBaji.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createViepager();
+
             }
         });
 
@@ -444,11 +623,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnGame2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), Game2Activity.class));
 
+    }
+
+    private void initGame2View() {
+        game2tabLayout = findViewById(R.id.game2tabLayout);
+        game2viewpagerBaji = findViewById(R.id.game2gameViewPager);
+        game2layAlert = findViewById(R.id.game2layAlert);
+        game2btnGame2Bajilist = findViewById(R.id.game2btnGame2Bajilist);
+        game2btnResult = findViewById(R.id.game2btnResult);
+
+        game2btnGame2Bajilist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, com.try3x.uttam.Game2.MyBajiListActivity.class));
+            }
+        });
+
+        game2btnResult.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, com.try3x.uttam.Game2.ResultListActivity.class));
             }
         });
     }
@@ -463,6 +658,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         createViepager();
+        createGame2Viepager();
+
     }
 
     private void createDialog() {
