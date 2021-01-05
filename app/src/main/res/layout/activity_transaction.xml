@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_tab_layout"
+    tools:context=".TransactionActivity">
+    <RelativeLayout
+        android:paddingEnd="@dimen/_3sdp"
+        android:paddingStart="@dimen/_3sdp"
+        android:paddingTop="@dimen/_10sdp"
+        android:layout_marginStart="@dimen/_3sdp"
+        android:layout_marginEnd="@dimen/_3sdp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:padding="@dimen/_5sdp"
+            android:background="@drawable/bg_gra_pink"
+            android:id="@+id/head"
+            android:weightSum="6"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txtRupee"
+                android:textColor="@color/white"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:padding="@dimen/_3sdp"
+                android:textSize="@dimen/_13sdp"
+                android:text="Date/Time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:textColor="@color/white"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:padding="@dimen/_3sdp"
+                android:textSize="@dimen/_13sdp"
+                android:text="Rupee"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtCoin"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:padding="@dimen/_3sdp"
+                android:textSize="@dimen/_13sdp"
+                android:text="Coin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtOrderid"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_3sdp"
+                android:text="Order Id"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp" />
+
+            <TextView
+                android:textColor="@color/white"
+                android:text="Action"
+                android:id="@+id/imgRecheck"
+                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:padding="@dimen/_3sdp"
+                android:textSize="@dimen/_13sdp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_below="@id/head"
+            android:layout_above="@+id/progress"
+            android:id="@+id/recyclerTransactions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ProgressBar
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"
+            android:id="@+id/progress"
+            android:layout_centerHorizontal="true"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"/>
+
+        <LinearLayout
+            android:id="@+id/layoutReload"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:src="@drawable/poor"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="@dimen/_100sdp"/>
+
+            <TextView
+                android:textColor="@color/BlueViolet"
+                android:layout_margin="@dimen/_8sdp"
+                android:padding="@dimen/_5sdp"
+                android:background="@drawable/bg_gra_btn_signin"
+                android:textSize="@dimen/_13sdp"
+                android:text="Try Again"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

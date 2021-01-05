@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:padding="@dimen/_5sdp"
+        android:id="@+id/layoutHeader"
+        android:background="@color/WhiteBlue"
+        android:gravity="center_vertical"
+        android:weightSum="11"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txtDate"
+            android:textColor="@color/Black"
+            android:textSize="@dimen/_13sdp"
+            android:gravity="center_horizontal"
+            android:layout_weight="3"
+            android:text="Date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/txtName"
+            android:textColor="@color/Black"
+            android:textSize="@dimen/_13sdp"
+            android:gravity="center_horizontal"
+            android:layout_weight="4"
+            android:text="Name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/txtAmount"
+            android:textColor="@color/Black"
+            android:textSize="@dimen/_13sdp"
+            android:gravity="center_horizontal"
+            android:layout_weight="2"
+            android:text="155"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:id="@+id/txtStatus"
+            android:textSize="@dimen/_13sdp"
+            android:gravity="center_horizontal"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <FrameLayout
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/imgClaim"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/_16sdp"
+                    android:textColor="@color/White"
+                    android:src="@drawable/ic_baseline_check_circle_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+
+                    android:textStyle="bold"
+                    android:id="@+id/txtClaim"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@drawable/update_btn_bg"
+                    android:padding="5dp"
+                    android:text="Claim"
+                    android:textColor="@color/Snow" />
+            </FrameLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_marginEnd="@dimen/_25sdp"
+        android:layout_marginStart="@dimen/_25sdp"
+        android:background="@color/MediumSeaGreen"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_2sdp"/>
+
+</LinearLayout>

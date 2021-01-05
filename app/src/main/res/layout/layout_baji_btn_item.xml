@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/_5sdp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imgIcon"
+            android:src="@drawable/heart"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"/>
+
+        <Button
+            android:drawablePadding="@dimen/_1sdp"
+            android:padding="@dimen/_3sdp"
+            android:textColor="@color/Yellow"
+            android:drawableEnd="@drawable/plus"
+            android:background="@drawable/bg_gra_sky"
+            android:textAllCaps="false"
+            android:textSize="@dimen/_8sdp"
+            android:layout_margin="@dimen/_4sdp"
+            android:id="@+id/btnAddCoin"
+            android:text="@string/add_coin"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_25sdp"/>
+    </LinearLayout>
+
+</LinearLayout>

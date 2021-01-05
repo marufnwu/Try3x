@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ResultListActivity">
+   <FrameLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+       <com.google.android.exoplayer2.ui.PlayerView
+           android:visibility="gone"
+           android:layout_margin="@dimen/_5sdp"
+           android:id="@+id/videoFullScreenPlayer"
+           android:layout_width="match_parent"
+           android:layout_height="@dimen/_190sdp"
+           app:surface_type="texture_view"
+           app:use_controller="false"
+           android:background="#353434">
+           <LinearLayout
+               android:layout_marginTop="@dimen/_13sdp"
+               android:layout_gravity="center_horizontal"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:id="@+id/txtViews"
+                   android:textStyle="bold"
+                   android:textSize="@dimen/_14sdp"
+                   android:gravity="center_vertical"
+                   android:paddingEnd="@dimen/_8sdp"
+                   android:paddingLeft="@dimen/_8sdp"
+                   android:drawableLeft="@drawable/ic_baseline_remove_red_eye_24"
+                   android:textColor="@color/white"
+                   android:background="@drawable/bg_black_trans"
+                   android:text="230K"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+           </LinearLayout>
+           <ProgressBar
+               android:visibility="gone"
+               android:layout_gravity="center"
+               android:id="@+id/vdoProgress"
+               android:layout_width="@dimen/_50sdp"
+               android:layout_height="@dimen/_50sdp"/>
+       </com.google.android.exoplayer2.ui.PlayerView>
+
+   </FrameLayout>
+
+    <LinearLayout
+        android:background="@drawable/bg_tab_layout"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/_5sdp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:scaleType="fitXY"
+            android:visibility="gone"
+            android:id="@+id/imgBanner"
+            android:layout_marginBottom="@dimen/_3sdp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_80sdp"/>
+        <LinearLayout
+            android:padding="@dimen/_3sdp"
+            android:background="@drawable/bg_gra_pink"
+            android:orientation="horizontal"
+            android:weightSum="4.5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txtDate"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:textSize="@dimen/_13sdp"
+                android:text="Date"
+                android:layout_weight="1.5"
+                android:layout_width="@dimen/dimen_0dp"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:textColor="@color/white"
+                android:id="@+id/txtBajiNo"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:textSize="@dimen/_13sdp"
+                android:text="Baji No"
+                android:layout_weight="1"
+                android:layout_width="@dimen/dimen_0dp"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:textColor="@color/white"
+                android:id="@+id/txtPublished"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:textSize="@dimen/_13sdp"
+                android:text="Result"
+                android:layout_weight="1"
+                android:layout_width="@dimen/dimen_0dp"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:textColor="@color/white"
+                android:id="@+id/txtBtn"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:textSize="@dimen/_13sdp"
+                android:text="Win Btn"
+                android:layout_weight="1"
+                android:layout_width="@dimen/dimen_0dp"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerResult"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+</LinearLayout>

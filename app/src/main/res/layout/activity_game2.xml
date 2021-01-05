@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardCornerRadius="@dimen/_8sdp"
+    app:cardElevation="@dimen/_10sdp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Game2.Game2Activity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/game2tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tab_layout"
+            app:tabMode="scrollable"
+            app:tabBackground="@drawable/tab_layout_selector"
+            app:tabSelectedTextColor="@color/Teal"
+            app:tabPaddingStart="@dimen/_10sdp"
+            app:tabPaddingEnd="@dimen/_10sdp"
+            app:tabIndicatorHeight="0dp"
+            app:tabRippleColor="@null" />
+        <com.try3x.uttam.Custom.MyViewpager
+            android:layout_below="@id/game2tabLayout"
+            android:id="@+id/game2gameViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_200sdp"
+            android:name="com.try3x.uttam.Custom.MyViewpager">
+        </com.try3x.uttam.Custom.MyViewpager>
+
+        <LinearLayout
+            android:layout_below="@id/game2tabLayout"
+            android:id="@+id/game2layAlert"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:background="@color/Pink"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_200sdp">
+
+            <ImageView
+                android:src="@drawable/warning"
+                android:layout_width="@dimen/_60sdp"
+                android:layout_height="@dimen/_60sdp"/>
+            <TextView
+                android:fontFamily="@font/nondon"
+                android:elevation="@dimen/_10sdp"
+                android:textColor="@color/MidnightBlue"
+                android:layout_margin="@dimen/_8sdp"
+                android:gravity="center"
+                android:textSize="@dimen/_15sdp"
+                android:text="আজকের সব গুলো গেমের রেজাল্ট পাবলিশ হয়ে গেছে।
+রাত ১২ টার পর থেকে আবার নতুন গেম চালু হবে।"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/game2btnReloadBaji"
+                android:layout_margin="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_8sdp"
+                android:paddingStart="@dimen/_8sdp"
+                android:textSize="@dimen/_13sdp"
+                android:textColor="@color/white"
+                android:background="@drawable/update_btn_1"
+                android:textAllCaps="false"
+                android:text="Reload Baji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/_8sdp"
+            android:weightSum="2"
+            android:orientation="horizontal"
+            android:layout_below="@id/game2gameViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_margin="@dimen/_3sdp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_btn_green"
+                android:elevation="@dimen/_3sdp"
+                android:id="@+id/game2btnResult"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="See Result"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_16sdp" />
+
+            <Button
+                android:layout_margin="@dimen/_3sdp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_btn_green"
+                android:elevation="@dimen/_3sdp"
+                android:id="@+id/game2btnGame2Bajilist"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Baji List"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_16sdp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
