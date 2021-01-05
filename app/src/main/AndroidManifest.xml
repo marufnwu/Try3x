@@ -25,14 +25,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup, usesCleartextTraffic">
-        <activity android:name=".Game2.Game2Activity"
+        <activity android:name=".YtVideoActivity"></activity>
+        <activity
+            android:name=".Game2.Game2Activity"
             android:label="Game 2"
-            android:theme="@style/custom_theme"></activity>
-
-
-        <activity android:name=".Game2.ResultListActivity"
+            android:theme="@style/custom_theme" />
+        <activity
+            android:name=".Game2.ResultListActivity"
             android:label="Game 2"
-            android:theme="@style/custom_theme"></activity>
+            android:theme="@style/custom_theme" />
         <activity
             android:name=".AppUpdateActivity"
             android:label="App Update"

@@ -169,17 +169,22 @@ public class PayoutActivity extends AppCompatActivity {
                     Toast.makeText(PayoutActivity.this, "Enter valid amount", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                int coin = Math.round(Float.parseFloat(coinStr));
-                int rupee = Math.round(Float.parseFloat(rupeStr));
+                float coin = Float.parseFloat(coinStr);
+                float rupee = Float.parseFloat(rupeStr);
                 if (coin>=minCoin && rupee>=minRupee){
+                    Log.d("PayoutError", "with: "+withrawableCoin+" coin "+coin);
+
                     if (withrawableCoin>=coin){
                         //selectPaytmPayMethod(coin, rupee);
                         //selectPaymethod(coin, rupee);
                         showCaptcha(coin ,rupee);
                     }else {
+                        Log.d("PayoutError", "1");
                         Toast.makeText(PayoutActivity.this, "You Have Not Much Coin", Toast.LENGTH_SHORT).show();
                     }
                 }else {
+                    Log.d("PayoutError", "2");
+
                     Toast.makeText(PayoutActivity.this, "You Have Not Much Coin", Toast.LENGTH_SHORT).show();
                 }
 
@@ -224,7 +229,7 @@ public class PayoutActivity extends AppCompatActivity {
 
     }
 
-    private void showCaptcha(final int coin, final int rupee) {
+    private void showCaptcha(final float coin, final float rupee) {
 
         final CapthaDialog capthaDialog = new CapthaDialog(PayoutActivity.this);
         capthaDialog.init();
@@ -377,7 +382,7 @@ public class PayoutActivity extends AppCompatActivity {
 
     }
 
-    private void selectPaytmPayMethod(final int coin, final int rupee){
+    private void selectPaytmPayMethod(final float coin, final float rupee){
 
         showWaitingDialog();
 

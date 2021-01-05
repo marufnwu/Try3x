@@ -28,10 +28,11 @@
            android:layout_margin="@dimen/_5sdp"
            android:padding="@dimen/_5sdp"
            android:textSize="@dimen/_12sdp"
-           android:text="Result At: 11:30:00"
+           android:text="রেজাল্ট পাবলিশ এর টাইম: 11:30:00"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"/>
        <TextView
+           android:visibility="gone"
            android:id="@+id/bajiId"
            android:textColor="@color/Black"
            android:layout_margin="@dimen/_5sdp"

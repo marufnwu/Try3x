@@ -35,6 +35,7 @@ import com.try3x.uttam.Models.Response.ReferUserResponse;
 import com.try3x.uttam.Models.Response.ServerResponse;
 import com.try3x.uttam.Models.ResultVideo;
 import com.try3x.uttam.Models.UserLogin;
+import com.try3x.uttam.Models.YtApi.YtPlaylist;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -42,6 +43,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface IRetrofitApiCall {
 
@@ -305,8 +307,8 @@ public interface IRetrofitApiCall {
             @Field("u_id") String uId,
             @Field("token") String token,
             @Field("pay_num") String pay_num,
-            @Field("coin") int coin,
-            @Field("rupee") int rupee
+            @Field("coin") float coin,
+            @Field("rupee") float rupee
     );
 
     @FormUrlEncoded
@@ -489,4 +491,14 @@ public interface IRetrofitApiCall {
     @POST("baji.game2.getResultVideo.php")
     Call<ResultVideo> getGame2ResultVideo();
 
+    //end of game2
+
+    @GET("https://youtube.googleapis.com/youtube/v3/playlistItems")
+    Call<YtPlaylist> getYtPlaylist(
+            @Query("playlistId") String playlistId,
+            @Query("key") String key,
+            @Query("part") String part,
+            @Query("maxResults") int maxResults,
+            @Query("pageToken") String pageToken
+    );
 }

@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TOPIC_ALL_USER = "ALL_USERS";
     TabLayout tabLayout;
     MyViewpager viewpagerBaji;
-    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji;
+    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji, btnYtVideo;
     User user;
     private NavigationView navigationView;
     ImageView imgDrawer,imgChat, imgUpdate;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout game2layAlert;
     TabLayout game2tabLayout;
     MyViewpager game2viewpagerBaji;
-    Button game2btnGame2Bajilist, game2btnResult;
+    Button game2btnGame2Bajilist, game2btnResult,  btnMyBajiList;
     ImageView imgBanner;
 
     @Override
@@ -129,22 +129,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mScrollView.post(new Runnable() {
-                    public void run() {
-                        mScrollView.smoothScrollTo(0, laySecondGame.getBottom());
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                mScrollView.smoothScrollTo(laySecondGame.getBottom(), View.FOCUS_UP);
-                            }
-                        }, 1000);
-                    }
-                });
-            }
-        }, 2000);
+      //scrollAnimation();
 
 
 
@@ -163,6 +148,25 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_ALL_USER);
         setAppUpdateHistory();
+    }
+
+    private void scrollAnimation() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mScrollView.post(new Runnable() {
+                    public void run() {
+                        mScrollView.smoothScrollTo(0, laySecondGame.getBottom());
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mScrollView.smoothScrollTo(laySecondGame.getBottom(), View.FOCUS_UP);
+                            }
+                        }, 1000);
+                    }
+                });
+            }
+        }, 2000);
     }
 
     private void getBanner() {
@@ -551,6 +555,7 @@ public class MainActivity extends AppCompatActivity {
         btnCommission = findViewById(R.id.btnCommission);
         btnWithdrawable = findViewById(R.id.btnwithdrawable);
         btnResult = findViewById(R.id.btnResult);
+        btnMyBajiList = findViewById(R.id.btnMyBajiList);
 
         btnMyCoin = findViewById(R.id.btnMyCoin);
         btnReloadBaji = findViewById(R.id.btnReloadBaji);
@@ -563,6 +568,7 @@ public class MainActivity extends AppCompatActivity {
         mScrollView = findViewById(R.id.scrollview);
         laySecondGame = findViewById(R.id.laySecondGame);
         imgBanner = findViewById(R.id.imgBanner);
+        btnYtVideo = findViewById(R.id.btnYtVideo);
 
         initGame2View();
 
@@ -623,6 +629,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnYtVideo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(getApplicationContext(), YtVideoActivity.class));
+
+                }
+            });
+        btnMyBajiList.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(getApplicationContext(), MyBajiListActivity.class));
+
+                }
+            });
+
 
     }
 
@@ -658,7 +679,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         createViepager();
-        createGame2Viepager();
+        //createGame2Viepager();
 
     }
 

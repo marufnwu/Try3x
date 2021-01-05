@@ -154,16 +154,44 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/gameViewPager"
                     android:layout_marginTop="8dp"
-                    android:text="See Result"
+                    android:text="See Result - রেজাল্ট দেখুন"
                     android:textAllCaps="false"
-                    android:textColor="@color/black"
+                    android:textColor="@color/MidnightBlue"
                     android:textSize="@dimen/_16sdp" />
+                <Button
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_btn_green"
+                    android:elevation="@dimen/_3sdp"
+                    android:id="@+id/btnMyBajiList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/btnResult"
+                    android:layout_marginTop="8dp"
+                    android:text="My Baji \n দেখুন আপনি কবে কোন ঘরে খেলেছেন"
+                    android:textAllCaps="false"
+                    android:textColor="@color/MidnightBlue"
+                    android:textSize="@dimen/_16sdp" />
+                <Button
+                    android:background="@drawable/bg_btn_green"
+                    android:elevation="@dimen/_3sdp"
+                    android:id="@+id/btnYtVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/btnMyBajiList"
+                    android:layout_marginTop="8dp"
+                    android:text="Game Tips - খেলার কিছু টিপস"
+                    android:textAllCaps="false"
+                    android:textColor="@color/MidnightBlue"
+                    android:textSize="@dimen/_16sdp" />
+
+
 
 
                 <com.smarteist.autoimageslider.SliderView
 
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:layout_below="@+id/btnResult"
+                    android:layout_below="@+id/btnYtVideo"
                     android:id="@+id/imageSlider"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_170sdp"
@@ -182,6 +210,7 @@
                     app:sliderStartAutoCycle="false" />
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:orientation="vertical"
                     android:layout_marginBottom="@dimen/_8sdp"
                     android:layout_marginTop="@dimen/_3sdp"

@@ -385,6 +385,7 @@
             </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:orientation="vertical"
             android:padding="@dimen/_8sdp"
             android:background="@drawable/bg_gra_gray"
