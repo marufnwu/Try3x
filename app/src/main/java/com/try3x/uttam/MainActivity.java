@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TOPIC_ALL_USER = "ALL_USERS";
     TabLayout tabLayout;
     MyViewpager viewpagerBaji;
-    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji, btnYtVideo;
+    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji, btnYtVideo, btnHowToPly;
     User user;
     private NavigationView navigationView;
     ImageView imgDrawer,imgChat, imgUpdate;
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     TabLayout game2tabLayout;
     MyViewpager game2viewpagerBaji;
     Button game2btnGame2Bajilist, game2btnResult,  btnMyBajiList;
-    ImageView imgBanner;
+    ImageView imgBanner, imgBanner1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
         getBannerSlider();
         getBanner();
+        getBanner1();
 
       /*  navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-      //scrollAnimation();
+      scrollAnimation();
 
 
 
@@ -148,6 +149,77 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_ALL_USER);
         setAppUpdateHistory();
+    }
+
+    private void getBanner1() {
+        imgBanner1.setVisibility(View.GONE);
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getActivityBanner("MainActivity1")
+                .enqueue(new Callback<ActivityBanner>() {
+                    @Override
+                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {
+                        if (response.isSuccessful() && response.body()!=null){
+                            final ActivityBanner activityBanner = response.body();
+                            if (!activityBanner.error){
+                                if (activityBanner.imageUrl!=null){
+                                    imgBanner1.setVisibility(View.VISIBLE);
+                                    if(!MainActivity.this.isFinishing()){
+                                        Glide.with(MainActivity.this)
+                                                .load(activityBanner.imageUrl)
+                                                .into(imgBanner1);
+
+                                        imgBanner1.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                if (activityBanner.actionType==1){
+                                                    //open url
+                                                    if (activityBanner.actionUrl!=null){
+                                                        String url = activityBanner.actionUrl;
+                                                        String linkHost = Uri.parse(url).getHost();
+                                                        Uri uri = Uri.parse(url);
+
+                                                        if (linkHost==null){
+                                                            return;
+                                                        }
+
+                                                        if (linkHost.equals("play.google.com")){
+                                                            String appId = uri.getQueryParameter("id");
+
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                            intent.setData(Uri.parse("market://details?id="+appId));
+                                                            startActivity(intent);
+
+                                                        }else if(linkHost.equals("www.youtube.com")){
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                            intent.setPackage("com.google.android.youtube");
+                                                            startActivity(intent);
+
+
+                                                        }else if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                                            startActivity(intent);
+
+                                                        }
+                                                    }
+                                                }else if (activityBanner.actionType==2){
+                                                    //open activity
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ActivityBanner> call, Throwable t) {
+
+                    }
+                });
     }
 
     private void scrollAnimation() {
@@ -292,6 +364,9 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout layTransaction = findViewById(R.id.layTransaction);
         LinearLayout layProfile = findViewById(R.id.layProfile);
 
+        TextView txtPrivacyPolicyNav = findViewById(R.id.txtPrivacyPolicyNav);
+        TextView txtTermsAndConditionNav = findViewById(R.id.txtTermsAndConditionNav);
+
         Glide.with(this)
                 .load(user.getPhoto_url())
                 .placeholder(R.drawable.person)
@@ -359,6 +434,20 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
             }
         });
+
+        txtPrivacyPolicyNav.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(MainActivity.this, PrivacyActivity.class));
+                    }
+         });
+
+        txtTermsAndConditionNav.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(MainActivity.this, TermActivity.class));
+                    }
+         });
 
 
 
@@ -556,6 +645,7 @@ public class MainActivity extends AppCompatActivity {
         btnWithdrawable = findViewById(R.id.btnwithdrawable);
         btnResult = findViewById(R.id.btnResult);
         btnMyBajiList = findViewById(R.id.btnMyBajiList);
+        btnHowToPly = findViewById(R.id.btnHowToPly);
 
         btnMyCoin = findViewById(R.id.btnMyCoin);
         btnReloadBaji = findViewById(R.id.btnReloadBaji);
@@ -568,6 +658,7 @@ public class MainActivity extends AppCompatActivity {
         mScrollView = findViewById(R.id.scrollview);
         laySecondGame = findViewById(R.id.laySecondGame);
         imgBanner = findViewById(R.id.imgBanner);
+        imgBanner1 = findViewById(R.id.imgBanner1);
         btnYtVideo = findViewById(R.id.btnYtVideo);
 
         initGame2View();
@@ -644,6 +735,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+         btnHowToPly.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            startActivity(new Intent(getApplicationContext(), HowToPlyActivity.class));
+
+                        }
+         });
+
 
     }
 
@@ -679,7 +778,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         createViepager();
-        //createGame2Viepager();
+        createGame2Viepager();
 
     }
 

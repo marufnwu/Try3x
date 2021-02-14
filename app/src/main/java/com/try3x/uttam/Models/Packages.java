@@ -6,6 +6,7 @@ public class Packages {
     public float price;
     public String btn;
     public int baji;
+    public boolean active;
 
     public int getBaji() {
         return baji;

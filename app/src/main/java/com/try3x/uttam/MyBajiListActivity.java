@@ -5,12 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -26,12 +38,16 @@ import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Listener.OnClaimClickListener;
 import com.try3x.uttam.Models.ActivityBanner;
+import com.try3x.uttam.Models.MathQuestion;
+import com.try3x.uttam.Models.QuestionResponse;
 import com.try3x.uttam.Models.Response.BajiInfoResponse;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.MyBajiList;
 import com.try3x.uttam.Models.Response.ServerResponse;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
 import com.try3x.uttam.Retrofit.RetrofitClient;
+import com.try3x.uttam.Services.BajiClaimSchedule;
+import com.try3x.uttam.Services.BajiClaimService;
 
 import cc.cloudist.acplibrary.ACProgressConstant;
 import cc.cloudist.acplibrary.ACProgressPie;
@@ -41,6 +57,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MyBajiListActivity extends AppCompatActivity implements OnClaimClickListener {
+
+
+    private static final int CLAIM_JOB_ID = 10001;
+    public static final String CLAIM_BAJI_ID = "BajiId";
+    public static final String GAME_NO = "GameNo";
+    BajiClaimService mService;
+    boolean mBound = false;
+
+
 
     int claimPos = -1;
 
@@ -338,12 +363,14 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
     private void getMyBajiList() {
         showWaitingDialog();
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
-                .getMyBajiList(Common.getKeyHash(
+                .getMyBajiList(
+                        Common.getKeyHash(
                         MyBajiListActivity.this),
                         mUser.getEmail(),
                         gmailInfo.user_id,
                         true, PAGE,
-                        PAGE_SIZE)
+                        PAGE_SIZE
+                )
                 .enqueue(new Callback<MyBajiList>() {
                     @Override
                     public void onResponse(Call<MyBajiList> call, Response<MyBajiList> response) {
@@ -410,28 +437,128 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
     }
 
     private void showCaptcha(final int id, final int pos) {
+        showWaitingDialog();
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getClaimQues(
+                        Common.getKeyHash(getApplicationContext()),
+                        mUser.getEmail(),
+                        gmailInfo.user_id,
+                        gmailInfo.access_token,
+                        id,
+                        1
+                )
+                .enqueue(new Callback<QuestionResponse>() {
+                    @Override
+                    public void onResponse(Call<QuestionResponse> call, Response<QuestionResponse> response) {
+                        dismissWaitingDialog();
+                        if (response.isSuccessful() && response.body()!=null){
+                            final QuestionResponse questionResponse = response.body();
 
-        final CapthaDialog capthaDialog = new CapthaDialog(MyBajiListActivity.this);
-        capthaDialog.init();
-        capthaDialog.showDialog();
-        capthaDialog.setOnCaptchaDialogListener(new CapthaDialog.OnCaptchaDialogListener() {
-            @Override
-            public void onResultOk() {
-                claimBaji(id, pos);
-            }
+                            if (!questionResponse.error){
+                                Dialog dialog = new Dialog(MyBajiListActivity.this);
+                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                dialog.setCancelable(false);
+                                dialog.setContentView(R.layout.dialog_claim_question);
 
-            @Override
-            public void onCancel() {
+                                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                Window window = dialog.getWindow();
+                                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                Button btnSubmit = dialog.findViewById(R.id.btnSubmit);
+                                Button btnCancel = dialog.findViewById(R.id.btnCancel);
 
-            }
+                                TextView txtQues = dialog.findViewById(R.id.txtQues);
+                                final TextView edtResult = dialog.findViewById(R.id.edtResult);
 
-            @Override
-            public void onToast(String message) {
+                                txtQues.setText(questionResponse.ques);
 
-                Toast.makeText(MyBajiListActivity.this, message, Toast.LENGTH_LONG).show();
-                capthaDialog.hideDialog();
-            }
-        });
+                                btnSubmit.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        cancelJobSchedule(CLAIM_JOB_ID);
+                                    }
+                                });
+
+                                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                                    @Override
+                                    public void onShow(DialogInterface dialog) {
+                                        setJobSchedule(id, 1);
+                                        new CountDownTimer(100000, 1000){
+
+                                            @Override
+                                            public void onTick(long millisUntilFinished) {
+                                                long timeRemaining = millisUntilFinished / 1000;
+                                            }
+
+                                            @Override
+                                            public void onFinish() {
+
+                                            }
+                                        };
+                                    }
+                                });
+
+                                dialog.show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<QuestionResponse> call, Throwable t) {
+                        dismissWaitingDialog();
+                    }
+                });
+
+//        final CapthaDialog capthaDialog = new CapthaDialog(MyBajiListActivity.this);
+//        capthaDialog.init();
+//        capthaDialog.showDialog();
+//        capthaDialog.setOnCaptchaDialogListener(new CapthaDialog.OnCaptchaDialogListener() {
+//            @Override
+//            public void onResultOk() {
+//                claimBaji(id, pos);
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//
+//            }
+//
+//            @Override
+//            public void onToast(String message) {
+//
+//                Toast.makeText(MyBajiListActivity.this, message, Toast.LENGTH_LONG).show();
+//                capthaDialog.hideDialog();
+//            }
+//        });
+    }
+
+    private void setJobSchedule(int bajiId, int gameNo) {
+
+        PersistableBundle persistableBundle = new PersistableBundle();
+        persistableBundle.putInt(CLAIM_BAJI_ID, bajiId);
+        persistableBundle.putInt(GAME_NO, gameNo);
+
+        ComponentName componentName = new ComponentName(this, BajiClaimSchedule.class);
+        JobInfo info = new JobInfo.Builder(CLAIM_JOB_ID, componentName)
+                .setExtras(persistableBundle)
+                .setOverrideDeadline(120000)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .build();
+
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+
+
+        int resultCode = scheduler.schedule(info);
+
+        if (resultCode == JobScheduler.RESULT_SUCCESS){
+            Log.d("JobScheduler", "Success");
+        }else {
+            Log.d("JobScheduler", "Failed");
+        }
+    }
+
+    void cancelJobSchedule(int jobId){
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        scheduler.cancel(jobId);
     }
 
 
@@ -485,6 +612,25 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
                     }
                 });
     }
+
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection connection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            BajiClaimService.BajiClaimServiceBinder binder = (BajiClaimService.BajiClaimServiceBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
 
 }

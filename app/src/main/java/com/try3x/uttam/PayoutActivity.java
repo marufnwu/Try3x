@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,6 +72,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PayoutActivity extends AppCompatActivity {
+    Spinner spinnerPaymethod;
     TextView txtSendRequest,  txtRupee;
     TextView txtCoin;
     TextView txtMinCoin, txtMinRupee;
@@ -88,7 +90,7 @@ public class PayoutActivity extends AppCompatActivity {
     boolean isLoading = true;
     RecyclerView recyclerPayout;
     private ProgressBar progress, progress_horizontal;
-    LinearLayout layoutReload, layPayoutReload, layPayout;
+    LinearLayout layoutReload, layPayoutReload, layPayout, layoutPayMobile,layoutPayBank;
     private PayoutAdapter payoutAdapter;
     private LinearLayoutManager layoutManager;
     private boolean isActivityCreatedByNoti;
@@ -209,6 +211,8 @@ public class PayoutActivity extends AppCompatActivity {
         txtMinCoin  = findViewById(R.id.txtMinCoin);
         txtMinRupee  = findViewById(R.id.txtMinRupee);
         btnReload  = findViewById(R.id.btnReload);
+
+
 
         progress_horizontal  = findViewById(R.id.progress_horizontal);
         recyclerPayout.setLayoutManager(layoutManager);
@@ -397,10 +401,15 @@ public class PayoutActivity extends AppCompatActivity {
 
         final EditText edtNum1 = payMethodDialog.findViewById(R.id.payNum1);
         final EditText edtNum2 = payMethodDialog.findViewById(R.id.payNum2);
+        //spinnerPaymethod = payMethodDialog.findViewById(R.id.spinnerPaymethod);
+        final RadioGroup rdioGrp_pay = payMethodDialog.findViewById(R.id.rdiogrp_pay);
 
         TextView btnPayout = payMethodDialog.findViewById(R.id.btnPayout);
         TextView btnCancel = payMethodDialog.findViewById(R.id.btnCancel);
         ImageView ImgWpContact = payMethodDialog.findViewById(R.id.ImgWpContact);
+
+        layoutPayMobile  = payMethodDialog.findViewById(R.id.layoutPayMobile);
+        layoutPayBank  = payMethodDialog.findViewById(R.id.layoutPayBank);
 
         final ImageView imgBanner = payMethodDialog.findViewById(R.id.imgBanner);
 
@@ -418,6 +427,25 @@ public class PayoutActivity extends AppCompatActivity {
             }
         });
 
+
+        rdioGrp_pay.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.rdioBtn_bank){
+                    //Bank Account - ব্যাংক একাউন্ট
+
+                    layoutPayBank.setVisibility(View.VISIBLE);
+                    layoutPayMobile.setVisibility(View.GONE);
+                }else if(checkedId == R.id.rdioBtn_upi){
+                    //Phonepay/Gpay/Paytm/UPI
+
+                    layoutPayBank.setVisibility(View.GONE);
+                    layoutPayMobile.setVisibility(View.VISIBLE);
+
+                }
+            }
+        });
+
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -429,48 +457,55 @@ public class PayoutActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                if(rdioGrp_pay.getCheckedRadioButtonId() == R.id.rdioBtn_upi) {
                     String num1 = edtNum1.getText().toString().trim();
                     String num2 = edtNum2.getText().toString().trim();
 
 
-                    if (num1.equals(num2) && num1.length()==10 && android.util.Patterns.PHONE.matcher(num1).matches()){
+                    if (num1.equals(num2) && num1.length() == 10 && android.util.Patterns.PHONE.matcher(num1).matches()) {
 
-                            showWaitingDialog();
-                            RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
-                                    .paymentPaytmRequest(
-                                            Common.getKeyHash(PayoutActivity.this),
-                                            gmailInfo.gmail,
-                                            gmailInfo.user_id,
-                                            gmailInfo.access_token,
-                                            num1,
-                                            coin,
-                                            rupee
-                                    )
-                                    .enqueue(new Callback<ServerResponse>() {
-                                        @Override
-                                        public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
-                                            dismissWaitingDialog();
-                                            if (response.isSuccessful() && response.body()!=null){
-                                                ServerResponse serverResponse = response.body();
-                                                Toast.makeText(PayoutActivity.this, serverResponse.error_description, Toast.LENGTH_SHORT).show();
+                        showWaitingDialog();
+                        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                                .paymentPaytmRequest(
+                                        Common.getKeyHash(PayoutActivity.this),
+                                        gmailInfo.gmail,
+                                        gmailInfo.user_id,
+                                        gmailInfo.access_token,
+                                        num1,
+                                        coin,
+                                        rupee
+                                )
+                                .enqueue(new Callback<ServerResponse>() {
+                                    @Override
+                                    public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                                        dismissWaitingDialog();
+                                        if (response.isSuccessful() && response.body() != null) {
+                                            ServerResponse serverResponse = response.body();
+                                            Toast.makeText(PayoutActivity.this, serverResponse.error_description, Toast.LENGTH_LONG).show();
 
-                                                if (!serverResponse.isError()){
-                                                    payMethodDialog.dismiss();
-                                                }
+                                            if (!serverResponse.isError()) {
+                                                payMethodDialog.dismiss();
                                             }
                                         }
+                                    }
 
-                                        @Override
-                                        public void onFailure(Call<ServerResponse> call, Throwable t) {
-                                            dismissWaitingDialog();
-                                            Toast.makeText(PayoutActivity.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
+                                    @Override
+                                    public void onFailure(Call<ServerResponse> call, Throwable t) {
+                                        dismissWaitingDialog();
+                                        Toast.makeText(PayoutActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
 
-                    }else {
+                    } else {
                         Toast.makeText(PayoutActivity.this, "Number Not Matched", Toast.LENGTH_SHORT).show();
 
                     }
+
+                }else if(rdioGrp_pay.getCheckedRadioButtonId() == R.id.rdioBtn_bank) {
+                    Toast.makeText(PayoutActivity.this, "Coming soon", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(PayoutActivity.this, "Please select any payment method", Toast.LENGTH_SHORT).show();
+                }
 
             }
         });

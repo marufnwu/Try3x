@@ -11,7 +11,7 @@
         android:layout_gravity="center_horizontal"
         android:textColor="@color/White"
         android:textSize="@dimen/_16sdp"
-        android:text="Confirm Baji List"
+        android:text="Confirm Game List"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

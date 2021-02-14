@@ -37,20 +37,26 @@ public class YtVideoAdapter extends RecyclerView.Adapter<YtVideoAdapter.MyViewHo
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final ItemsItem item = items.get(position);
 
-        Glide.with(context)
-                .load(item.getSnippet().getThumbnails().getHigh().getUrl())
-                .into(holder.thumbnail);
+        if(item.getSnippet().getThumbnails().getHigh()!=null){
+            Glide.with(context)
+                    .load(item.getSnippet().getThumbnails().getHigh().getUrl())
+                    .into(holder.thumbnail);
+        }
 
-        holder.thumbnail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri uri = Uri.parse("https://www.youtube.com/watch?v="+item.getSnippet().getResourceId().getVideoId());
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setPackage("com.google.android.youtube");
-                context.startActivity(intent);
-            }
-        });
+        if(item.getSnippet().getResourceId().getVideoId()!=null){
+            holder.thumbnail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Uri uri = Uri.parse("https://www.youtube.com/watch?v="+item.getSnippet().getResourceId().getVideoId());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setPackage("com.google.android.youtube");
+                    context.startActivity(intent);
+                }
+            });
+        }
+
+
     }
 
     @Override

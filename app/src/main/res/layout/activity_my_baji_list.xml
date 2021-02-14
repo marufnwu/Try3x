@@ -54,7 +54,7 @@
                                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                                android:textColor="@color/OrangeRed"
                                android:textSize="@dimen/_12sdp"
-                               android:text="Total Baji Placed"
+                               android:text="Total Game Placed"
                                android:layout_width="wrap_content"
                                android:layout_height="wrap_content"/>
 
@@ -87,7 +87,7 @@
                                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                                android:textColor="@color/OrangeRed"
                                android:textSize="@dimen/_12sdp"
-                               android:text="Total Baji Win"
+                               android:text="Total Game Win"
                                android:layout_width="wrap_content"
                                android:layout_height="wrap_content"/>
 
@@ -129,7 +129,7 @@
                                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                                android:textColor="@color/OrangeRed"
                                android:textSize="@dimen/_12sdp"
-                               android:text="Today Baji Placed"
+                               android:text="Today Game Placed"
                                android:layout_width="wrap_content"
                                android:layout_height="wrap_content"/>
 
@@ -162,7 +162,7 @@
                                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                                android:textColor="@color/OrangeRed"
                                android:textSize="@dimen/_12sdp"
-                               android:text="Today Baji Win"
+                               android:text="Today Game Win"
                                android:layout_width="wrap_content"
                                android:layout_height="wrap_content"/>
 
@@ -232,7 +232,7 @@
                            android:layout_gravity="center_horizontal"
                            android:textSize="@dimen/_10sdp"
                            android:textColor="@color/White"
-                           android:text="Baji ID"
+                           android:text="Game ID"
                            android:layout_width="wrap_content"
                            android:layout_height="wrap_content"/>
                    </LinearLayout>

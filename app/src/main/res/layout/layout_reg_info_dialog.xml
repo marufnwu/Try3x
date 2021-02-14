@@ -6,7 +6,7 @@
     android:layout_margin="@dimen/_8sdp"
     android:scrollbars="vertical"
     android:padding="@dimen/_20sdp"
-    android:background="@drawable/gra_bg_pink_1"
+    android:background="@drawable/update_btn_bg"
     android:layout_height="wrap_content">
 
     <LinearLayout

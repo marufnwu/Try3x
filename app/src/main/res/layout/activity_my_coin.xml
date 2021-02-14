@@ -76,12 +76,24 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
+
+
                 </RelativeLayout>
 
 
             </RelativeLayout>
 
-
+            <Button
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp"
+                android:textAllCaps="false"
+                android:text="My Transaction"
+                android:background="@drawable/bg_gra_black"
+                android:layout_margin="@dimen/_3sdp"
+                android:id="@+id/btnMyTransaction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
 
             <LinearLayout

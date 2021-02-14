@@ -38,6 +38,7 @@ import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Listener.OnPackageItemClickListener;
 import com.try3x.uttam.Models.Btn;
 import com.try3x.uttam.Models.GmailInfo;
+import com.try3x.uttam.Models.MathQuestion;
 import com.try3x.uttam.Models.PackageList;
 import com.try3x.uttam.Models.Packages;
 import com.try3x.uttam.Models.Response.BajiBtnResponse;
@@ -265,7 +266,10 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
         recyclerPck.setHasFixedSize(true);
 
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
-                .getPackages()
+                .getPackages(
+                        slot.id,
+                        gmailInfo.user_id
+                )
                 .enqueue(new Callback<PackageList>() {
                     @Override
                     public void onResponse(Call<PackageList> call, Response<PackageList> response) {
@@ -304,7 +308,7 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
                 bajiPlaceListAdapter.notifyItemRangeRemoved(pos, bajiServerBody.getPackageList().size());
             }
         }else {
-           // bajiServerBody.packageList.clear(); //we clear all baji cause we required
+            bajiServerBody.packageList.clear(); //we clear all baji cause we required
             Packages packages = new Packages();
             packages.price = price;
             packages.id = id;
@@ -319,6 +323,8 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
             if (dialog!=null && dialog.isShowing()){
                 dialog.dismiss();
             }
+            waitingdialog.show();
+            placeBaji();
         }
     }
 
@@ -340,95 +346,173 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
                             if (response.isSuccessful() && response.body()!=null){
                                 if (response.body().coin<bajiCoin){
                                     //show dialog
+                                    dismissWaitingDialog();
+
                                     new AddCoinDialog(getContext());
 
                                 }else {
-                                    final Dialog dialog = new Dialog(getContext());
-                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                    dialog.setCancelable(true);
-                                    dialog.setContentView(R.layout.layout_fianl_baji_list_dialog);
-
-                                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-                                    Window window = dialog.getWindow();
-                                    window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-
-                                    final RecyclerView recyclerPck = dialog.findViewById(R.id.recyclerPck);
-                                    Button btnCancel = dialog.findViewById(R.id.btnCancel);
-                                    Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
-
-
-
-                                    recyclerPck.setLayoutManager(new LinearLayoutManager(getContext()));
-                                    recyclerPck.setHasFixedSize(true);
-
-
-                                    bajiPlaceListAdapter = new BajiPlaceListAdapter(getContext(), bajiServerBody.getPackageList(), GameSlotView.this);
-                                    recyclerPck.setAdapter(bajiPlaceListAdapter);
-                                    Button btnAddCoin = dialog.findViewById(R.id.btnAddCoin);
-                                    btnAddCoin.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            startActivity(new Intent(getContext(), AddCoinActivity.class));
-                                        }
-                                    });
-                                    dialog.show();
-
-                                    btnCancel.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            if (dialog.isShowing()){
-                                                dialog.dismiss();
-                                            }
-                                        }
-                                    });
-
-                                    btnConfirm.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            if (bajiServerBody.getPackageList().size()>0){
-//                                                confirmBaji();
-                                                dialog.dismiss();
-                                                showCaptcha();
-                                            }else {
-                                                Toast.makeText(getContext(), "Baji List Is Empty", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
+                                    Toast.makeText(getContext(), "Participate with the correct answer and take the chance to win prizes", Toast.LENGTH_SHORT).show();
+                                    showCaptcha();
+                                    
+//                                    final Dialog dialog = new Dialog(getContext());
+//                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                                    dialog.setCancelable(true);
+//                                    dialog.setContentView(R.layout.layout_fianl_baji_list_dialog);
+//
+//                                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+//
+//                                    Window window = dialog.getWindow();
+//                                    window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//
+//
+//                                    final RecyclerView recyclerPck = dialog.findViewById(R.id.recyclerPck);
+//                                    Button btnCancel = dialog.findViewById(R.id.btnCancel);
+//                                    Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+//
+//
+//
+//                                    recyclerPck.setLayoutManager(new LinearLayoutManager(getContext()));
+//                                    recyclerPck.setHasFixedSize(true);
+//
+//
+//                                    bajiPlaceListAdapter = new BajiPlaceListAdapter(getContext(), bajiServerBody.getPackageList(), GameSlotView.this);
+//                                    recyclerPck.setAdapter(bajiPlaceListAdapter);
+//                                    Button btnAddCoin = dialog.findViewById(R.id.btnAddCoin);
+//                                    btnAddCoin.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View view) {
+//                                            startActivity(new Intent(getContext(), AddCoinActivity.class));
+//                                        }
+//                                    });
+//                                    dialog.show();
+//
+//                                    btnCancel.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View view) {
+//                                            if (dialog.isShowing()){
+//                                                dialog.dismiss();
+//                                            }
+//                                        }
+//                                    });
+//
+//                                    btnConfirm.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View view) {
+//                                            if (bajiServerBody.getPackageList().size()>0){
+////                                                confirmBaji();
+//                                                dialog.dismiss();
+//                                                showCaptcha();
+//                                            }else {
+//                                                Toast.makeText(getContext(), "Baji List Is Empty", Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        }
+//                                    });
                                 }
                             }
                         }
 
                         @Override
                         public void onFailure(Call<MyCoinResponse> call, Throwable t) {
-
+                            dismissWaitingDialog();
                         }
                     });
 
 
 
         }else {
+            dismissWaitingDialog();
             Toast.makeText(getContext(), "Please add baji", Toast.LENGTH_SHORT).show();
         }
 
 
 
     }
-    private void showCaptcha() {
+    /*private void showCaptcha() {
 
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getMathQuestion(
+                        Common.getKeyHash(getContext()),
+                        gmailInfo.getGmail(),
+                        gmailInfo.user_id,
+                        gmailInfo.access_token
+                )
+                .enqueue(new Callback<MathQuestion>() {
+                    @Override
+                    public void onResponse(Call<MathQuestion> call, Response<MathQuestion> response) {
+                        dismissWaitingDialog();
+                        if (response.isSuccessful() && response.body()!=null){
+                            final MathQuestion mathQuestion = response.body();
+                            if (!mathQuestion.isError()){
+                                final Dialog dialog = new Dialog(getContext());
+                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                dialog.setCancelable(true);
+                                dialog.setContentView(R.layout.dialog_captcha_layout);
+
+                                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                                Window window = dialog.getWindow();
+                                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                Button btnSubmit = dialog.findViewById(R.id.btnSubmit);
+                                Button btnCancel = dialog.findViewById(R.id.btnCancel);
+
+                                TextView txtQues = dialog.findViewById(R.id.txtQues);
+                                final TextView edtResult = dialog.findViewById(R.id.edtResult);
+
+
+                                String ques = mathQuestion.getNum1()+mathQuestion.getOperator()+mathQuestion.getNum2();
+                                txtQues.setText(ques);
+
+
+                                btnSubmit.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        if (edtResult.getText().length()>0){
+                                            int result = Integer.parseInt(edtResult.getText().toString());
+                                            dialog.dismiss();
+                                            confirmBaji(mathQuestion.getId(), result);
+                                        }else {
+                                            Toast.makeText(getContext(), "Please Enter Result", Toast.LENGTH_SHORT).show();;
+                                        }
+
+                                    }
+                                });
+
+                                btnCancel.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                dialog.show();
+                            }else {
+                                Toast.makeText(getContext(), mathQuestion.getErrorDescription(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MathQuestion> call, Throwable t) {
+                        dismissWaitingDialog();
+                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }*/
+
+    private void showCaptcha(){
+        dismissWaitingDialog();
         final CapthaDialog capthaDialog = new CapthaDialog(getContext());
         capthaDialog.init();
         capthaDialog.showDialog();
         capthaDialog.setOnCaptchaDialogListener(new CapthaDialog.OnCaptchaDialogListener() {
             @Override
             public void onResultOk() {
-                confirmBaji();
+
+               confirmBaji();
             }
 
             @Override
             public void onCancel() {
-
+                capthaDialog.hideDialog();
             }
 
             @Override
@@ -458,6 +542,7 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
                             bajiServerBody.token = gmailInfo.access_token;
                             bajiServerBody.noOfBaji = Integer.parseInt(slot.id);
                             bajiServerBody.sha1 = Common.getKeyHash(getContext());
+
                             RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
                                     .placeBaji(bajiServerBody)
                                     .enqueue(new Callback<ServerResponse>() {
@@ -468,7 +553,7 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
                                                 if (!serverResponse.error){
                                                     dismissWaitingDialog();
                                                     bajiServerBody.getPackageList().clear();
-                                                    bajiPlaceListAdapter.notifyDataSetChanged();
+                                                    //bajiPlaceListAdapter.notifyDataSetChanged();
                                                     Toast.makeText(getContext(), ""+serverResponse.getError_description(), Toast.LENGTH_SHORT).show();
 
                                                     Common.subscribeNoti(Common.getDate()+"_"+bajiServerBody.noOfBaji);
@@ -495,4 +580,62 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
 
 
     }
+
+    /*private void confirmBaji(final String quesId, final int result) {
+
+        if (gmailInfo==null){
+            Toast.makeText(getContext(), "Login Again", Toast.LENGTH_SHORT).show();
+        }
+        showWaitingDialog();
+        mAuth.getAccessToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            String idToken = task.getResult().getToken();
+                            // Send token to your backend via HTTPS
+                            bajiServerBody.email = mUser.getEmail();
+                            bajiServerBody.u_id = gmailInfo.user_id;
+                            bajiServerBody.token = gmailInfo.access_token;
+                            bajiServerBody.noOfBaji = Integer.parseInt(slot.id);
+                            bajiServerBody.sha1 = Common.getKeyHash(getContext());
+                            bajiServerBody.quesId = quesId;
+                            bajiServerBody.quesResult = result;
+                            RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                                    .placeBaji(bajiServerBody)
+                                    .enqueue(new Callback<ServerResponse>() {
+                                        @Override
+                                        public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                                            if (response.isSuccessful() && response.body()!=null){
+                                                ServerResponse serverResponse = response.body();
+                                                if (!serverResponse.error){
+                                                    dismissWaitingDialog();
+                                                    bajiServerBody.getPackageList().clear();
+                                                    //bajiPlaceListAdapter.notifyDataSetChanged();
+                                                    Toast.makeText(getContext(), ""+serverResponse.getError_description(), Toast.LENGTH_SHORT).show();
+
+                                                    Common.subscribeNoti(Common.getDate()+"_"+bajiServerBody.noOfBaji);
+                                                }else {
+                                                    dismissWaitingDialog();
+                                                    Toast.makeText(getContext(),  serverResponse.getError_description(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<ServerResponse> call, Throwable t) {
+                                            dismissWaitingDialog();
+                                            Log.d("retrofit", t.getMessage());
+                                            Toast.makeText(getContext(), ""+t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        } else {
+                            // Handle error -> task.getException();
+                        }
+                    }
+                });
+
+
+
+    }*/
 }

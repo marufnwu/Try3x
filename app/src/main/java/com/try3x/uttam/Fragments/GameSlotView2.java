@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.try3x.uttam.Adapters.BajiBtnAdapter;
 import com.try3x.uttam.Adapters.BajiPlaceListAdapter;
+import com.try3x.uttam.Adapters.Game2PackagesListAdapter;
 import com.try3x.uttam.Adapters.PackagesListAdapter;
 import com.try3x.uttam.AddCoinActivity;
 import com.try3x.uttam.Common.AddCoinDialog;
@@ -265,7 +266,7 @@ public class GameSlotView2 extends Fragment implements OnPackageItemClickListene
         recyclerPck.setHasFixedSize(true);
 
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
-                .getPackages()
+                .getGame2Packages()
                 .enqueue(new Callback<PackageList>() {
                     @Override
                     public void onResponse(Call<PackageList> call, Response<PackageList> response) {
@@ -273,7 +274,7 @@ public class GameSlotView2 extends Fragment implements OnPackageItemClickListene
                             PackageList pack = response.body();
 
                             if (!pack.isError()){
-                                PackagesListAdapter adapter = new PackagesListAdapter(getContext(), pack.getPackages(), btn, GameSlotView2.this);
+                                Game2PackagesListAdapter adapter = new Game2PackagesListAdapter(getContext(), pack.getPackages(), btn, GameSlotView2.this);
                                 recyclerPck.setAdapter(adapter);
                             }
                         }
@@ -471,6 +472,7 @@ public class GameSlotView2 extends Fragment implements OnPackageItemClickListene
                                                     Toast.makeText(getContext(), ""+serverResponse.getError_description(), Toast.LENGTH_SHORT).show();
 
                                                     Common.subscribeNoti("g2_"+Common.getDate()+"_"+bajiServerBody.noOfBaji);
+                                                    Common.subscribeNoti("game2");
                                                 }else {
                                                     dismissWaitingDialog();
                                                     Toast.makeText(getContext(),  serverResponse.getError_description(), Toast.LENGTH_SHORT).show();

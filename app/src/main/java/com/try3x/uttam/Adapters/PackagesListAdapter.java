@@ -41,6 +41,11 @@ public class PackagesListAdapter extends RecyclerView.Adapter<PackagesListAdapte
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
         final Packages packages = packageList.get(position);
         int pos = position+1;
+        if(packages.active){
+            holder.layForeground.setVisibility(View.GONE);
+        }else {
+            holder.layForeground.setVisibility(View.VISIBLE);
+        }
         holder.txtSl.setText(""+pos);
         holder.txtName.setText(packages.name);
         holder.txtPrice.setText(packages.price+" Rp.");
@@ -48,7 +53,10 @@ public class PackagesListAdapter extends RecyclerView.Adapter<PackagesListAdapte
         holder.layoutParrent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onPackageItemClickListener.onItemClick(position, packages.id, packages.price, packages.name,  btnId);
+                if (packages.active){
+                    onPackageItemClickListener.onItemClick(position, packages.id, packages.price, packages.name,  btnId);
+
+                }
             }
         });
 
@@ -62,7 +70,7 @@ public class PackagesListAdapter extends RecyclerView.Adapter<PackagesListAdapte
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView txtSl, txtName, txtPrice;
-        LinearLayout layoutParrent;
+        LinearLayout layoutParrent, layForeground;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -71,6 +79,7 @@ public class PackagesListAdapter extends RecyclerView.Adapter<PackagesListAdapte
             txtName = itemView.findViewById(R.id.txtPackName);
             txtPrice = itemView.findViewById(R.id.txtPrice);
             layoutParrent = itemView.findViewById(R.id.layoutParrent);
+            layForeground = itemView.findViewById(R.id.layForeground);
         }
     }
 }

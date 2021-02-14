@@ -25,7 +25,22 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup, usesCleartextTraffic">
-        <activity android:name=".YtVideoActivity"></activity>
+        <service
+            android:name=".Services.BajiClaimSchedule"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity
+            android:name=".PrivacyActivity"
+            android:label="Privacy Policy"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/custom_theme" />
+        <activity
+            android:name=".TermActivity"
+            android:label="Terms Of Use"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/custom_theme" />
+        <activity android:name=".YtVideoActivity" />
         <activity
             android:name=".Game2.Game2Activity"
             android:label="Game 2"
@@ -43,6 +58,10 @@
         <activity
             android:name=".TransactionActivity"
             android:label="Transactions"
+            android:theme="@style/custom_theme" />
+        <activity
+            android:name=".HowToPlyActivity"
+            android:label="How To Play"
             android:theme="@style/custom_theme" />
         <activity
             android:name=".ResultListActivity"

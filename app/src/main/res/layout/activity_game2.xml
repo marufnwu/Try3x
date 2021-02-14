@@ -79,32 +79,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <Button
+                android:paddingTop="@dimen/_3sdp"
+                android:paddingBottom="@dimen/_3sdp"
                 android:layout_margin="@dimen/_3sdp"
                 android:layout_weight="1"
-                android:background="@drawable/bg_btn_green"
+                android:background="@color/colorAccent"
                 android:elevation="@dimen/_3sdp"
                 android:id="@+id/game2btnResult"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="See Result"
+                android:text="See Result\nরেজাল্ট দেখুন"
                 android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_16sdp" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12sdp" />
 
             <Button
+                android:paddingTop="@dimen/_3sdp"
+                android:paddingBottom="@dimen/_3sdp"
                 android:layout_margin="@dimen/_3sdp"
                 android:layout_weight="1"
-                android:background="@drawable/bg_btn_green"
+                android:background="#4CAF50"
                 android:elevation="@dimen/_3sdp"
                 android:id="@+id/game2btnGame2Bajilist"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Baji List"
+                android:text="My Game \nখেলার লিষ্ট"
                 android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_16sdp" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12sdp" />
         </LinearLayout>
     </RelativeLayout>
 

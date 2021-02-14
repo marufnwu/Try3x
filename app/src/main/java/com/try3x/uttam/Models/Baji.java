@@ -35,6 +35,7 @@ public class Baji {
 
     public int r_id;
     public int win_pack_id;
+    public boolean is_crr_ans;
 
 
 

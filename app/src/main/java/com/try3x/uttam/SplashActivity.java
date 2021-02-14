@@ -98,7 +98,7 @@ import retrofit2.Response;
 public class SplashActivity extends AppCompatActivity {
     private static final int READ_STORAGE_REQUEST_CODE = 2522;
     String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-
+    TextView txtTermsAndCondition, txtPrivacyPolicy;
     private static final int GMAIL_SIGN_IN = 1001;
     ProgressBar progressBar;
     Button btnSignIn;
@@ -126,6 +126,7 @@ public class SplashActivity extends AppCompatActivity {
     private ProgressDialog mPDialog;
     String activity = null;
     boolean isActivityCreatedByNoti = false;
+    private IRetrofitApiCall iRetrofitApiCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +136,7 @@ public class SplashActivity extends AppCompatActivity {
         isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);
         mAuth = FirebaseAuth.getInstance();
         Paper.init(this);
-
+        iRetrofitApiCall = RetrofitClient.getRetrofit().create(IRetrofitApiCall.class);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -175,6 +176,8 @@ public class SplashActivity extends AppCompatActivity {
     private void initViews() {
         btnSignIn = findViewById(R.id.btnSignIn);
         progressBar = findViewById(R.id.progress);
+        txtPrivacyPolicy = findViewById(R.id.txtPrivacyPolicy);
+        txtTermsAndCondition = findViewById(R.id.txtTermsAndCondition);
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,6 +200,13 @@ public class SplashActivity extends AppCompatActivity {
 
         checkUpdate();
 
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
     }
 
@@ -235,11 +245,12 @@ public class SplashActivity extends AppCompatActivity {
                                         moveForward();
                                     }else {
                                         showUpdateDialog(apk);
-                                        //moveForward();
+                                       // moveForward();
                                     }
-                                } catch (PackageManager.NameNotFoundException e) {
-                                    e.printStackTrace();
+                                } catch (PackageManager.NameNotFoundException e){
+
                                 }
+                                //
 
                             }else {
                                 Toast.makeText(SplashActivity.this, appUpdateResponse.error_description, Toast.LENGTH_SHORT).show();
@@ -249,7 +260,7 @@ public class SplashActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<AppUpdateResponse> call, Throwable t) {
-
+                        t.printStackTrace();
                     }
                 });
     }
@@ -385,7 +396,6 @@ public class SplashActivity extends AppCompatActivity {
             return;
         }
         String sha1 = Common.getKeyHash(SplashActivity.this);
-        IRetrofitApiCall iRetrofitApiCall = RetrofitClient.getRetrofit().create(IRetrofitApiCall.class);
         iRetrofitApiCall.isUserExits(
                 sha1,
                 user.getEmail(),
@@ -745,8 +755,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void getDynamicBanner(final ImageView imgBanner, String keyword) {
         imgBanner.setVisibility(View.GONE);
-        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
-                .getActivityBanner(keyword)
+                iRetrofitApiCall.getActivityBanner(keyword)
                 .enqueue(new Callback<ActivityBanner>() {
                     @Override
                     public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {
@@ -818,7 +827,7 @@ public class SplashActivity extends AppCompatActivity {
         final GmailInfo gmailInfo = Paper.book().read(PaperDB.GMAILINFO);
         showWaitingDialog();
 
-        IRetrofitApiCall iRetrofitApiCall = RetrofitClient.getRetrofit().create(IRetrofitApiCall.class);
+
         iRetrofitApiCall.addUser(
                 Common.getKeyHash(SplashActivity.this),
                 user.getEmail(),

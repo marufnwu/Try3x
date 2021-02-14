@@ -217,7 +217,7 @@
             android:layout_height="@dimen/_30sdp"/>
     </FrameLayout>
     <Button
-
+        android:visibility="gone"
         android:id="@+id/btnPlace"
         android:textSize="@dimen/_15sdp"
         android:padding="@dimen/_5sdp"

@@ -63,7 +63,7 @@ public class MyCoinActivity extends AppCompatActivity {
     private CoinHistoryResponse coinHistoryResponses;
     private CoinHistoryAdapter coinHistoryAdapter;
     private TextView txtAddCoin;
-    private Button btnInvite, btnCopy;
+    private Button btnInvite, btnCopy, btnMyTransaction;
     private boolean isActivityCreatedByNoti;
     private ImageView imgLiveChat;
     private ImageView imgBanner;
@@ -181,12 +181,14 @@ public class MyCoinActivity extends AppCompatActivity {
         recyclerCoin.setLayoutManager(layoutManager);
         recyclerCoin.setLayoutManager(layoutManager);
 
+
         postListProgress = findViewById(R.id.progress);
         txtAddCoin = findViewById(R.id.txtAddCoin);
         imgLiveChat = findViewById(R.id.imgLiveChat);
         imgBanner = findViewById(R.id.imgBanner);
         btnCopy = findViewById(R.id.btnCopy);
         edtReferCode = findViewById(R.id.edtReferCode);
+        btnMyTransaction = findViewById(R.id.btnMyTransaction);
 
 
         txtAddCoin.setOnClickListener(new View.OnClickListener() {
@@ -205,6 +207,14 @@ public class MyCoinActivity extends AppCompatActivity {
                 }else {
                     Toast.makeText(MyCoinActivity.this, "Something Wrong", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+
+        btnMyTransaction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), TransactionActivity.class));
             }
         });
 

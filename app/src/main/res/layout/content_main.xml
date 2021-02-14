@@ -13,6 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <LinearLayout
+            android:weightSum="3"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -20,8 +21,12 @@
             android:layout_height="wrap_content">
 
             <Button
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:maxLines="2"
                 android:id="@+id/btnMyCoin"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_120sdp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/_4sdp"
                 android:background="@drawable/bg_btn_1"
@@ -29,15 +34,16 @@
                 android:drawablePadding="@dimen/_8sdp"
                 android:paddingStart="@dimen/_8sdp"
                 android:paddingEnd="@dimen/_8sdp"
-                android:text="@string/my_coin"
+                android:text="My Coin\nকয়েন কিনুন"
                 android:textAllCaps="false"
                 android:textColor="@color/MidnightBlue"
                 android:textSize="@dimen/_13sdp" />
 
             <Button
+                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
-                android:paddingTop="@dimen/_3sdp"
-                android:paddingBottom="@dimen/_3sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
                 android:drawablePadding="@dimen/_8sdp"
                 android:paddingEnd="@dimen/_8sdp"
                 android:paddingStart="@dimen/_8sdp"
@@ -50,14 +56,15 @@
                 android:textAllCaps="false"
                 android:layout_margin="@dimen/_4sdp"
                 android:id="@+id/btnCommission"
-                android:text="@string/commission"
-                android:layout_width="wrap_content"
+                android:text="Commission\nকমিশন"
+                android:layout_width="@dimen/_110sdp"
                 android:layout_height="wrap_content"/>
 
             <Button
+                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
-                android:paddingTop="@dimen/_3sdp"
-                android:paddingBottom="@dimen/_3sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
                 android:drawablePadding="@dimen/_8sdp"
                 android:paddingEnd="@dimen/_8sdp"
                 android:paddingStart="@dimen/_8sdp"
@@ -68,8 +75,9 @@
                 android:textAllCaps="false"
                 android:layout_margin="@dimen/_4sdp"
                 android:id="@+id/btnwithdrawable"
-                android:text="@string/withdrawable"
-                android:layout_width="wrap_content"
+                android:text="Prize\nপ্রাইজ
+"
+                android:layout_width="@dimen/_120sdp"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
     </HorizontalScrollView>
@@ -103,7 +111,7 @@
                 <com.try3x.uttam.Custom.MyViewpager
                     android:id="@+id/gameViewPager"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_200sdp"
+                    android:layout_height="@dimen/_180sdp"
                     android:name="com.try3x.uttam.Custom.MyViewpager">
                 </com.try3x.uttam.Custom.MyViewpager>
 
@@ -114,7 +122,7 @@
                     android:orientation="vertical"
                     android:background="@color/Pink"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_200sdp">
+                    android:layout_height="wrap_content">
 
                     <ImageView
                         android:src="@drawable/warning"
@@ -141,57 +149,84 @@
                         android:textColor="@color/white"
                         android:background="@drawable/update_btn_1"
                         android:textAllCaps="false"
-                        android:text="Reload Baji"
+                        android:text="Reload Game"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
 
-                <Button
-                    android:background="@drawable/bg_btn_green"
-                    android:elevation="@dimen/_3sdp"
-                    android:id="@+id/btnResult"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/gameViewPager"
-                    android:layout_marginTop="8dp"
-                    android:text="See Result - রেজাল্ট দেখুন"
-                    android:textAllCaps="false"
-                    android:textColor="@color/MidnightBlue"
-                    android:textSize="@dimen/_16sdp" />
-                <Button
-                    android:paddingBottom="@dimen/_8sdp"
-                    android:gravity="center"
-                    android:background="@drawable/bg_btn_green"
-                    android:elevation="@dimen/_3sdp"
-                    android:id="@+id/btnMyBajiList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/btnResult"
-                    android:layout_marginTop="8dp"
-                    android:text="My Baji \n দেখুন আপনি কবে কোন ঘরে খেলেছেন"
-                    android:textAllCaps="false"
-                    android:textColor="@color/MidnightBlue"
-                    android:textSize="@dimen/_16sdp" />
-                <Button
-                    android:background="@drawable/bg_btn_green"
-                    android:elevation="@dimen/_3sdp"
-                    android:id="@+id/btnYtVideo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/btnMyBajiList"
-                    android:layout_marginTop="8dp"
-                    android:text="Game Tips - খেলার কিছু টিপস"
-                    android:textAllCaps="false"
-                    android:textColor="@color/MidnightBlue"
-                    android:textSize="@dimen/_16sdp" />
+               <LinearLayout
+                   android:gravity="center_vertical"
+                   android:layout_marginBottom="@dimen/_5sdp"
+                   android:layout_marginTop="@dimen/_5sdp"
+                   android:weightSum="3"
+                   android:orientation="horizontal"
+                   android:layout_below="@id/gameViewPager"
+                   android:id="@+id/layOutBtn"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+                   <Button
+                       android:paddingBottom="@dimen/_5sdp"
+                       android:paddingTop="@dimen/_5sdp"
+                       android:layout_margin="@dimen/_2sdp"
+                       android:layout_weight="1"
+                       android:background="@color/colorAccent"
+                       android:elevation="@dimen/_3sdp"
+                       android:id="@+id/btnResult"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:text="See Result\nরেজাল্ট দেখুন"
+                       android:textAllCaps="false"
+                       android:textColor="@color/white"
+                       android:textSize="@dimen/_12sdp" />
+                   <Button
+                       android:paddingBottom="@dimen/_5sdp"
+                       android:paddingTop="@dimen/_5sdp"
+                       android:layout_margin="@dimen/_2sdp"
+                       android:layout_weight="1"
+                       android:gravity="center"
+                       android:background="@color/DarkOrange"
+                       android:id="@+id/btnMyBajiList"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layout_below="@id/btnResult"
+                       android:layout_marginTop="8dp"
+                       android:text="My Game \nখেলার লিষ্ট"
+                       android:textAllCaps="false"
+                       android:textColor="@color/White"
+                       android:textSize="@dimen/_12sdp" />
+                   <Button
+                       android:paddingBottom="@dimen/_5sdp"
+                       android:paddingTop="@dimen/_5sdp"
+                       android:layout_margin="@dimen/_2sdp"
+                       android:layout_weight="1"
+                       android:background="#4CAF50"
+                       android:elevation="@dimen/_3sdp"
+                       android:id="@+id/btnYtVideo"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layout_below="@id/btnMyBajiList"
+                       android:layout_marginTop="8dp"
+                       android:text="Game Tips \nখেলার টিপস"
+                       android:textAllCaps="false"
+                       android:textColor="@color/white"
+                       android:textSize="@dimen/_12sdp" />
+               </LinearLayout>
 
+                <Button
+                    android:textColor="@color/white"
+                    android:text="How To ply - কিভাবে খেলবেন?"
+                    android:background="@color/MediumVioletRed"
+                    android:id="@+id/btnHowToPly"
+                    android:layout_below="@+id/layOutBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
 
 
                 <com.smarteist.autoimageslider.SliderView
-
+                    android:visibility="visible"
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:layout_below="@+id/btnYtVideo"
+                    android:layout_below="@+id/btnHowToPly"
                     android:id="@+id/imageSlider"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_170sdp"
@@ -209,16 +244,38 @@
                     app:sliderScrollTimeInSec="1"
                     app:sliderStartAutoCycle="false" />
 
+                <View
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:id="@+id/divider"
+                    android:layout_below="@id/imageSlider"
+                    android:background="@color/colorAccent"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_3sdp"/>
+
+                <ImageView
+
+                    android:layout_below="@id/divider"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:scaleType="fitXY"
+                    android:id="@+id/imgBanner1"
+                    android:visibility="visible"
+                    android:layout_margin="@dimen/_5sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_160sdp"/>
+
+
                 <LinearLayout
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:orientation="vertical"
                     android:layout_marginBottom="@dimen/_8sdp"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:layout_below="@+id/imageSlider"
+                    android:layout_below="@+id/imgBanner1"
                     android:id="@+id/laySecondGame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <include
+                        android:visibility="visible"
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent"
                         layout="@layout/activity_game2"/>

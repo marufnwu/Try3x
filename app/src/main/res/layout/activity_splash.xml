@@ -8,7 +8,46 @@
     tools:context=".SplashActivity">
 
 
+    <LinearLayout
+       android:layout_margin="@dimen/_8sdp"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:layout_above="@+id/frameLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:text="By clicking Sign In button you are agree to our"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+       <LinearLayout
+           android:gravity="center_horizontal"
+           android:layout_gravity="center"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <TextView
+                android:id="@+id/txtTermsAndCondition"
+               android:textSize="@dimen/_13sdp"
+               android:text="@string/terms_condition"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"/>
+
+           <TextView
+               android:text="and "
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"/>
+           <TextView
+               android:id="@+id/txtPrivacyPolicy"
+               android:textSize="@dimen/_13sdp"
+               android:text="@string/privacy_policy"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"/>
+       </LinearLayout>
+    </LinearLayout>
+
     <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/_35sdp"
         android:layout_marginEnd="@dimen/_20sdp"
@@ -16,7 +55,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <Button
+
             android:id="@+id/btnSignIn"
             android:visibility="gone"
             android:textColor="@color/Black"

@@ -28,7 +28,7 @@
            android:padding="@dimen/_8sdp"
            android:gravity="center_horizontal"
            android:textSize="@dimen/_14sdp"
-           android:text="Sorry! You have not enough coin to place bajj. Please BUY COIN to place baji."
+           android:text="Sorry! You have not enough coin to place game. Please BUY COIN to place game."
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"/>
 

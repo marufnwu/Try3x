@@ -38,4 +38,5 @@
     <color name="Aqua">#00FFFF</color>
     <color name="Teal">#008080</color>
     <color name="Black">#000000</color>
+    <color name="black_transparent">#88000000</color>
 </resources>
