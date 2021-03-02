@@ -12,6 +12,7 @@ import com.try3x.uttam.Models.QuestionResponse;
 import com.try3x.uttam.Models.RazorPayOrder;
 import com.try3x.uttam.Models.Response.AppUpdateResponse;
 import com.try3x.uttam.Models.Response.BajiBtnResponse;
+import com.try3x.uttam.Models.Response.BajiClaimResponse;
 import com.try3x.uttam.Models.Response.BajiInfoResponse;
 import com.try3x.uttam.Models.Response.BuyCoinTransResponse;
 import com.try3x.uttam.Models.Response.CoinHistoryResponse;
@@ -100,12 +101,14 @@ public interface IRetrofitApiCall {
 
     @FormUrlEncoded
     @POST("coin.bajiClaim.php")
-    Call<ServerResponse> claimBaji(
+    Call<BajiClaimResponse> claimBaji(
             @Field("sha1") String sha1,
             @Field("email") String email,
             @Field("u_id") String uId,
             @Field("token") String token,
-            @Field("baji_id") int id
+            @Field("baji_id") int id,
+            @Field("ques_id") String ques_id,
+            @Field("ques_result") long ques_result
 
 
     );

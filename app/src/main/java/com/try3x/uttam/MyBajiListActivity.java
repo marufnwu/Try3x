@@ -40,6 +40,7 @@ import com.try3x.uttam.Listener.OnClaimClickListener;
 import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.MathQuestion;
 import com.try3x.uttam.Models.QuestionResponse;
+import com.try3x.uttam.Models.Response.BajiClaimResponse;
 import com.try3x.uttam.Models.Response.BajiInfoResponse;
 import com.try3x.uttam.Models.GmailInfo;
 import com.try3x.uttam.Models.MyBajiList;
@@ -89,6 +90,7 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
     TextView txtTotalBaji, txtTotalWin, txtTodayBaji, txtToadyWin;
     ImageView imgBanner, imgLiveChat;
     private boolean isActivityCreatedByNoti;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -455,7 +457,7 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
                             final QuestionResponse questionResponse = response.body();
 
                             if (!questionResponse.error){
-                                Dialog dialog = new Dialog(MyBajiListActivity.this);
+                                final Dialog dialog = new Dialog(MyBajiListActivity.this);
                                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                                 dialog.setCancelable(false);
                                 dialog.setContentView(R.layout.dialog_claim_question);
@@ -465,6 +467,7 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
                                 window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                                 Button btnSubmit = dialog.findViewById(R.id.btnSubmit);
                                 Button btnCancel = dialog.findViewById(R.id.btnCancel);
+                                final TextView txtTimer = dialog.findViewById(R.id.txtTimer);
 
                                 TextView txtQues = dialog.findViewById(R.id.txtQues);
                                 final TextView edtResult = dialog.findViewById(R.id.edtResult);
@@ -474,26 +477,39 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
                                 btnSubmit.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        cancelJobSchedule(CLAIM_JOB_ID);
+                                        //cancelJobSchedule(CLAIM_JOB_ID);
+                                        if (edtResult.getText().toString().trim().length()<1){
+                                            Toast.makeText(MyBajiListActivity.this, "Please ans the question", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+                                        countDownTimer.cancel();
+                                        dialog.dismiss();
+                                        long result = Long.parseLong(edtResult.getText().toString().trim());
+                                        claimBaji(id, pos, questionResponse.quesId, result);
                                     }
                                 });
 
                                 dialog.setOnShowListener(new DialogInterface.OnShowListener() {
                                     @Override
-                                    public void onShow(DialogInterface dialog) {
-                                        setJobSchedule(id, 1);
-                                        new CountDownTimer(100000, 1000){
+                                    public void onShow(final DialogInterface dialog) {
+                                        //setJobSchedule(id, 1);
+                                      countDownTimer = new CountDownTimer(10000, 1000){
 
                                             @Override
                                             public void onTick(long millisUntilFinished) {
                                                 long timeRemaining = millisUntilFinished / 1000;
+                                                txtTimer.setText(timeRemaining+"s");
                                             }
 
                                             @Override
                                             public void onFinish() {
-
+                                                dialog.dismiss();
+                                                countDownTimer.cancel();
+                                                claimBaji(id, pos, questionResponse.quesId, 00000);
                                             }
                                         };
+
+                                      countDownTimer.start();
                                     }
                                 });
 
@@ -568,7 +584,7 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
 
     }
 
-    private void claimBaji(int id, int pos){
+    private void claimBaji(int id, int pos, String quesId, long result){
         showWaitingDialog();
         claimPos = pos;
         if (gmailInfo==null){
@@ -584,18 +600,25 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
                         mUser.getEmail(),
                         gmailInfo.user_id,
                         gmailInfo.access_token,
-                        id
+                        id,
+                        quesId,
+                        result
                 )
-                .enqueue(new Callback<ServerResponse>() {
+                .enqueue(new Callback<BajiClaimResponse>() {
                     @Override
-                    public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                    public void onResponse(Call<BajiClaimResponse> call, Response<BajiClaimResponse> response) {
                         if (response.isSuccessful() && response.body()!=null){
-                            ServerResponse serverResponse = response.body();
+                            BajiClaimResponse serverResponse = response.body();
                             if (!serverResponse.isError()){
                                 dismissWaitingDialog();
                                 if (myBajiListAdapter!=null){
                                     if (myBajiList!=null && myBajiList.bajiList.size()>=claimPos){
                                         myBajiList.bajiList.get(claimPos).claim = true;
+                                        if (serverResponse.isCorrect){
+                                            myBajiList.bajiList.get(claimPos).is_crr_ans = true;
+
+                                        }
+
                                         myBajiListAdapter.notifyDataSetChanged();
                                     }
                                 }
@@ -607,7 +630,7 @@ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClic
                     }
 
                     @Override
-                    public void onFailure(Call<ServerResponse> call, Throwable t) {
+                    public void onFailure(Call<BajiClaimResponse> call, Throwable t) {
                         dismissWaitingDialog();
                     }
                 });

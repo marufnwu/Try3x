@@ -47,22 +47,11 @@ public class MyBajiListAdapter extends RecyclerView.Adapter<MyBajiListAdapter.My
 
         if (baji.result_published){
             holder.imgResultPub.setImageResource(R.drawable.ic_baseline_check_circle_24);
-
+            //holder.imgWin.setImageResource(R.drawable.ic_baseline_check_circle_24);
            if (baji.win_btn!=null){
                if (baji.win_btn.equals(baji.btn)){
                    //win
                    holder.imgWin.setImageResource(R.drawable.ic_baseline_check_circle_24);
-                   if (!baji.claim){
-                       holder.imgClaim.setVisibility(View.GONE);
-                       holder.txtClaim.setVisibility(View.VISIBLE);
-
-                   }else {
-                       holder.imgClaim.setImageResource(R.drawable.ic_baseline_check_circle_24);
-
-                       holder.imgClaim.setVisibility(View.VISIBLE);
-
-                       holder.txtClaim.setVisibility(View.GONE);
-                   }
                }else {
                    holder.imgWin.setImageResource(R.drawable.ic_baseline_cancel_24);
 
@@ -72,6 +61,26 @@ public class MyBajiListAdapter extends RecyclerView.Adapter<MyBajiListAdapter.My
 
                    holder.txtClaim.setVisibility(View.GONE);
                }
+
+                   if (!baji.claim){
+                       holder.imgClaim.setVisibility(View.GONE);
+                       holder.txtClaim.setVisibility(View.VISIBLE);
+
+                   }else if (baji.claim && !baji.is_crr_ans){
+                       holder.imgClaim.setImageResource(R.drawable.ic_baseline_error_24);
+
+                       holder.imgClaim.setVisibility(View.VISIBLE);
+
+                       holder.txtClaim.setVisibility(View.GONE);
+                   }
+                   else {
+                       holder.imgClaim.setImageResource(R.drawable.ic_baseline_check_circle_24);
+
+                       holder.imgClaim.setVisibility(View.VISIBLE);
+
+                       holder.txtClaim.setVisibility(View.GONE);
+                   }
+
            }else {
                holder.imgWin.setImageResource(R.drawable.ic_baseline_cancel_24);
 
