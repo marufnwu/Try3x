@@ -25,10 +25,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup, usesCleartextTraffic">
-        <service
-            android:name=".Services.BajiClaimSchedule"
-            android:enabled="true"
-            android:exported="true"></service>
+
 
         <activity
             android:name=".PrivacyActivity"
