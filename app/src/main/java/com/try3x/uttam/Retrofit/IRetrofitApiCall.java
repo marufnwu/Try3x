@@ -3,12 +3,10 @@ package com.try3x.uttam.Retrofit;
 import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.CFToken;
 import com.try3x.uttam.Models.GameSlot;
-import com.try3x.uttam.Models.MathQuestion;
 import com.try3x.uttam.Models.PayMethodInfo;
 import com.try3x.uttam.Models.Paytm.Checksum;
 import com.try3x.uttam.Models.Paytm.PaytmHash;
 import com.try3x.uttam.Models.Paytm.Root;
-import com.try3x.uttam.Models.QuestionResponse;
 import com.try3x.uttam.Models.RazorPayOrder;
 import com.try3x.uttam.Models.Response.AppUpdateResponse;
 import com.try3x.uttam.Models.Response.BajiBtnResponse;
@@ -75,10 +73,7 @@ public interface IRetrofitApiCall {
     );
 
     @GET("helper.getPackages.php")
-    Call<PackageList> getPackages(
-            @Query("slot") String slot,
-            @Query("uid") String uid
-    );
+    Call<PackageList> getPackages();
 
 
     @POST("baji.placeBaji.php")
@@ -496,17 +491,6 @@ public interface IRetrofitApiCall {
     @POST("baji.game2.getResultVideo.php")
     Call<ResultVideo> getGame2ResultVideo();
 
-    @FormUrlEncoded
-    @POST("helper.getMathQuestion.php")
-    Call<QuestionResponse> getClaimQues(
-            @Field("sha1") String sha1,
-            @Field("email") String email,
-            @Field("u_id") String uId,
-            @Field("token") String token,
-            @Field("bajIid") int bajIid,
-            @Field("gameNo") int gameNo
-    );
-
     //end of game2
 
     @GET("https://youtube.googleapis.com/youtube/v3/playlistItems")
@@ -516,14 +500,5 @@ public interface IRetrofitApiCall {
             @Query("part") String part,
             @Query("maxResults") int maxResults,
             @Query("pageToken") String pageToken
-    );
-
-    @FormUrlEncoded
-    @POST("helper.getMathQuestion.php")
-    Call<MathQuestion> getMathQuestion(
-            @Field("sha1") String sha1,
-            @Field("email") String email,
-            @Field("u_id") String uId,
-            @Field("token") String token
     );
 }

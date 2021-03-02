@@ -38,7 +38,6 @@ import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Listener.OnPackageItemClickListener;
 import com.try3x.uttam.Models.Btn;
 import com.try3x.uttam.Models.GmailInfo;
-import com.try3x.uttam.Models.MathQuestion;
 import com.try3x.uttam.Models.PackageList;
 import com.try3x.uttam.Models.Packages;
 import com.try3x.uttam.Models.Response.BajiBtnResponse;
@@ -149,7 +148,7 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
         btn4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // selectPackages(btn4);
+                // selectPackages(btn4);
             }
         });
 
@@ -266,10 +265,7 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
         recyclerPck.setHasFixedSize(true);
 
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
-                .getPackages(
-                        slot.id,
-                        gmailInfo.user_id
-                )
+                .getPackages()
                 .enqueue(new Callback<PackageList>() {
                     @Override
                     public void onResponse(Call<PackageList> call, Response<PackageList> response) {
@@ -353,7 +349,7 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
                                 }else {
                                     Toast.makeText(getContext(), "Participate with the correct answer and take the chance to win prizes", Toast.LENGTH_SHORT).show();
                                     showCaptcha();
-                                    
+
 //                                    final Dialog dialog = new Dialog(getContext());
 //                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 //                                    dialog.setCancelable(true);
@@ -611,7 +607,7 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
                                                 if (!serverResponse.error){
                                                     dismissWaitingDialog();
                                                     bajiServerBody.getPackageList().clear();
-                                                    //bajiPlaceListAdapter.notifyDataSetChanged();
+                                                    bajiPlaceListAdapter.notifyDataSetChanged();
                                                     Toast.makeText(getContext(), ""+serverResponse.getError_description(), Toast.LENGTH_SHORT).show();
 
                                                     Common.subscribeNoti(Common.getDate()+"_"+bajiServerBody.noOfBaji);

@@ -1,0 +1,258 @@
+Index: app/src/main/java/com/try3x/uttam/MyBajiListActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.try3x.uttam;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport android.app.Dialog;\r\nimport android.app.job.JobInfo;\r\nimport android.app.job.JobScheduler;\r\nimport android.content.ComponentName;\r\nimport android.content.DialogInterface;\r\nimport android.content.Intent;\r\nimport android.content.ServiceConnection;\r\nimport android.graphics.Color;\r\nimport android.graphics.drawable.ColorDrawable;\r\nimport android.net.Uri;\r\nimport android.os.Bundle;\r\nimport android.os.CountDownTimer;\r\nimport android.os.IBinder;\r\nimport android.os.PersistableBundle;\r\nimport android.util.Log;\r\nimport android.view.View;\r\nimport android.view.Window;\r\nimport android.widget.Button;\r\nimport android.widget.ImageView;\r\nimport android.widget.LinearLayout;\r\nimport android.widget.ProgressBar;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.auth.FirebaseUser;\r\nimport com.try3x.uttam.Adapters.MyBajiListAdapter;\r\nimport com.try3x.uttam.Common.CapthaDialog;\r\nimport com.try3x.uttam.Common.Common;\r\nimport com.try3x.uttam.Common.PaperDB;\r\nimport com.try3x.uttam.Listener.OnClaimClickListener;\r\nimport com.try3x.uttam.Models.ActivityBanner;\r\nimport com.try3x.uttam.Models.MathQuestion;\r\nimport com.try3x.uttam.Models.QuestionResponse;\r\nimport com.try3x.uttam.Models.Response.BajiInfoResponse;\r\nimport com.try3x.uttam.Models.GmailInfo;\r\nimport com.try3x.uttam.Models.MyBajiList;\r\nimport com.try3x.uttam.Models.Response.ServerResponse;\r\nimport com.try3x.uttam.Retrofit.IRetrofitApiCall;\r\nimport com.try3x.uttam.Retrofit.RetrofitClient;\r\nimport com.try3x.uttam.Services.BajiClaimSchedule;\r\nimport com.try3x.uttam.Services.BajiClaimService;\r\n\r\nimport cc.cloudist.acplibrary.ACProgressConstant;\r\nimport cc.cloudist.acplibrary.ACProgressPie;\r\nimport io.paperdb.Paper;\r\nimport retrofit2.Call;\r\nimport retrofit2.Callback;\r\nimport retrofit2.Response;\r\n\r\npublic class MyBajiListActivity extends AppCompatActivity implements OnClaimClickListener {\r\n\r\n\r\n    private static final int CLAIM_JOB_ID = 10001;\r\n    public static final String CLAIM_BAJI_ID = \"BajiId\";\r\n    public static final String GAME_NO = \"GameNo\";\r\n    BajiClaimService mService;\r\n    boolean mBound = false;\r\n\r\n\r\n\r\n    int claimPos = -1;\r\n\r\n    FirebaseAuth mAuth;\r\n    FirebaseUser mUser;\r\n    int currPage = 1;\r\n    int perPage= 5;\r\n    MyBajiListAdapter myBajiListAdapter;\r\n    private LinearLayoutManager layoutManager;\r\n    private ACProgressPie dialog;\r\n    private MyBajiList myBajiList;\r\n    int pastVisibleItem, visibleItemCount, totalItemCount, previousTotal = 0;\r\n\r\n    private int PAGE = 1, PAGE_SIZE = 30, TOTAL_PAGE = 0;\r\n    boolean isLoading = true;\r\n\r\n    private GmailInfo gmailInfo;\r\n    RecyclerView recyclerBaji;\r\n    private ProgressBar postListProgress;\r\n    LinearLayout layoutReload;\r\n    TextView txtTotalBaji, txtTotalWin, txtTodayBaji, txtToadyWin;\r\n    ImageView imgBanner, imgLiveChat;\r\n    private boolean isActivityCreatedByNoti;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_my_baji_list);\r\n        isActivityCreatedByNoti = getIntent().getBooleanExtra(Common.ACTIVITY_CREATED_BY_NOTI, false);\r\n\r\n        mAuth = FirebaseAuth.getInstance();\r\n        mUser = mAuth.getCurrentUser();\r\n\r\n        Paper.init(this);\r\n        createDialog();\r\n        gmailInfo  = Paper.book().read(PaperDB.GMAILINFO);\r\n\r\n        recyclerBaji = findViewById(R.id.recyclerMyBaji);\r\n        recyclerBaji.setHasFixedSize(true);\r\n        layoutManager = new LinearLayoutManager(this);\r\n        recyclerBaji.setLayoutManager(layoutManager);\r\n        \r\n        postListProgress = findViewById(R.id.progress);\r\n        layoutReload = findViewById(R.id.layoutReload);\r\n\r\n\r\n        txtTotalBaji = findViewById(R.id.txtTotalBaji);\r\n        txtTotalWin = findViewById(R.id.txtTotalBajiWin);\r\n        txtToadyWin = findViewById(R.id.txtTodayBajiWin);\r\n        txtTodayBaji = findViewById(R.id.txtTodayBajiPlace);\r\n\r\n        imgBanner = findViewById(R.id.imgBanner);\r\n        imgLiveChat = findViewById(R.id.imgLiveChat);\r\n        Common.setShakeAnimation(imgLiveChat, getApplicationContext());\r\n        imgLiveChat.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                Common.openLiveChat(getApplicationContext());\r\n            }\r\n        });\r\n\r\n        initRecyclerPagination();\r\n\r\n        if (mAuth!=null && mUser!=null){\r\n            getMyBajiList();\r\n\r\n            //getMyBajiInfo();\r\n        }\r\n\r\n        getDynamicBanner(imgBanner, \"MyBajiListActivity\");\r\n    }\r\n    private void getDynamicBanner(final ImageView imgBanner, String keyword) {\r\n        imgBanner.setVisibility(View.GONE);\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getActivityBanner(keyword)\r\n                .enqueue(new Callback<ActivityBanner>() {\r\n                    @Override\r\n                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            final ActivityBanner activityBanner = response.body();\r\n                            if (!activityBanner.error){\r\n                                if (activityBanner.imageUrl!=null){\r\n                                    imgBanner.setVisibility(View.VISIBLE);\r\n                                    Glide.with(getApplicationContext())\r\n                                            .load(activityBanner.imageUrl)\r\n                                            .into(imgBanner);\r\n\r\n                                    imgBanner.setOnClickListener(new View.OnClickListener() {\r\n                                        @Override\r\n                                        public void onClick(View view) {\r\n                                            if (activityBanner.actionType==1){\r\n                                                //open url\r\n                                                if (activityBanner.actionUrl!=null){\r\n                                                    String url = activityBanner.actionUrl;\r\n                                                    String linkHost = Uri.parse(url).getHost();\r\n                                                    Uri uri = Uri.parse(url);\r\n\r\n                                                    if (linkHost==null){\r\n                                                        return;\r\n                                                    }\r\n\r\n                                                    if (linkHost.equals(\"play.google.com\")){\r\n                                                        String appId = uri.getQueryParameter(\"id\");\r\n\r\n                                                        Intent intent = new Intent(Intent.ACTION_VIEW);\r\n                                                        intent.setData(Uri.parse(\"market://details?id=\"+appId));\r\n                                                        startActivity(intent);\r\n\r\n                                                    }else if(linkHost.equals(\"www.youtube.com\")){\r\n                                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);\r\n                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);\r\n                                                        intent.setPackage(\"com.google.android.youtube\");\r\n                                                        startActivity(intent);\r\n\r\n\r\n                                                    }else if (url != null && (url.startsWith(\"http://\") || url.startsWith(\"https://\"))) {\r\n                                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));\r\n                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);\r\n\r\n                                                        startActivity(intent);\r\n\r\n                                                    }\r\n                                                }\r\n                                            }else if (activityBanner.actionType==2){\r\n                                                //open activity\r\n                                            }\r\n                                        }\r\n                                    });\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<ActivityBanner> call, Throwable t) {\r\n\r\n                    }\r\n                });\r\n    }\r\n    private void getMyBajiInfo() {\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getMyBajiInfo(\r\n                        Common.getKeyHash(MyBajiListActivity.this),\r\n                        gmailInfo.gmail,\r\n                        gmailInfo.user_id,\r\n                        gmailInfo.access_token\r\n\r\n                )\r\n                .enqueue(new Callback<BajiInfoResponse>() {\r\n                    @Override\r\n                    public void onResponse(Call<BajiInfoResponse> call, Response<BajiInfoResponse> response) {\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            BajiInfoResponse bajiInfoResponse = response.body();\r\n                            if (!bajiInfoResponse.error){\r\n                                txtToadyWin.setText(\"\"+bajiInfoResponse.todayWin);\r\n                                txtTodayBaji.setText(\"\"+bajiInfoResponse.todayBaji);\r\n                                txtTotalBaji.setText(\"\"+bajiInfoResponse.totalBaji);\r\n                                txtTotalWin.setText(\"\"+bajiInfoResponse.totalWin);\r\n                            }else {\r\n                               setBajiInfoZero();\r\n                                Toast.makeText(MyBajiListActivity.this, bajiInfoResponse.error_description, Toast.LENGTH_SHORT).show();\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<BajiInfoResponse> call, Throwable t) {\r\n                        setBajiInfoZero();\r\n                        Toast.makeText(MyBajiListActivity.this, \"\"+t.getMessage(), Toast.LENGTH_SHORT).show();\r\n                    }\r\n                });\r\n    }\r\n\r\n    private void setBajiInfoZero() {\r\n        txtToadyWin.setText(\"00\");\r\n        txtTodayBaji.setText(\"00\");\r\n        txtTotalBaji.setText(\"00\");\r\n        txtTotalWin.setText(\"00\");\r\n    }\r\n\r\n\r\n    @Override\r\n    protected void onStart() {\r\n        super.onStart();\r\n        if (gmailInfo==null){\r\n            Toast.makeText(this, \"Login Again\", Toast.LENGTH_SHORT).show();\r\n            finish();\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public void onBackPressed() {\r\n        super.onBackPressed();\r\n        if (isActivityCreatedByNoti){\r\n            finish();\r\n            startActivity(new Intent(getApplicationContext(), MainActivity.class));\r\n        }\r\n    }\r\n\r\n    private void initRecyclerPagination() {\r\n\r\n        recyclerBaji.addOnScrollListener(new RecyclerView.OnScrollListener() {\r\n            @Override\r\n            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {\r\n                super.onScrolled(recyclerView, dx, dy);\r\n\r\n                visibleItemCount = layoutManager.getChildCount();\r\n                totalItemCount = layoutManager.getItemCount();\r\n                pastVisibleItem = layoutManager.findFirstVisibleItemPosition();\r\n\r\n                if (dy>0){\r\n\r\n                    Log.d(\"Pagination\", \"Scrolled\");\r\n\r\n                    if (!isLoading ){\r\n\r\n                        if (PAGE <= TOTAL_PAGE){\r\n                            Log.d(\"Pagination\", \"Total Page \"+TOTAL_PAGE);\r\n                            Log.d(\"Pagination\", \"Page \"+PAGE);\r\n                            if ( (visibleItemCount + pastVisibleItem) >= totalItemCount)\r\n                            {\r\n                                postListProgress.setVisibility(View.VISIBLE);\r\n                                isLoading = true;\r\n                                Log.v(\"...\", \"Last Item Wow !\");\r\n                                //Do pagination.. i.e. fetch new data\r\n                                PAGE++;\r\n                                if (PAGE<=TOTAL_PAGE){\r\n                                    doPagination();\r\n                                }else {\r\n                                    isLoading = false;\r\n                                    postListProgress.setVisibility(View.GONE);\r\n                                }\r\n                            }\r\n                        }else{\r\n\r\n                            //postListProgress.setVisibility(View.GONE);\r\n                            Log.d(\"Pagination\", \"End of page\");\r\n                        }\r\n                    }else {\r\n                        Log.d(\"Pagination\", \"Loading\");\r\n\r\n                    }\r\n                }\r\n            }\r\n        });\r\n    }\r\n\r\n    private void doPagination() {\r\n        postListProgress.setVisibility(View.VISIBLE);\r\n\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getMyBajiList(\r\n                        Common.getKeyHash(MyBajiListActivity.this),\r\n                        mUser.getEmail(),\r\n                        gmailInfo.user_id,\r\n                        true,\r\n                        PAGE,\r\n                        PAGE_SIZE)\r\n                .enqueue(new Callback<MyBajiList>() {\r\n                    @Override\r\n                    public void onResponse(Call<MyBajiList> call, Response<MyBajiList> response) {\r\n\r\n                        if (response.isSuccessful()&& response.body()!=null){\r\n                           MyBajiList myBajiList1 = response.body();\r\n                            if (!myBajiList1.error){\r\n                              PAGE_SIZE = myBajiList1.totalPage;\r\n                              if (myBajiList1.bajiList.size()>0){\r\n                                  isLoading = false;\r\n\r\n                                  myBajiList.bajiList.addAll(myBajiList1.bajiList);\r\n                                  myBajiListAdapter.notifyDataSetChanged();\r\n                              }\r\n\r\n                            }else {\r\n                                isLoading = false;\r\n\r\n                                Toast.makeText(MyBajiListActivity.this, \"\"+myBajiList.error_description, Toast.LENGTH_SHORT).show();\r\n                            }\r\n                        }else {\r\n                            isLoading = false;\r\n\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<MyBajiList> call, Throwable t) {\r\n                        Log.d(\"RetrofitError\", t.getMessage());\r\n                        isLoading = false;\r\n                        postListProgress.setVisibility(View.GONE);\r\n                    }\r\n                });\r\n\r\n    }\r\n\r\n    private void getMyBajiList() {\r\n        showWaitingDialog();\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getMyBajiList(\r\n                        Common.getKeyHash(\r\n                        MyBajiListActivity.this),\r\n                        mUser.getEmail(),\r\n                        gmailInfo.user_id,\r\n                        true, PAGE,\r\n                        PAGE_SIZE\r\n                )\r\n                .enqueue(new Callback<MyBajiList>() {\r\n                    @Override\r\n                    public void onResponse(Call<MyBajiList> call, Response<MyBajiList> response) {\r\n                        isLoading = false;\r\n                        if (response.isSuccessful()&& response.body()!=null){\r\n                             myBajiList = response.body();\r\n                             TOTAL_PAGE = myBajiList.totalPage;\r\n                           if (!myBajiList.error){\r\n\r\n\r\n                                   myBajiListAdapter = new MyBajiListAdapter(MyBajiListActivity.this, myBajiList.bajiList, MyBajiListActivity.this);\r\n                                   recyclerBaji.setAdapter(myBajiListAdapter);\r\n                                   dismissWaitingDialog();\r\n\r\n                           }else {\r\n\r\n\r\n                               dismissWaitingDialog();\r\n                               Toast.makeText(MyBajiListActivity.this, \"\"+myBajiList.error_description, Toast.LENGTH_SHORT).show();\r\n                           }\r\n                        }else {\r\n\r\n                            dismissWaitingDialog();\r\n                        }\r\n\r\n\r\n                        if (myBajiList.bajiList.size()<0){\r\n                            layoutReload.setVisibility(View.VISIBLE);\r\n                        }else {\r\n                            layoutReload.setVisibility(View.GONE);\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<MyBajiList> call, Throwable t) {\r\n                        Log.d(\"RetrofitError\", t.getMessage());\r\n                        isLoading = false;\r\n                        dismissWaitingDialog();\r\n                        layoutReload.setVisibility(View.VISIBLE);\r\n\r\n                    }\r\n                });\r\n\r\n    }\r\n\r\n    private void createDialog() {\r\n        dialog = new ACProgressPie.Builder(this)\r\n                .ringColor(Color.WHITE)\r\n                .pieColor(Color.WHITE)\r\n                .updateType(ACProgressConstant.PIE_AUTO_UPDATE)\r\n                .build();\r\n    }\r\n\r\n    private void showWaitingDialog() {\r\n        if (!isFinishing() &&dialog!=null && !dialog.isShowing()){\r\n            dialog.show();\r\n        }\r\n    }\r\n\r\n    private void dismissWaitingDialog() {\r\n        if (!isFinishing() &&dialog!=null && dialog.isShowing()){\r\n            dialog.dismiss();\r\n        }\r\n    }\r\n\r\n    private void showCaptcha(final int id, final int pos) {\r\n        showWaitingDialog();\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getClaimQues(\r\n                        Common.getKeyHash(getApplicationContext()),\r\n                        mUser.getEmail(),\r\n                        gmailInfo.user_id,\r\n                        gmailInfo.access_token,\r\n                        id,\r\n                        1\r\n                )\r\n                .enqueue(new Callback<QuestionResponse>() {\r\n                    @Override\r\n                    public void onResponse(Call<QuestionResponse> call, Response<QuestionResponse> response) {\r\n                        dismissWaitingDialog();\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            final QuestionResponse questionResponse = response.body();\r\n\r\n                            if (!questionResponse.error){\r\n                                Dialog dialog = new Dialog(MyBajiListActivity.this);\r\n                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);\r\n                                dialog.setCancelable(false);\r\n                                dialog.setContentView(R.layout.dialog_claim_question);\r\n\r\n                                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));\r\n                                Window window = dialog.getWindow();\r\n                                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);\r\n                                Button btnSubmit = dialog.findViewById(R.id.btnSubmit);\r\n                                Button btnCancel = dialog.findViewById(R.id.btnCancel);\r\n\r\n                                TextView txtQues = dialog.findViewById(R.id.txtQues);\r\n                                final TextView edtResult = dialog.findViewById(R.id.edtResult);\r\n\r\n                                txtQues.setText(questionResponse.ques);\r\n\r\n                                btnSubmit.setOnClickListener(new View.OnClickListener() {\r\n                                    @Override\r\n                                    public void onClick(View v) {\r\n                                        cancelJobSchedule(CLAIM_JOB_ID);\r\n                                    }\r\n                                });\r\n\r\n                                dialog.setOnShowListener(new DialogInterface.OnShowListener() {\r\n                                    @Override\r\n                                    public void onShow(DialogInterface dialog) {\r\n                                        setJobSchedule(id, 1);\r\n                                        new CountDownTimer(100000, 1000){\r\n\r\n                                            @Override\r\n                                            public void onTick(long millisUntilFinished) {\r\n                                                long timeRemaining = millisUntilFinished / 1000;\r\n                                            }\r\n\r\n                                            @Override\r\n                                            public void onFinish() {\r\n\r\n                                            }\r\n                                        };\r\n                                    }\r\n                                });\r\n\r\n                                dialog.show();\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<QuestionResponse> call, Throwable t) {\r\n                        dismissWaitingDialog();\r\n                    }\r\n                });\r\n\r\n//        final CapthaDialog capthaDialog = new CapthaDialog(MyBajiListActivity.this);\r\n//        capthaDialog.init();\r\n//        capthaDialog.showDialog();\r\n//        capthaDialog.setOnCaptchaDialogListener(new CapthaDialog.OnCaptchaDialogListener() {\r\n//            @Override\r\n//            public void onResultOk() {\r\n//                claimBaji(id, pos);\r\n//            }\r\n//\r\n//            @Override\r\n//            public void onCancel() {\r\n//\r\n//            }\r\n//\r\n//            @Override\r\n//            public void onToast(String message) {\r\n//\r\n//                Toast.makeText(MyBajiListActivity.this, message, Toast.LENGTH_LONG).show();\r\n//                capthaDialog.hideDialog();\r\n//            }\r\n//        });\r\n    }\r\n\r\n    private void setJobSchedule(int bajiId, int gameNo) {\r\n\r\n        PersistableBundle persistableBundle = new PersistableBundle();\r\n        persistableBundle.putInt(CLAIM_BAJI_ID, bajiId);\r\n        persistableBundle.putInt(GAME_NO, gameNo);\r\n\r\n        ComponentName componentName = new ComponentName(this, BajiClaimSchedule.class);\r\n        JobInfo info = new JobInfo.Builder(CLAIM_JOB_ID, componentName)\r\n                .setExtras(persistableBundle)\r\n                .setOverrideDeadline(120000)\r\n                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)\r\n                .build();\r\n\r\n        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);\r\n\r\n\r\n        int resultCode = scheduler.schedule(info);\r\n\r\n        if (resultCode == JobScheduler.RESULT_SUCCESS){\r\n            Log.d(\"JobScheduler\", \"Success\");\r\n        }else {\r\n            Log.d(\"JobScheduler\", \"Failed\");\r\n        }\r\n    }\r\n\r\n    void cancelJobSchedule(int jobId){\r\n        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);\r\n        scheduler.cancel(jobId);\r\n    }\r\n\r\n\r\n    @Override\r\n    public void onClick(int id, int pos) {\r\n       showCaptcha(id, pos);\r\n\r\n    }\r\n\r\n    private void claimBaji(int id, int pos){\r\n        showWaitingDialog();\r\n        claimPos = pos;\r\n        if (gmailInfo==null){\r\n            Toast.makeText(this, \"Login Again\", Toast.LENGTH_SHORT).show();\r\n            return;\r\n        }\r\n\r\n        Log.d(\"UserId\", \"paper \"+gmailInfo.user_id+\" user \"+mUser.getUid());\r\n\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .claimBaji(\r\n                        Common.getKeyHash(getApplicationContext()),\r\n                        mUser.getEmail(),\r\n                        gmailInfo.user_id,\r\n                        gmailInfo.access_token,\r\n                        id\r\n                )\r\n                .enqueue(new Callback<ServerResponse>() {\r\n                    @Override\r\n                    public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            ServerResponse serverResponse = response.body();\r\n                            if (!serverResponse.isError()){\r\n                                dismissWaitingDialog();\r\n                                if (myBajiListAdapter!=null){\r\n                                    if (myBajiList!=null && myBajiList.bajiList.size()>=claimPos){\r\n                                        myBajiList.bajiList.get(claimPos).claim = true;\r\n                                        myBajiListAdapter.notifyDataSetChanged();\r\n                                    }\r\n                                }\r\n                            }else {\r\n                                dismissWaitingDialog();\r\n                                Toast.makeText(MyBajiListActivity.this, \"\"+serverResponse.getError_description(), Toast.LENGTH_SHORT).show();\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<ServerResponse> call, Throwable t) {\r\n                        dismissWaitingDialog();\r\n                    }\r\n                });\r\n    }\r\n\r\n\r\n    /** Defines callbacks for service binding, passed to bindService() */\r\n    private ServiceConnection connection = new ServiceConnection() {\r\n\r\n        @Override\r\n        public void onServiceConnected(ComponentName className,\r\n                                       IBinder service) {\r\n            // We've bound to LocalService, cast the IBinder and get LocalService instance\r\n            BajiClaimService.BajiClaimServiceBinder binder = (BajiClaimService.BajiClaimServiceBinder) service;\r\n            mService = binder.getService();\r\n            mBound = true;\r\n        }\r\n\r\n        @Override\r\n        public void onServiceDisconnected(ComponentName arg0) {\r\n            mBound = false;\r\n        }\r\n    };\r\n\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/try3x/uttam/MyBajiListActivity.java	(revision d95c8560275c18811e5b66ee86a5d48cffa41b05)
++++ app/src/main/java/com/try3x/uttam/MyBajiListActivity.java	(date 1614724316685)
+@@ -5,24 +5,12 @@
+ import androidx.recyclerview.widget.LinearLayoutManager;
+ import androidx.recyclerview.widget.RecyclerView;
+ 
+-import android.app.Dialog;
+-import android.app.job.JobInfo;
+-import android.app.job.JobScheduler;
+-import android.content.ComponentName;
+-import android.content.DialogInterface;
+ import android.content.Intent;
+-import android.content.ServiceConnection;
+ import android.graphics.Color;
+-import android.graphics.drawable.ColorDrawable;
+ import android.net.Uri;
+ import android.os.Bundle;
+-import android.os.CountDownTimer;
+-import android.os.IBinder;
+-import android.os.PersistableBundle;
+ import android.util.Log;
+ import android.view.View;
+-import android.view.Window;
+-import android.widget.Button;
+ import android.widget.ImageView;
+ import android.widget.LinearLayout;
+ import android.widget.ProgressBar;
+@@ -38,16 +26,12 @@
+ import com.try3x.uttam.Common.PaperDB;
+ import com.try3x.uttam.Listener.OnClaimClickListener;
+ import com.try3x.uttam.Models.ActivityBanner;
+-import com.try3x.uttam.Models.MathQuestion;
+-import com.try3x.uttam.Models.QuestionResponse;
+ import com.try3x.uttam.Models.Response.BajiInfoResponse;
+ import com.try3x.uttam.Models.GmailInfo;
+ import com.try3x.uttam.Models.MyBajiList;
+ import com.try3x.uttam.Models.Response.ServerResponse;
+ import com.try3x.uttam.Retrofit.IRetrofitApiCall;
+ import com.try3x.uttam.Retrofit.RetrofitClient;
+-import com.try3x.uttam.Services.BajiClaimSchedule;
+-import com.try3x.uttam.Services.BajiClaimService;
+ 
+ import cc.cloudist.acplibrary.ACProgressConstant;
+ import cc.cloudist.acplibrary.ACProgressPie;
+@@ -58,15 +42,6 @@
+ 
+ public class MyBajiListActivity extends AppCompatActivity implements OnClaimClickListener {
+ 
+-
+-    private static final int CLAIM_JOB_ID = 10001;
+-    public static final String CLAIM_BAJI_ID = "BajiId";
+-    public static final String GAME_NO = "GameNo";
+-    BajiClaimService mService;
+-    boolean mBound = false;
+-
+-
+-
+     int claimPos = -1;
+ 
+     FirebaseAuth mAuth;
+@@ -363,14 +338,12 @@
+     private void getMyBajiList() {
+         showWaitingDialog();
+         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+-                .getMyBajiList(
+-                        Common.getKeyHash(
++                .getMyBajiList(Common.getKeyHash(
+                         MyBajiListActivity.this),
+                         mUser.getEmail(),
+                         gmailInfo.user_id,
+                         true, PAGE,
+-                        PAGE_SIZE
+-                )
++                        PAGE_SIZE)
+                 .enqueue(new Callback<MyBajiList>() {
+                     @Override
+                     public void onResponse(Call<MyBajiList> call, Response<MyBajiList> response) {
+@@ -437,128 +410,28 @@
+     }
+ 
+     private void showCaptcha(final int id, final int pos) {
+-        showWaitingDialog();
+-        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+-                .getClaimQues(
+-                        Common.getKeyHash(getApplicationContext()),
+-                        mUser.getEmail(),
+-                        gmailInfo.user_id,
+-                        gmailInfo.access_token,
+-                        id,
+-                        1
+-                )
+-                .enqueue(new Callback<QuestionResponse>() {
+-                    @Override
+-                    public void onResponse(Call<QuestionResponse> call, Response<QuestionResponse> response) {
+-                        dismissWaitingDialog();
+-                        if (response.isSuccessful() && response.body()!=null){
+-                            final QuestionResponse questionResponse = response.body();
+-
+-                            if (!questionResponse.error){
+-                                Dialog dialog = new Dialog(MyBajiListActivity.this);
+-                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+-                                dialog.setCancelable(false);
+-                                dialog.setContentView(R.layout.dialog_claim_question);
+-
+-                                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+-                                Window window = dialog.getWindow();
+-                                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+-                                Button btnSubmit = dialog.findViewById(R.id.btnSubmit);
+-                                Button btnCancel = dialog.findViewById(R.id.btnCancel);
+-
+-                                TextView txtQues = dialog.findViewById(R.id.txtQues);
+-                                final TextView edtResult = dialog.findViewById(R.id.edtResult);
++
++        final CapthaDialog capthaDialog = new CapthaDialog(MyBajiListActivity.this);
++        capthaDialog.init();
++        capthaDialog.showDialog();
++        capthaDialog.setOnCaptchaDialogListener(new CapthaDialog.OnCaptchaDialogListener() {
++            @Override
++            public void onResultOk() {
++                claimBaji(id, pos);
++            }
+ 
+-                                txtQues.setText(questionResponse.ques);
+-
+-                                btnSubmit.setOnClickListener(new View.OnClickListener() {
+-                                    @Override
+-                                    public void onClick(View v) {
+-                                        cancelJobSchedule(CLAIM_JOB_ID);
+-                                    }
+-                                });
++            @Override
++            public void onCancel() {
++
++            }
+ 
+-                                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+-                                    @Override
+-                                    public void onShow(DialogInterface dialog) {
+-                                        setJobSchedule(id, 1);
+-                                        new CountDownTimer(100000, 1000){
+-
+-                                            @Override
+-                                            public void onTick(long millisUntilFinished) {
+-                                                long timeRemaining = millisUntilFinished / 1000;
+-                                            }
+-
+-                                            @Override
+-                                            public void onFinish() {
+-
+-                                            }
+-                                        };
+-                                    }
+-                                });
+-
+-                                dialog.show();
+-                            }
+-                        }
+-                    }
+-
+-                    @Override
+-                    public void onFailure(Call<QuestionResponse> call, Throwable t) {
+-                        dismissWaitingDialog();
+-                    }
+-                });
+-
+-//        final CapthaDialog capthaDialog = new CapthaDialog(MyBajiListActivity.this);
+-//        capthaDialog.init();
+-//        capthaDialog.showDialog();
+-//        capthaDialog.setOnCaptchaDialogListener(new CapthaDialog.OnCaptchaDialogListener() {
+-//            @Override
+-//            public void onResultOk() {
+-//                claimBaji(id, pos);
+-//            }
+-//
+-//            @Override
+-//            public void onCancel() {
+-//
+-//            }
+-//
+-//            @Override
+-//            public void onToast(String message) {
+-//
+-//                Toast.makeText(MyBajiListActivity.this, message, Toast.LENGTH_LONG).show();
+-//                capthaDialog.hideDialog();
+-//            }
+-//        });
+-    }
+-
+-    private void setJobSchedule(int bajiId, int gameNo) {
+-
+-        PersistableBundle persistableBundle = new PersistableBundle();
+-        persistableBundle.putInt(CLAIM_BAJI_ID, bajiId);
+-        persistableBundle.putInt(GAME_NO, gameNo);
+-
+-        ComponentName componentName = new ComponentName(this, BajiClaimSchedule.class);
+-        JobInfo info = new JobInfo.Builder(CLAIM_JOB_ID, componentName)
+-                .setExtras(persistableBundle)
+-                .setOverrideDeadline(120000)
+-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+-                .build();
+-
+-        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+-
+-
+-        int resultCode = scheduler.schedule(info);
+-
+-        if (resultCode == JobScheduler.RESULT_SUCCESS){
+-            Log.d("JobScheduler", "Success");
+-        }else {
+-            Log.d("JobScheduler", "Failed");
+-        }
+-    }
+-
+-    void cancelJobSchedule(int jobId){
+-        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+-        scheduler.cancel(jobId);
++            @Override
++            public void onToast(String message) {
++
++                Toast.makeText(MyBajiListActivity.this, message, Toast.LENGTH_LONG).show();
++                capthaDialog.hideDialog();
++            }
++        });
+     }
+ 
+ 
+@@ -614,23 +487,4 @@
+     }
+ 
+ 
+-    /** Defines callbacks for service binding, passed to bindService() */
+-    private ServiceConnection connection = new ServiceConnection() {
+-
+-        @Override
+-        public void onServiceConnected(ComponentName className,
+-                                       IBinder service) {
+-            // We've bound to LocalService, cast the IBinder and get LocalService instance
+-            BajiClaimService.BajiClaimServiceBinder binder = (BajiClaimService.BajiClaimServiceBinder) service;
+-            mService = binder.getService();
+-            mBound = true;
+-        }
+-
+-        @Override
+-        public void onServiceDisconnected(ComponentName arg0) {
+-            mBound = false;
+-        }
+-    };
+-
+-
+ }
+\ No newline at end of file

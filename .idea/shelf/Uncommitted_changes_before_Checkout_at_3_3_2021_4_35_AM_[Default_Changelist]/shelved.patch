@@ -1,0 +1,951 @@
+Index: app/src/main/java/com/try3x/uttam/Retrofit/IRetrofitApiCall.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.try3x.uttam.Retrofit;\r\n\r\nimport com.try3x.uttam.Models.ActivityBanner;\r\nimport com.try3x.uttam.Models.CFToken;\r\nimport com.try3x.uttam.Models.GameSlot;\r\nimport com.try3x.uttam.Models.MathQuestion;\r\nimport com.try3x.uttam.Models.PayMethodInfo;\r\nimport com.try3x.uttam.Models.Paytm.Checksum;\r\nimport com.try3x.uttam.Models.Paytm.PaytmHash;\r\nimport com.try3x.uttam.Models.Paytm.Root;\r\nimport com.try3x.uttam.Models.QuestionResponse;\r\nimport com.try3x.uttam.Models.RazorPayOrder;\r\nimport com.try3x.uttam.Models.Response.AppUpdateResponse;\r\nimport com.try3x.uttam.Models.Response.BajiBtnResponse;\r\nimport com.try3x.uttam.Models.Response.BajiClaimResponse;\r\nimport com.try3x.uttam.Models.Response.BajiInfoResponse;\r\nimport com.try3x.uttam.Models.Response.BuyCoinTransResponse;\r\nimport com.try3x.uttam.Models.Response.CoinHistoryResponse;\r\nimport com.try3x.uttam.Models.Response.CoinPackageResponse;\r\nimport com.try3x.uttam.Models.Response.MyCommissionsResponse;\r\nimport com.try3x.uttam.Models.Response.PaymentInfoResponse;\r\nimport com.try3x.uttam.Models.Response.PaymentMethodResponse;\r\nimport com.try3x.uttam.Models.Response.PayoutHistoryResponse;\r\nimport com.try3x.uttam.Models.Response.PayoutInfoResponse;\r\nimport com.try3x.uttam.Models.Response.ReferUserListResponse;\r\nimport com.try3x.uttam.Models.Response.ResultListResponse;\r\nimport com.try3x.uttam.Models.Response.ResultStatusResponse;\r\nimport com.try3x.uttam.Models.Response.SinglePayMethodResponse;\r\nimport com.try3x.uttam.Models.Response.SlideResponse;\r\nimport com.try3x.uttam.Models.Response.TransactionResponse;\r\nimport com.try3x.uttam.Models.Response.UserPayMethodListResponse;\r\nimport com.try3x.uttam.Models.Response.addUserResponse;\r\nimport com.try3x.uttam.Models.Response.BajiServerBody;\r\nimport com.try3x.uttam.Models.MyBajiList;\r\nimport com.try3x.uttam.Models.Response.MyCoinResponse;\r\nimport com.try3x.uttam.Models.PackageList;\r\nimport com.try3x.uttam.Models.Response.ReferUserResponse;\r\nimport com.try3x.uttam.Models.Response.ServerResponse;\r\nimport com.try3x.uttam.Models.ResultVideo;\r\nimport com.try3x.uttam.Models.UserLogin;\r\nimport com.try3x.uttam.Models.YtApi.YtPlaylist;\r\n\r\nimport retrofit2.Call;\r\nimport retrofit2.http.Body;\r\nimport retrofit2.http.Field;\r\nimport retrofit2.http.FormUrlEncoded;\r\nimport retrofit2.http.GET;\r\nimport retrofit2.http.POST;\r\nimport retrofit2.http.Query;\r\n\r\npublic interface IRetrofitApiCall {\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"account.isUserExits.php\")\r\n    Call<UserLogin> isUserExits(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uid,\r\n            @Field(\"fcmToken\") String fcmToken);\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"account.addUser.php\")\r\n    Call<addUserResponse> addUser(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uid,\r\n            @Field(\"name\") String name,\r\n            @Field(\"photo_url\") String photo_url,\r\n            @Field(\"phone\") String phone,\r\n            @Field(\"gender\") int gender,\r\n            @Field(\"pay_method\") int pay_method,\r\n            @Field(\"pay_id\") String pay_id,\r\n            @Field(\"isReferBy\") boolean isReferBy,\r\n            @Field(\"fcmToken\") String fcmToken,\r\n            @Field(\"referCode\") String referCod\r\n    );\r\n\r\n    @GET(\"helper.getPackages.php\")\r\n    Call<PackageList> getPackages(\r\n            @Query(\"slot\") String slot,\r\n            @Query(\"uid\") String uid\r\n    );\r\n\r\n\r\n    @POST(\"baji.placeBaji.php\")\r\n    Call<ServerResponse> placeBaji(\r\n           @Body BajiServerBody bajiServerBody\r\n     );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"baji.getMyBajiList.php\")\r\n    Call<MyBajiList> getMyBajiList(\r\n        @Field(\"sha1\") String sha1,\r\n        @Field(\"email\") String email,\r\n        @Field(\"u_id\") String uId,\r\n        @Field(\"isPaging\") boolean isPaging,\r\n        @Field(\"currPage\") int currPage,\r\n        @Field(\"itemPage\") int itemPage\r\n\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.bajiClaim.php\")\r\n    Call<BajiClaimResponse> claimBaji(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"baji_id\") int id,\r\n            @Field(\"ques_id\") String ques_id,\r\n            @Field(\"ques_result\") long ques_result\r\n\r\n\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.getCoin.php\")\r\n    Call<MyCoinResponse> getCoin(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.getCommission.php\")\r\n    Call<MyCoinResponse> getCommission(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.getWithdrawable.php\")\r\n    Call<MyCoinResponse> getWithdrawable(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.commissionToMyCoin.php\")\r\n    Call<ServerResponse> commissionToMyCoin(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"commission\") float commission\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.getCoinHistory.php\")\r\n    Call<CoinHistoryResponse> getCoinHistory(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"isPaging\") boolean isPaging,\r\n            @Field(\"currPage\") int currPage,\r\n            @Field(\"itemPage\") int itemPage\r\n    );\r\n\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.getWithrawbleHistory.php\")\r\n    Call<CoinHistoryResponse> getWithrawbleHistory(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"isPaging\") boolean isPaging,\r\n            @Field(\"currPage\") int currPage,\r\n            @Field(\"itemPage\") int itemPage\r\n    );\r\n\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.getCommissions.php\")\r\n    Call<MyCommissionsResponse> getCommissions(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"isPaging\") boolean isPaging,\r\n            @Field(\"currPage\") int currPage,\r\n            @Field(\"itemPage\") int itemPage\r\n    );\r\n    @FormUrlEncoded\r\n    @POST(\"account.getReferUser.php\")\r\n    Call<ReferUserResponse> getReferUser(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"u_id\") String uId\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"baji.getMyBajiInfo.php\")\r\n    Call<BajiInfoResponse> getMyBajiInfo(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token\r\n    );\r\n\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.getCoinPack.php\")\r\n    Call<CoinPackageResponse> getCoinPack(\r\n            @Field(\"sha1\") String sha1\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"money.addBuyCoinTransaction.php\")\r\n    Call<BuyCoinTransResponse> getBuyCoinTransRef(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"amount\") float amount,\r\n            @Field(\"coin_pack_id\") int coin_pack_id,\r\n            @Field(\"coin\") int coin,\r\n            @Field(\"order_id\") String razor_orderId\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"setting.getPaymentInfo.php\")\r\n    Call<PaymentInfoResponse> getPaymentInfo(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"settings.getPayoutInfo.php\")\r\n    Call<PayoutInfoResponse> getPayoutInfo(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token\r\n    );\r\n\r\n\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"money.addBuyCoin.php\")\r\n    Call<ServerResponse> addBuyCoin(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"ref\") String ref,\r\n            @Field(\"price\") float amount\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"paytm_checksum/generateChecksum.php\")\r\n    Call<Checksum> getChecksum(\r\n            @Field(\"MID\") String mId,\r\n            @Field(\"ORDER_ID\") String orderId\r\n    );\r\n\r\n    @POST(\"payment.getPaymentMethod.php\")\r\n    Call<PaymentMethodResponse> getPaymentMethod();\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"payment.getMyPayMethodById.php\")\r\n    Call<SinglePayMethodResponse> getMyPayMethodById(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"method_id\") int method_id\r\n\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"payment.addPayMethod.php\")\r\n    Call<ServerResponse> addPayMethod(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"pay_method_id\") int pay_method_id,\r\n            @Field(\"pay_number\") String pay_number\r\n\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"payment.getPayMethodList.php\")\r\n    Call<UserPayMethodListResponse> getPayMethodList(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"payment.paymentRequest.php\")\r\n    Call<ServerResponse> paymentRequest(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"method_id\") int method_id,\r\n            @Field(\"coin\") int coin,\r\n            @Field(\"rupee\") int rupee\r\n    );\r\n    @FormUrlEncoded\r\n    @POST(\"payment.paymentPaytmRequest.php\")\r\n    Call<ServerResponse> paymentPaytmRequest(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"pay_num\") String pay_num,\r\n            @Field(\"coin\") float coin,\r\n            @Field(\"rupee\") float rupee\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"payment.getPayoutList.php\")\r\n    Call<PayoutHistoryResponse> getPayoutList(\r\n                    @Field(\"sha1\") String sha1,\r\n                    @Field(\"email\") String email,\r\n                    @Field(\"u_id\") String uId,\r\n                    @Field(\"token\") String token,\r\n                    @Field(\"isPaging\") boolean isPaging,\r\n                    @Field(\"currPage\") int currPage,\r\n                    @Field(\"itemPage\") int itemPage\r\n            );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"payRequestHash.php\")\r\n    Call<String> payRequestHash(\r\n            @Field(\"txnid\") String txnId,\r\n            @Field(\"amount\") float amount,\r\n            @Field(\"productinfo\") String productinfo,\r\n            @Field(\"firstname\") String firstname,\r\n            @Field(\"email\") String email\r\n\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"paytm/checkSum.php\")\r\n    Call<ServerResponse> paytmRequestHash(\r\n            @Field(\"orderId\") String orderId\r\n\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"paytm/paytm.requestPayout.php\")\r\n    Call<Root> paytmHash(\r\n            @Field(\"amount\") String amount,\r\n            @Field(\"orderId\") String orderId,\r\n            @Field(\"uId\") String uId,\r\n            @Field(\"uEmail\") String uEmail\r\n\r\n    );\r\n\r\n    @POST(\"baji.bajiResultPunlishedORNot.php\")\r\n    Call<ResultStatusResponse> getBajiResultStatus( );\r\n\r\n     @POST(\"helper.getLatestUpdate.php\")\r\n    Call<AppUpdateResponse> getAppUpdate( );\r\n\r\n     @POST(\"helper.getSlides.php\")\r\n    Call<SlideResponse> getBannerSlide( );\r\n\r\n    @POST(\"baji.getResult.php\")\r\n    Call<ResultListResponse> getResultList(\r\n\r\n    );\r\n\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"paytm/paytm.paymentCheck.php\")\r\n    Call<String> paytmPaymentStatus(\r\n        @Field(\"ORDERID\") String oderid\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"payment.getTransactionList.php\")\r\n    Call<TransactionResponse> getTransactionList(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"isPaging\") boolean isPaging,\r\n            @Field(\"currPage\") int currPage,\r\n            @Field(\"itemPage\") int itemPage\r\n    );\r\n    @POST(\"settings.getPaytmMid.php\")\r\n    Call<ServerResponse>getPaytmMid();\r\n    @FormUrlEncoded\r\n    @POST(\"helper.getActivityBanner.php\")\r\n    Call<ActivityBanner>getActivityBanner(\r\n            @Field(\"activity\") String activity    );\r\n\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"helper.updateHistory.php\")\r\n    Call<String> appUpdateHistory(\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"verion_name\") String verion_name,\r\n            @Field(\"version_code\") String version_code\r\n\r\n    );\r\n\r\n\r\n    @POST(\"baji.getResultVideo.php\")\r\n    Call<ResultVideo> getResultVideo();\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"cashfree/cashfree.generateToken.php\")\r\n    Call<CFToken> generateCFToken(\r\n            @Field(\"orderId\") String orderid,\r\n            @Field(\"amount\") float amount\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"razorpay/razorpay.createOrder.php\")\r\n    Call<RazorPayOrder> generateRazorpayOrder(\r\n            @Field(\"amount\") int amount\r\n    );\r\n\r\n    @POST(\"baji.getBaji.php\")\r\n    Call<GameSlot> getGameSlot();\r\n\r\n    @POST(\"baji.getBabjiBtns.php\")\r\n    Call<BajiBtnResponse> getBajiBtn();\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"account.getReferUserList.php\")\r\n    Call<ReferUserListResponse> getReferUserList(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uid\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"account.redemRefer.php\")\r\n    Call<ServerResponse> redemRefer(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uid,\r\n            @Field(\"token\") String token,\r\n            @Field(\"referId\") String referId\r\n\r\n    );\r\n\r\n    //Game 2\r\n\r\n    @POST(\"baji2.getBaji.php\")\r\n    Call<GameSlot> getGameSlot2();\r\n\r\n    @POST(\"baji2.getBabjiBtns.php\")\r\n    Call<BajiBtnResponse> getBajiBtn2();\r\n\r\n    @GET(\"helper.game2.getPackages.php\")\r\n    Call<PackageList> getGame2Packages();\r\n\r\n\r\n    @POST(\"baji.game2.placeBaji.php\")\r\n    Call<ServerResponse> placeGame2Baji(\r\n            @Body BajiServerBody bajiServerBody\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"baji.game2.getMyBajiList.php\")\r\n    Call<MyBajiList> getGame2MyBajiList(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"isPaging\") boolean isPaging,\r\n            @Field(\"currPage\") int currPage,\r\n            @Field(\"itemPage\") int itemPage\r\n\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"coin.game2.bajiClaim.php\")\r\n    Call<ServerResponse> claimGame2Baji(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"baji_id\") int id\r\n\r\n\r\n    );\r\n    @POST(\"baji.game2.getResult.php\")\r\n    Call<ResultListResponse> getGame2ResultList(\r\n\r\n    );\r\n\r\n    @POST(\"baji.game2.getResultVideo.php\")\r\n    Call<ResultVideo> getGame2ResultVideo();\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"helper.getMathQuestion.php\")\r\n    Call<QuestionResponse> getClaimQues(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token,\r\n            @Field(\"bajIid\") int bajIid,\r\n            @Field(\"gameNo\") int gameNo\r\n    );\r\n\r\n    //end of game2\r\n\r\n    @GET(\"https://youtube.googleapis.com/youtube/v3/playlistItems\")\r\n    Call<YtPlaylist> getYtPlaylist(\r\n            @Query(\"playlistId\") String playlistId,\r\n            @Query(\"key\") String key,\r\n            @Query(\"part\") String part,\r\n            @Query(\"maxResults\") int maxResults,\r\n            @Query(\"pageToken\") String pageToken\r\n    );\r\n\r\n    @FormUrlEncoded\r\n    @POST(\"helper.getMathQuestion.php\")\r\n    Call<MathQuestion> getMathQuestion(\r\n            @Field(\"sha1\") String sha1,\r\n            @Field(\"email\") String email,\r\n            @Field(\"u_id\") String uId,\r\n            @Field(\"token\") String token\r\n    );\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/try3x/uttam/Retrofit/IRetrofitApiCall.java	(revision 403455868a5119df8ba76623c5b2d44014df7cc6)
++++ app/src/main/java/com/try3x/uttam/Retrofit/IRetrofitApiCall.java	(date 1614724507755)
+@@ -3,11 +3,13 @@
+ import com.try3x.uttam.Models.ActivityBanner;
+ import com.try3x.uttam.Models.CFToken;
+ import com.try3x.uttam.Models.GameSlot;
++
+ import com.try3x.uttam.Models.MathQuestion;
+ import com.try3x.uttam.Models.PayMethodInfo;
+ import com.try3x.uttam.Models.Paytm.Checksum;
+ import com.try3x.uttam.Models.Paytm.PaytmHash;
+ import com.try3x.uttam.Models.Paytm.Root;
++
+ import com.try3x.uttam.Models.QuestionResponse;
+ import com.try3x.uttam.Models.RazorPayOrder;
+ import com.try3x.uttam.Models.Response.AppUpdateResponse;
+Index: app/src/main/java/com/try3x/uttam/Adapters/PackagesListAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.try3x.uttam.Adapters;\r\n\r\nimport android.content.Context;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.LinearLayout;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.try3x.uttam.Listener.OnPackageItemClickListener;\r\nimport com.try3x.uttam.Models.PackageList;\r\nimport com.try3x.uttam.Models.Packages;\r\nimport com.try3x.uttam.R;\r\n\r\nimport java.util.List;\r\n\r\npublic class PackagesListAdapter extends RecyclerView.Adapter<PackagesListAdapter.MyViewHolder> {\r\n\r\n    Context ctx;\r\n    List<Packages> packageList;\r\n    int btnId;\r\n    OnPackageItemClickListener onPackageItemClickListener;\r\n\r\n    public PackagesListAdapter(Context ctx, List<Packages> packageList, int btnId, OnPackageItemClickListener onPackageItemClickListener) {\r\n        this.ctx = ctx;\r\n        this.packageList = packageList;\r\n        this.btnId = btnId;\r\n        this.onPackageItemClickListener = onPackageItemClickListener;\r\n    }\r\n\r\n    @NonNull\r\n    @Override\r\n    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {\r\n        return new MyViewHolder(LayoutInflater.from(ctx).inflate(R.layout.layout_pck_item, parent, false));\r\n    }\r\n\r\n    @Override\r\n    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {\r\n        final Packages packages = packageList.get(position);\r\n        int pos = position+1;\r\n        if(packages.active){\r\n            holder.layForeground.setVisibility(View.GONE);\r\n        }else {\r\n            holder.layForeground.setVisibility(View.VISIBLE);\r\n        }\r\n        holder.txtSl.setText(\"\"+pos);\r\n        holder.txtName.setText(packages.name);\r\n        holder.txtPrice.setText(packages.price+\" Rp.\");\r\n\r\n        holder.layoutParrent.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                if (packages.active){\r\n                    onPackageItemClickListener.onItemClick(position, packages.id, packages.price, packages.name,  btnId);\r\n\r\n                }\r\n            }\r\n        });\r\n\r\n    }\r\n\r\n    @Override\r\n    public int getItemCount() {\r\n        return packageList.size();\r\n    }\r\n\r\n    public class MyViewHolder extends RecyclerView.ViewHolder {\r\n\r\n        TextView txtSl, txtName, txtPrice;\r\n        LinearLayout layoutParrent, layForeground;\r\n\r\n        public MyViewHolder(@NonNull View itemView) {\r\n            super(itemView);\r\n\r\n            txtSl = itemView.findViewById(R.id.txtSl);\r\n            txtName = itemView.findViewById(R.id.txtPackName);\r\n            txtPrice = itemView.findViewById(R.id.txtPrice);\r\n            layoutParrent = itemView.findViewById(R.id.layoutParrent);\r\n            layForeground = itemView.findViewById(R.id.layForeground);\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/try3x/uttam/Adapters/PackagesListAdapter.java	(revision 403455868a5119df8ba76623c5b2d44014df7cc6)
++++ app/src/main/java/com/try3x/uttam/Adapters/PackagesListAdapter.java	(date 1614724349637)
+@@ -41,11 +41,6 @@
+     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
+         final Packages packages = packageList.get(position);
+         int pos = position+1;
+-        if(packages.active){
+-            holder.layForeground.setVisibility(View.GONE);
+-        }else {
+-            holder.layForeground.setVisibility(View.VISIBLE);
+-        }
+         holder.txtSl.setText(""+pos);
+         holder.txtName.setText(packages.name);
+         holder.txtPrice.setText(packages.price+" Rp.");
+@@ -53,10 +48,7 @@
+         holder.layoutParrent.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+-                if (packages.active){
+-                    onPackageItemClickListener.onItemClick(position, packages.id, packages.price, packages.name,  btnId);
+-
+-                }
++                onPackageItemClickListener.onItemClick(position, packages.id, packages.price, packages.name,  btnId);
+             }
+         });
+ 
+@@ -70,7 +62,7 @@
+     public class MyViewHolder extends RecyclerView.ViewHolder {
+ 
+         TextView txtSl, txtName, txtPrice;
+-        LinearLayout layoutParrent, layForeground;
++        LinearLayout layoutParrent;
+ 
+         public MyViewHolder(@NonNull View itemView) {
+             super(itemView);
+@@ -79,7 +71,6 @@
+             txtName = itemView.findViewById(R.id.txtPackName);
+             txtPrice = itemView.findViewById(R.id.txtPrice);
+             layoutParrent = itemView.findViewById(R.id.layoutParrent);
+-            layForeground = itemView.findViewById(R.id.layForeground);
+         }
+     }
+ }
+Index: app/src/main/java/com/try3x/uttam/Fragments/GameSlotView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.try3x.uttam.Fragments;\r\n\r\nimport android.app.Dialog;\r\nimport android.content.Intent;\r\nimport android.graphics.Color;\r\nimport android.graphics.drawable.ColorDrawable;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.view.Window;\r\nimport android.widget.Button;\r\nimport android.widget.LinearLayout;\r\nimport android.widget.ProgressBar;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.google.android.gms.tasks.OnCompleteListener;\r\nimport com.google.android.gms.tasks.Task;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.auth.FirebaseUser;\r\nimport com.google.firebase.auth.GetTokenResult;\r\nimport com.try3x.uttam.Adapters.BajiBtnAdapter;\r\nimport com.try3x.uttam.Adapters.BajiPlaceListAdapter;\r\nimport com.try3x.uttam.Adapters.PackagesListAdapter;\r\nimport com.try3x.uttam.AddCoinActivity;\r\nimport com.try3x.uttam.Common.AddCoinDialog;\r\nimport com.try3x.uttam.Common.CapthaDialog;\r\nimport com.try3x.uttam.Common.Common;\r\nimport com.try3x.uttam.Common.PaperDB;\r\nimport com.try3x.uttam.Listener.OnPackageItemClickListener;\r\nimport com.try3x.uttam.Models.Btn;\r\nimport com.try3x.uttam.Models.GmailInfo;\r\nimport com.try3x.uttam.Models.MathQuestion;\r\nimport com.try3x.uttam.Models.PackageList;\r\nimport com.try3x.uttam.Models.Packages;\r\nimport com.try3x.uttam.Models.Response.BajiBtnResponse;\r\nimport com.try3x.uttam.Models.Response.BajiServerBody;\r\nimport com.try3x.uttam.Models.Response.MyCoinResponse;\r\nimport com.try3x.uttam.Models.Response.ServerResponse;\r\nimport com.try3x.uttam.Models.Slot;\r\nimport com.try3x.uttam.PayoutActivity;\r\nimport com.try3x.uttam.R;\r\nimport com.try3x.uttam.Retrofit.IRetrofitApiCall;\r\nimport com.try3x.uttam.Retrofit.RetrofitClient;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\nimport cc.cloudist.acplibrary.ACProgressConstant;\r\nimport cc.cloudist.acplibrary.ACProgressPie;\r\nimport io.paperdb.Paper;\r\nimport retrofit2.Call;\r\nimport retrofit2.Callback;\r\nimport retrofit2.Response;\r\n\r\npublic class GameSlotView extends Fragment implements OnPackageItemClickListener {\r\n    Slot slot;\r\n    Button btn1, btn2, btn3, btn4, btn5, btnPlaceBaji;\r\n    private Dialog dialog;\r\n    Packages pBtn1, pBtn2, pBtn3, pBtn4, pBtn5;\r\n    BajiServerBody bajiServerBody;\r\n    FirebaseAuth mAuth;\r\n    FirebaseUser mUser;\r\n    BajiPlaceListAdapter bajiPlaceListAdapter;\r\n    private ACProgressPie waitingdialog;\r\n    boolean isResultPublish;\r\n    TextView bajiStatus;\r\n    private GmailInfo gmailInfo;\r\n    RecyclerView recyBajiBtn;\r\n    ProgressBar btnProgress;\r\n    BajiBtnAdapter bajiBtnAdapter;\r\n    List<Btn> btnList = new ArrayList<>();\r\n    private TextView bajiId,txtResultTime;\r\n    private static final String SLOT_KEY = \"slot_key\";\r\n\r\n    public GameSlotView() {\r\n\r\n    }\r\n\r\n    public static GameSlotView getInstance(Slot slot){\r\n        GameSlotView gameSlotView = new GameSlotView();\r\n        Bundle bundle = new Bundle();\r\n        bundle.putSerializable(SLOT_KEY, slot);\r\n        gameSlotView.setArguments(bundle);\r\n\r\n        return  gameSlotView;\r\n    }\r\n    @Override\r\n    public void onCreate(@Nullable Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        mAuth = FirebaseAuth.getInstance();\r\n        mUser = mAuth.getCurrentUser();\r\n        Paper.init(getContext());\r\n        gmailInfo = Paper.book().read(PaperDB.GMAILINFO);\r\n    }\r\n\r\n    @Nullable\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {\r\n        View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_baji, null, false);\r\n        slot = (Slot) getArguments().getSerializable(\r\n                SLOT_KEY);\r\n        btnProgress = view.findViewById(R.id.btnProgress);\r\n        recyBajiBtn = view.findViewById(R.id.recyBajiBtn);\r\n        bajiId = view.findViewById(R.id.bajiId);\r\n        txtResultTime = view.findViewById(R.id.txtResultTime);\r\n\r\n        recyBajiBtn.setHasFixedSize(true);\r\n        recyBajiBtn.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false) );\r\n\r\n        btn1 = view.findViewById(R.id.btn1);\r\n        btn2 = view.findViewById(R.id.btn2);\r\n        btn3 = view.findViewById(R.id.btn3);\r\n        btn4 = view.findViewById(R.id.btn4);\r\n        btn5 = view.findViewById(R.id.btn5);\r\n        btnPlaceBaji = view.findViewById(R.id.btnPlace);\r\n\r\n        bajiServerBody = new BajiServerBody();\r\n        createDialog();\r\n\r\n        btn1.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                //selectPackages(btn1);\r\n            }\r\n        });\r\n        btn2.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                //selectPackages(btn2);\r\n            }\r\n        });\r\n\r\n        btn3.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                //selectPackages(btn3);\r\n            }\r\n        });\r\n\r\n        btn4.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n               // selectPackages(btn4);\r\n            }\r\n        });\r\n\r\n        btn5.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                //selectPackages(btn5);\r\n            }\r\n        });\r\n\r\n        btnPlaceBaji.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                for(Packages packages : bajiServerBody.getPackageList()){\r\n                    Log.d(\"Packages\"+packages.btn, \"\"+packages.price);\r\n\r\n                }\r\n\r\n                if (mUser!=null){\r\n                    placeBaji();\r\n                }else {\r\n                    Toast.makeText(getContext(), \"Something Went Wrong\", Toast.LENGTH_SHORT).show();\r\n                }\r\n            }\r\n        });\r\n\r\n        bajiId.setText(\"ID #\"+slot.id);\r\n        txtResultTime.setText(\"রেজাল্ট পাবলিশ এর টাইম: \"+slot.end_time);\r\n\r\n        getBajiBtns();\r\n\r\n        return view;\r\n    }\r\n\r\n    private void getBajiBtns() {\r\n        btnProgress.setVisibility(View.VISIBLE);\r\n        bajiBtnAdapter = new BajiBtnAdapter(getContext(), btnList);\r\n        recyBajiBtn.setAdapter(bajiBtnAdapter);\r\n\r\n\r\n        bajiBtnAdapter.setOnBtnClickListener(new BajiBtnAdapter.OnBtnClickListener() {\r\n            @Override\r\n            public void onBtnClick(int pos, Btn btn) {\r\n                selectPackages(btn.id);\r\n            }\r\n        });\r\n\r\n\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getBajiBtn()\r\n                .enqueue(new Callback<BajiBtnResponse>() {\r\n                    @Override\r\n                    public void onResponse(Call<BajiBtnResponse> call, Response<BajiBtnResponse> response) {\r\n                        btnProgress.setVisibility(View.GONE);\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            BajiBtnResponse bajiBtnResponse = response.body();\r\n\r\n                            if (!bajiBtnResponse.error){\r\n                                List<Btn> btns = bajiBtnResponse.btns;\r\n                                btnList.clear();\r\n                                btnList.addAll(btns);\r\n                                bajiBtnAdapter.notifyDataSetChanged();\r\n\r\n                            }\r\n                        }else {\r\n                            Toast.makeText(getContext(), \"Something went wrong\", Toast.LENGTH_SHORT).show();\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<BajiBtnResponse> call, Throwable t) {\r\n\r\n                    }\r\n                });\r\n    }\r\n\r\n    private void createDialog() {\r\n        waitingdialog = new ACProgressPie.Builder(getContext())\r\n                .ringColor(Color.WHITE)\r\n                .pieColor(Color.WHITE)\r\n                .updateType(ACProgressConstant.PIE_AUTO_UPDATE)\r\n                .build();\r\n    }\r\n\r\n\r\n    private void showWaitingDialog() {\r\n        if (waitingdialog!=null && !waitingdialog.isShowing()){\r\n            waitingdialog.show();\r\n        }\r\n    }\r\n\r\n    private void dismissWaitingDialog() {\r\n        if (waitingdialog!=null && waitingdialog.isShowing()){\r\n            waitingdialog.dismiss();\r\n        }\r\n    }\r\n\r\n    private void selectPackages(final int btn) {\r\n        dialog = new Dialog(getContext());\r\n        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);\r\n        dialog.setCancelable(true);\r\n        dialog.setContentView(R.layout.layout_pck_list_dialog);\r\n\r\n        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));\r\n\r\n        Window window = dialog.getWindow();\r\n        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);\r\n\r\n\r\n        final RecyclerView recyclerPck = dialog.findViewById(R.id.recyclerPck);\r\n        Button btnCancel = dialog.findViewById(R.id.btnCancel);\r\n\r\n        recyclerPck.setLayoutManager(new LinearLayoutManager(getContext()));\r\n        recyclerPck.setHasFixedSize(true);\r\n\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getPackages(\r\n                        slot.id,\r\n                        gmailInfo.user_id\r\n                )\r\n                .enqueue(new Callback<PackageList>() {\r\n                    @Override\r\n                    public void onResponse(Call<PackageList> call, Response<PackageList> response) {\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            PackageList pack = response.body();\r\n\r\n                            if (!pack.isError()){\r\n                                PackagesListAdapter adapter = new PackagesListAdapter(getContext(), pack.getPackages(), btn, GameSlotView.this);\r\n                                recyclerPck.setAdapter(adapter);\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<PackageList> call, Throwable t) {\r\n\r\n                    }\r\n                });\r\n\r\n\r\n        dialog.show();\r\n        btnCancel.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                dialog.dismiss();\r\n            }\r\n        });\r\n    }\r\n\r\n    @Override\r\n    public void onItemClick(int pos, int id, float price, String name, int btnId) {\r\n        if (btnId==0 && bajiServerBody.getPackageList().size()>0){\r\n            bajiServerBody.getPackageList().remove(pos);\r\n            if (bajiPlaceListAdapter!=null){\r\n                bajiPlaceListAdapter.notifyItemRemoved(pos);\r\n                bajiPlaceListAdapter.notifyItemRangeRemoved(pos, bajiServerBody.getPackageList().size());\r\n            }\r\n        }else {\r\n            bajiServerBody.packageList.clear(); //we clear all baji cause we required\r\n            Packages packages = new Packages();\r\n            packages.price = price;\r\n            packages.id = id;\r\n            packages.baji = Integer.parseInt(slot.id);\r\n            packages.name = name;\r\n            packages.btn = String.valueOf(btnId);\r\n\r\n\r\n            bajiServerBody.packageList.add(packages);\r\n\r\n            //Toast.makeText(getContext(), \"Added\", Toast.LENGTH_SHORT).show();\r\n            if (dialog!=null && dialog.isShowing()){\r\n                dialog.dismiss();\r\n            }\r\n            waitingdialog.show();\r\n            placeBaji();\r\n        }\r\n    }\r\n\r\n    private void placeBaji() {\r\n\r\n        if (bajiServerBody.getPackageList().size()>0){\r\n\r\n            final float bajiCoin = bajiServerBody.getPackageList().get(0).price;\r\n\r\n\r\n            RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                    .getCoin(Common.getKeyHash(getContext()),\r\n                            gmailInfo.getGmail(),\r\n                            gmailInfo.user_id,\r\n                            gmailInfo.access_token)\r\n                    .enqueue(new Callback<MyCoinResponse>() {\r\n                        @Override\r\n                        public void onResponse(Call<MyCoinResponse> call, Response<MyCoinResponse> response) {\r\n                            if (response.isSuccessful() && response.body()!=null){\r\n                                if (response.body().coin<bajiCoin){\r\n                                    //show dialog\r\n                                    dismissWaitingDialog();\r\n\r\n                                    new AddCoinDialog(getContext());\r\n\r\n                                }else {\r\n                                    Toast.makeText(getContext(), \"Participate with the correct answer and take the chance to win prizes\", Toast.LENGTH_SHORT).show();\r\n                                    showCaptcha();\r\n                                    \r\n//                                    final Dialog dialog = new Dialog(getContext());\r\n//                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);\r\n//                                    dialog.setCancelable(true);\r\n//                                    dialog.setContentView(R.layout.layout_fianl_baji_list_dialog);\r\n//\r\n//                                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));\r\n//\r\n//                                    Window window = dialog.getWindow();\r\n//                                    window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);\r\n//\r\n//\r\n//                                    final RecyclerView recyclerPck = dialog.findViewById(R.id.recyclerPck);\r\n//                                    Button btnCancel = dialog.findViewById(R.id.btnCancel);\r\n//                                    Button btnConfirm = dialog.findViewById(R.id.btnConfirm);\r\n//\r\n//\r\n//\r\n//                                    recyclerPck.setLayoutManager(new LinearLayoutManager(getContext()));\r\n//                                    recyclerPck.setHasFixedSize(true);\r\n//\r\n//\r\n//                                    bajiPlaceListAdapter = new BajiPlaceListAdapter(getContext(), bajiServerBody.getPackageList(), GameSlotView.this);\r\n//                                    recyclerPck.setAdapter(bajiPlaceListAdapter);\r\n//                                    Button btnAddCoin = dialog.findViewById(R.id.btnAddCoin);\r\n//                                    btnAddCoin.setOnClickListener(new View.OnClickListener() {\r\n//                                        @Override\r\n//                                        public void onClick(View view) {\r\n//                                            startActivity(new Intent(getContext(), AddCoinActivity.class));\r\n//                                        }\r\n//                                    });\r\n//                                    dialog.show();\r\n//\r\n//                                    btnCancel.setOnClickListener(new View.OnClickListener() {\r\n//                                        @Override\r\n//                                        public void onClick(View view) {\r\n//                                            if (dialog.isShowing()){\r\n//                                                dialog.dismiss();\r\n//                                            }\r\n//                                        }\r\n//                                    });\r\n//\r\n//                                    btnConfirm.setOnClickListener(new View.OnClickListener() {\r\n//                                        @Override\r\n//                                        public void onClick(View view) {\r\n//                                            if (bajiServerBody.getPackageList().size()>0){\r\n////                                                confirmBaji();\r\n//                                                dialog.dismiss();\r\n//                                                showCaptcha();\r\n//                                            }else {\r\n//                                                Toast.makeText(getContext(), \"Baji List Is Empty\", Toast.LENGTH_SHORT).show();\r\n//                                            }\r\n//                                        }\r\n//                                    });\r\n                                }\r\n                            }\r\n                        }\r\n\r\n                        @Override\r\n                        public void onFailure(Call<MyCoinResponse> call, Throwable t) {\r\n                            dismissWaitingDialog();\r\n                        }\r\n                    });\r\n\r\n\r\n\r\n        }else {\r\n            dismissWaitingDialog();\r\n            Toast.makeText(getContext(), \"Please add baji\", Toast.LENGTH_SHORT).show();\r\n        }\r\n\r\n\r\n\r\n    }\r\n    /*private void showCaptcha() {\r\n\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getMathQuestion(\r\n                        Common.getKeyHash(getContext()),\r\n                        gmailInfo.getGmail(),\r\n                        gmailInfo.user_id,\r\n                        gmailInfo.access_token\r\n                )\r\n                .enqueue(new Callback<MathQuestion>() {\r\n                    @Override\r\n                    public void onResponse(Call<MathQuestion> call, Response<MathQuestion> response) {\r\n                        dismissWaitingDialog();\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            final MathQuestion mathQuestion = response.body();\r\n                            if (!mathQuestion.isError()){\r\n                                final Dialog dialog = new Dialog(getContext());\r\n                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);\r\n                                dialog.setCancelable(true);\r\n                                dialog.setContentView(R.layout.dialog_captcha_layout);\r\n\r\n                                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));\r\n                                Window window = dialog.getWindow();\r\n                                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);\r\n                                Button btnSubmit = dialog.findViewById(R.id.btnSubmit);\r\n                                Button btnCancel = dialog.findViewById(R.id.btnCancel);\r\n\r\n                                TextView txtQues = dialog.findViewById(R.id.txtQues);\r\n                                final TextView edtResult = dialog.findViewById(R.id.edtResult);\r\n\r\n\r\n                                String ques = mathQuestion.getNum1()+mathQuestion.getOperator()+mathQuestion.getNum2();\r\n                                txtQues.setText(ques);\r\n\r\n\r\n                                btnSubmit.setOnClickListener(new View.OnClickListener() {\r\n                                    @Override\r\n                                    public void onClick(View view) {\r\n                                        if (edtResult.getText().length()>0){\r\n                                            int result = Integer.parseInt(edtResult.getText().toString());\r\n                                            dialog.dismiss();\r\n                                            confirmBaji(mathQuestion.getId(), result);\r\n                                        }else {\r\n                                            Toast.makeText(getContext(), \"Please Enter Result\", Toast.LENGTH_SHORT).show();;\r\n                                        }\r\n\r\n                                    }\r\n                                });\r\n\r\n                                btnCancel.setOnClickListener(new View.OnClickListener() {\r\n                                    @Override\r\n                                    public void onClick(View view) {\r\n                                        dialog.dismiss();\r\n                                    }\r\n                                });\r\n\r\n                                dialog.show();\r\n                            }else {\r\n                                Toast.makeText(getContext(), mathQuestion.getErrorDescription(), Toast.LENGTH_SHORT).show();\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<MathQuestion> call, Throwable t) {\r\n                        dismissWaitingDialog();\r\n                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();\r\n                    }\r\n                });\r\n    }*/\r\n\r\n    private void showCaptcha(){\r\n        dismissWaitingDialog();\r\n        final CapthaDialog capthaDialog = new CapthaDialog(getContext());\r\n        capthaDialog.init();\r\n        capthaDialog.showDialog();\r\n        capthaDialog.setOnCaptchaDialogListener(new CapthaDialog.OnCaptchaDialogListener() {\r\n            @Override\r\n            public void onResultOk() {\r\n\r\n               confirmBaji();\r\n            }\r\n\r\n            @Override\r\n            public void onCancel() {\r\n                capthaDialog.hideDialog();\r\n            }\r\n\r\n            @Override\r\n            public void onToast(String message) {\r\n\r\n                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();\r\n                capthaDialog.hideDialog();\r\n            }\r\n        });\r\n    }\r\n\r\n    private void confirmBaji() {\r\n\r\n        if (gmailInfo==null){\r\n            Toast.makeText(getContext(), \"Login Again\", Toast.LENGTH_SHORT).show();\r\n        }\r\n        showWaitingDialog();\r\n        mAuth.getAccessToken(true)\r\n                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {\r\n                    @Override\r\n                    public void onComplete(@NonNull Task<GetTokenResult> task) {\r\n                        if (task.isSuccessful()) {\r\n                            String idToken = task.getResult().getToken();\r\n                            // Send token to your backend via HTTPS\r\n                            bajiServerBody.email = mUser.getEmail();\r\n                            bajiServerBody.u_id = gmailInfo.user_id;\r\n                            bajiServerBody.token = gmailInfo.access_token;\r\n                            bajiServerBody.noOfBaji = Integer.parseInt(slot.id);\r\n                            bajiServerBody.sha1 = Common.getKeyHash(getContext());\r\n\r\n                            RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                                    .placeBaji(bajiServerBody)\r\n                                    .enqueue(new Callback<ServerResponse>() {\r\n                                        @Override\r\n                                        public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {\r\n                                            if (response.isSuccessful() && response.body()!=null){\r\n                                                ServerResponse serverResponse = response.body();\r\n                                                if (!serverResponse.error){\r\n                                                    dismissWaitingDialog();\r\n                                                    bajiServerBody.getPackageList().clear();\r\n                                                    //bajiPlaceListAdapter.notifyDataSetChanged();\r\n                                                    Toast.makeText(getContext(), \"\"+serverResponse.getError_description(), Toast.LENGTH_SHORT).show();\r\n\r\n                                                    Common.subscribeNoti(Common.getDate()+\"_\"+bajiServerBody.noOfBaji);\r\n                                                }else {\r\n                                                    dismissWaitingDialog();\r\n                                                    Toast.makeText(getContext(),  serverResponse.getError_description(), Toast.LENGTH_SHORT).show();\r\n                                                }\r\n                                            }\r\n                                        }\r\n\r\n                                        @Override\r\n                                        public void onFailure(Call<ServerResponse> call, Throwable t) {\r\n                                            dismissWaitingDialog();\r\n                                            Log.d(\"retrofit\", t.getMessage());\r\n                                            Toast.makeText(getContext(), \"\"+t.getMessage(), Toast.LENGTH_SHORT).show();\r\n                                        }\r\n                                    });\r\n                        } else {\r\n                            // Handle error -> task.getException();\r\n                        }\r\n                    }\r\n                });\r\n\r\n\r\n\r\n    }\r\n\r\n    /*private void confirmBaji(final String quesId, final int result) {\r\n\r\n        if (gmailInfo==null){\r\n            Toast.makeText(getContext(), \"Login Again\", Toast.LENGTH_SHORT).show();\r\n        }\r\n        showWaitingDialog();\r\n        mAuth.getAccessToken(true)\r\n                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {\r\n                    @Override\r\n                    public void onComplete(@NonNull Task<GetTokenResult> task) {\r\n                        if (task.isSuccessful()) {\r\n                            String idToken = task.getResult().getToken();\r\n                            // Send token to your backend via HTTPS\r\n                            bajiServerBody.email = mUser.getEmail();\r\n                            bajiServerBody.u_id = gmailInfo.user_id;\r\n                            bajiServerBody.token = gmailInfo.access_token;\r\n                            bajiServerBody.noOfBaji = Integer.parseInt(slot.id);\r\n                            bajiServerBody.sha1 = Common.getKeyHash(getContext());\r\n                            bajiServerBody.quesId = quesId;\r\n                            bajiServerBody.quesResult = result;\r\n                            RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                                    .placeBaji(bajiServerBody)\r\n                                    .enqueue(new Callback<ServerResponse>() {\r\n                                        @Override\r\n                                        public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {\r\n                                            if (response.isSuccessful() && response.body()!=null){\r\n                                                ServerResponse serverResponse = response.body();\r\n                                                if (!serverResponse.error){\r\n                                                    dismissWaitingDialog();\r\n                                                    bajiServerBody.getPackageList().clear();\r\n                                                    //bajiPlaceListAdapter.notifyDataSetChanged();\r\n                                                    Toast.makeText(getContext(), \"\"+serverResponse.getError_description(), Toast.LENGTH_SHORT).show();\r\n\r\n                                                    Common.subscribeNoti(Common.getDate()+\"_\"+bajiServerBody.noOfBaji);\r\n                                                }else {\r\n                                                    dismissWaitingDialog();\r\n                                                    Toast.makeText(getContext(),  serverResponse.getError_description(), Toast.LENGTH_SHORT).show();\r\n                                                }\r\n                                            }\r\n                                        }\r\n\r\n                                        @Override\r\n                                        public void onFailure(Call<ServerResponse> call, Throwable t) {\r\n                                            dismissWaitingDialog();\r\n                                            Log.d(\"retrofit\", t.getMessage());\r\n                                            Toast.makeText(getContext(), \"\"+t.getMessage(), Toast.LENGTH_SHORT).show();\r\n                                        }\r\n                                    });\r\n                        } else {\r\n                            // Handle error -> task.getException();\r\n                        }\r\n                    }\r\n                });\r\n\r\n\r\n\r\n    }*/\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/try3x/uttam/Fragments/GameSlotView.java	(revision 403455868a5119df8ba76623c5b2d44014df7cc6)
++++ app/src/main/java/com/try3x/uttam/Fragments/GameSlotView.java	(date 1614724349646)
+@@ -38,7 +38,7 @@
+ import com.try3x.uttam.Listener.OnPackageItemClickListener;
+ import com.try3x.uttam.Models.Btn;
+ import com.try3x.uttam.Models.GmailInfo;
+-import com.try3x.uttam.Models.MathQuestion;
++
+ import com.try3x.uttam.Models.PackageList;
+ import com.try3x.uttam.Models.Packages;
+ import com.try3x.uttam.Models.Response.BajiBtnResponse;
+Index: app/src/main/res/layout/content_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"wrap_content\"\r\n    android:orientation=\"vertical\"\r\n    app:layout_behavior=\"@string/appbar_scrolling_view_behavior\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\">\r\n\r\n    <HorizontalScrollView\r\n        android:layout_margin=\"@dimen/_3sdp\"\r\n        android:scrollbarThumbHorizontal=\"@color/none\"\r\n        android:scrollbars=\"horizontal\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\">\r\n        <LinearLayout\r\n            android:weightSum=\"3\"\r\n            android:layout_gravity=\"center_vertical\"\r\n            android:gravity=\"center_vertical\"\r\n            android:orientation=\"horizontal\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\">\r\n\r\n            <Button\r\n                android:paddingTop=\"@dimen/_5sdp\"\r\n                android:paddingBottom=\"@dimen/_5sdp\"\r\n                android:layout_weight=\"1\"\r\n                android:maxLines=\"2\"\r\n                android:id=\"@+id/btnMyCoin\"\r\n                android:layout_width=\"@dimen/_120sdp\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_margin=\"@dimen/_4sdp\"\r\n                android:background=\"@drawable/bg_btn_1\"\r\n                android:drawableEnd=\"@drawable/arrow_right\"\r\n                android:drawablePadding=\"@dimen/_8sdp\"\r\n                android:paddingStart=\"@dimen/_8sdp\"\r\n                android:paddingEnd=\"@dimen/_8sdp\"\r\n                android:text=\"My Coin\\nকয়েন কিনুন\"\r\n                android:textAllCaps=\"false\"\r\n                android:textColor=\"@color/MidnightBlue\"\r\n                android:textSize=\"@dimen/_13sdp\" />\r\n\r\n            <Button\r\n                android:layout_weight=\"1\"\r\n                android:layout_gravity=\"center_vertical\"\r\n                android:paddingTop=\"@dimen/_5sdp\"\r\n                android:paddingBottom=\"@dimen/_5sdp\"\r\n                android:drawablePadding=\"@dimen/_8sdp\"\r\n                android:paddingEnd=\"@dimen/_8sdp\"\r\n                android:paddingStart=\"@dimen/_8sdp\"\r\n                android:textColor=\"@color/MidnightBlue\"\r\n                android:textSize=\"@dimen/_13sdp\"\r\n\r\n                android:drawableEnd=\"@drawable/arrow_right\"\r\n                android:background=\"@drawable/bg_btn_1\"\r\n\r\n                android:textAllCaps=\"false\"\r\n                android:layout_margin=\"@dimen/_4sdp\"\r\n                android:id=\"@+id/btnCommission\"\r\n                android:text=\"Commission\\nকমিশন\"\r\n                android:layout_width=\"@dimen/_110sdp\"\r\n                android:layout_height=\"wrap_content\"/>\r\n\r\n            <Button\r\n                android:layout_weight=\"1\"\r\n                android:layout_gravity=\"center_vertical\"\r\n                android:paddingTop=\"@dimen/_5sdp\"\r\n                android:paddingBottom=\"@dimen/_5sdp\"\r\n                android:drawablePadding=\"@dimen/_8sdp\"\r\n                android:paddingEnd=\"@dimen/_8sdp\"\r\n                android:paddingStart=\"@dimen/_8sdp\"\r\n                android:textColor=\"@color/MidnightBlue\"\r\n                android:textSize=\"@dimen/_13sdp\"\r\n                android:drawableEnd=\"@drawable/arrow_right\"\r\n                android:background=\"@drawable/bg_btn_1\"\r\n                android:textAllCaps=\"false\"\r\n                android:layout_margin=\"@dimen/_4sdp\"\r\n                android:id=\"@+id/btnwithdrawable\"\r\n                android:text=\"Prize\\nপ্রাইজ\r\n\"\r\n                android:layout_width=\"@dimen/_120sdp\"\r\n                android:layout_height=\"wrap_content\"/>\r\n        </LinearLayout>\r\n    </HorizontalScrollView>\r\n\r\n\r\n    <ScrollView\r\n        android:id=\"@+id/scrollview\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\">\r\n        <LinearLayout\r\n            android:layout_margin=\"@dimen/_5sdp\"\r\n            android:orientation=\"vertical\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\">\r\n            <com.google.android.material.tabs.TabLayout\r\n                android:id=\"@+id/tabLayout\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:background=\"@drawable/bg_tab_layout\"\r\n                app:tabMode=\"scrollable\"\r\n                app:tabBackground=\"@drawable/tab_layout_selector\"\r\n                app:tabSelectedTextColor=\"@color/Teal\"\r\n                app:tabPaddingStart=\"@dimen/_10sdp\"\r\n                app:tabPaddingEnd=\"@dimen/_10sdp\"\r\n                app:tabIndicatorHeight=\"0dp\"\r\n                app:tabRippleColor=\"@null\" />\r\n\r\n            <RelativeLayout\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\">\r\n                <com.try3x.uttam.Custom.MyViewpager\r\n                    android:id=\"@+id/gameViewPager\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"@dimen/_180sdp\"\r\n                    android:name=\"com.try3x.uttam.Custom.MyViewpager\">\r\n                </com.try3x.uttam.Custom.MyViewpager>\r\n\r\n                <LinearLayout\r\n                    android:id=\"@+id/layAlert\"\r\n                    android:gravity=\"center\"\r\n                    android:layout_gravity=\"center_vertical\"\r\n                    android:orientation=\"vertical\"\r\n                    android:background=\"@color/Pink\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\">\r\n\r\n                    <ImageView\r\n                        android:src=\"@drawable/warning\"\r\n                        android:layout_width=\"@dimen/_60sdp\"\r\n                        android:layout_height=\"@dimen/_60sdp\"/>\r\n                    <TextView\r\n                        android:fontFamily=\"@font/nondon\"\r\n                        android:elevation=\"@dimen/_10sdp\"\r\n                        android:textColor=\"@color/MidnightBlue\"\r\n                        android:layout_margin=\"@dimen/_8sdp\"\r\n                        android:gravity=\"center\"\r\n                        android:textSize=\"@dimen/_15sdp\"\r\n                        android:text=\"আজকের সব গুলো গেমের রেজাল্ট পাবলিশ হয়ে গেছে।\r\nরাত ১২ টার পর থেকে আবার নতুন গেম চালু হবে।\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"/>\r\n\r\n                    <Button\r\n                        android:id=\"@+id/btnReloadBaji\"\r\n                        android:layout_margin=\"@dimen/_5sdp\"\r\n                        android:paddingEnd=\"@dimen/_8sdp\"\r\n                        android:paddingStart=\"@dimen/_8sdp\"\r\n                        android:textSize=\"@dimen/_13sdp\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:background=\"@drawable/update_btn_1\"\r\n                        android:textAllCaps=\"false\"\r\n                        android:text=\"Reload Game\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"/>\r\n                </LinearLayout>\r\n\r\n               <LinearLayout\r\n                   android:gravity=\"center_vertical\"\r\n                   android:layout_marginBottom=\"@dimen/_5sdp\"\r\n                   android:layout_marginTop=\"@dimen/_5sdp\"\r\n                   android:weightSum=\"3\"\r\n                   android:orientation=\"horizontal\"\r\n                   android:layout_below=\"@id/gameViewPager\"\r\n                   android:id=\"@+id/layOutBtn\"\r\n                   android:layout_width=\"match_parent\"\r\n                   android:layout_height=\"wrap_content\">\r\n                   <Button\r\n                       android:paddingBottom=\"@dimen/_5sdp\"\r\n                       android:paddingTop=\"@dimen/_5sdp\"\r\n                       android:layout_margin=\"@dimen/_2sdp\"\r\n                       android:layout_weight=\"1\"\r\n                       android:background=\"@color/colorAccent\"\r\n                       android:elevation=\"@dimen/_3sdp\"\r\n                       android:id=\"@+id/btnResult\"\r\n                       android:layout_width=\"match_parent\"\r\n                       android:layout_height=\"wrap_content\"\r\n                       android:text=\"See Result\\nরেজাল্ট দেখুন\"\r\n                       android:textAllCaps=\"false\"\r\n                       android:textColor=\"@color/white\"\r\n                       android:textSize=\"@dimen/_12sdp\" />\r\n                   <Button\r\n                       android:paddingBottom=\"@dimen/_5sdp\"\r\n                       android:paddingTop=\"@dimen/_5sdp\"\r\n                       android:layout_margin=\"@dimen/_2sdp\"\r\n                       android:layout_weight=\"1\"\r\n                       android:gravity=\"center\"\r\n                       android:background=\"@color/DarkOrange\"\r\n                       android:id=\"@+id/btnMyBajiList\"\r\n                       android:layout_width=\"match_parent\"\r\n                       android:layout_height=\"wrap_content\"\r\n                       android:layout_below=\"@id/btnResult\"\r\n                       android:layout_marginTop=\"8dp\"\r\n                       android:text=\"My Game \\nখেলার লিষ্ট\"\r\n                       android:textAllCaps=\"false\"\r\n                       android:textColor=\"@color/White\"\r\n                       android:textSize=\"@dimen/_12sdp\" />\r\n                   <Button\r\n                       android:paddingBottom=\"@dimen/_5sdp\"\r\n                       android:paddingTop=\"@dimen/_5sdp\"\r\n                       android:layout_margin=\"@dimen/_2sdp\"\r\n                       android:layout_weight=\"1\"\r\n                       android:background=\"#4CAF50\"\r\n                       android:elevation=\"@dimen/_3sdp\"\r\n                       android:id=\"@+id/btnYtVideo\"\r\n                       android:layout_width=\"match_parent\"\r\n                       android:layout_height=\"wrap_content\"\r\n                       android:layout_below=\"@id/btnMyBajiList\"\r\n                       android:layout_marginTop=\"8dp\"\r\n                       android:text=\"Game Tips \\nখেলার টিপস\"\r\n                       android:textAllCaps=\"false\"\r\n                       android:textColor=\"@color/white\"\r\n                       android:textSize=\"@dimen/_12sdp\" />\r\n               </LinearLayout>\r\n\r\n                <Button\r\n                    android:textColor=\"@color/white\"\r\n                    android:text=\"How To ply - কিভাবে খেলবেন?\"\r\n                    android:background=\"@color/MediumVioletRed\"\r\n                    android:id=\"@+id/btnHowToPly\"\r\n                    android:layout_below=\"@+id/layOutBtn\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"/>\r\n\r\n\r\n\r\n                <com.smarteist.autoimageslider.SliderView\r\n                    android:visibility=\"visible\"\r\n                    android:layout_marginTop=\"@dimen/_8sdp\"\r\n                    android:layout_below=\"@+id/btnHowToPly\"\r\n                    android:id=\"@+id/imageSlider\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"@dimen/_170sdp\"\r\n                    app:sliderAnimationDuration=\"600\"\r\n                    app:sliderAutoCycleDirection=\"back_and_forth\"\r\n                    app:sliderAutoCycleEnabled=\"false\"\r\n                    app:sliderIndicatorAnimationDuration=\"600\"\r\n                    app:sliderIndicatorGravity=\"center_horizontal|bottom\"\r\n                    app:sliderIndicatorMargin=\"15dp\"\r\n                    app:sliderIndicatorOrientation=\"horizontal\"\r\n                    app:sliderIndicatorPadding=\"3dp\"\r\n                    app:sliderIndicatorRadius=\"2dp\"\r\n                    app:sliderIndicatorSelectedColor=\"#5A5A5A\"\r\n                    app:sliderIndicatorUnselectedColor=\"#FFF\"\r\n                    app:sliderScrollTimeInSec=\"1\"\r\n                    app:sliderStartAutoCycle=\"false\" />\r\n\r\n                <View\r\n                    android:layout_marginBottom=\"@dimen/_20sdp\"\r\n                    android:layout_marginTop=\"@dimen/_20sdp\"\r\n                    android:id=\"@+id/divider\"\r\n                    android:layout_below=\"@id/imageSlider\"\r\n                    android:background=\"@color/colorAccent\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"@dimen/_3sdp\"/>\r\n\r\n                <ImageView\r\n\r\n                    android:layout_below=\"@id/divider\"\r\n                    android:layout_marginBottom=\"@dimen/_8sdp\"\r\n                    android:layout_marginTop=\"@dimen/_15sdp\"\r\n                    android:scaleType=\"fitXY\"\r\n                    android:id=\"@+id/imgBanner1\"\r\n                    android:visibility=\"visible\"\r\n                    android:layout_margin=\"@dimen/_5sdp\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"@dimen/_160sdp\"/>\r\n\r\n\r\n                <LinearLayout\r\n                    android:visibility=\"visible\"\r\n                    android:orientation=\"vertical\"\r\n                    android:layout_marginBottom=\"@dimen/_8sdp\"\r\n                    android:layout_below=\"@+id/imgBanner1\"\r\n                    android:id=\"@+id/laySecondGame\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\">\r\n                    <include\r\n                        android:visibility=\"visible\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_width=\"match_parent\"\r\n                        layout=\"@layout/activity_game2\"/>\r\n\r\n                    <ImageView\r\n                        android:layout_marginBottom=\"@dimen/_8sdp\"\r\n                        android:layout_marginTop=\"@dimen/_8sdp\"\r\n                        android:scaleType=\"fitXY\"\r\n                        android:id=\"@+id/imgBanner\"\r\n                        android:visibility=\"visible\"\r\n                        android:layout_margin=\"@dimen/_5sdp\"\r\n                        android:layout_width=\"match_parent\"\r\n                        android:layout_height=\"@dimen/_160sdp\"/>\r\n                </LinearLayout>\r\n\r\n\r\n\r\n            </RelativeLayout>\r\n        </LinearLayout>\r\n\r\n    </ScrollView>\r\n\r\n\r\n\r\n\r\n\r\n</LinearLayout>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/content_main.xml	(revision 403455868a5119df8ba76623c5b2d44014df7cc6)
++++ app/src/main/res/layout/content_main.xml	(date 1614724349682)
+@@ -13,7 +13,6 @@
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content">
+         <LinearLayout
+-            android:weightSum="3"
+             android:layout_gravity="center_vertical"
+             android:gravity="center_vertical"
+             android:orientation="horizontal"
+@@ -21,12 +20,8 @@
+             android:layout_height="wrap_content">
+ 
+             <Button
+-                android:paddingTop="@dimen/_5sdp"
+-                android:paddingBottom="@dimen/_5sdp"
+-                android:layout_weight="1"
+-                android:maxLines="2"
+                 android:id="@+id/btnMyCoin"
+-                android:layout_width="@dimen/_120sdp"
++                android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_margin="@dimen/_4sdp"
+                 android:background="@drawable/bg_btn_1"
+@@ -34,16 +29,15 @@
+                 android:drawablePadding="@dimen/_8sdp"
+                 android:paddingStart="@dimen/_8sdp"
+                 android:paddingEnd="@dimen/_8sdp"
+-                android:text="My Coin\nকয়েন কিনুন"
++                android:text="@string/my_coin"
+                 android:textAllCaps="false"
+                 android:textColor="@color/MidnightBlue"
+                 android:textSize="@dimen/_13sdp" />
+ 
+             <Button
+-                android:layout_weight="1"
+                 android:layout_gravity="center_vertical"
+-                android:paddingTop="@dimen/_5sdp"
+-                android:paddingBottom="@dimen/_5sdp"
++                android:paddingTop="@dimen/_3sdp"
++                android:paddingBottom="@dimen/_3sdp"
+                 android:drawablePadding="@dimen/_8sdp"
+                 android:paddingEnd="@dimen/_8sdp"
+                 android:paddingStart="@dimen/_8sdp"
+@@ -56,15 +50,14 @@
+                 android:textAllCaps="false"
+                 android:layout_margin="@dimen/_4sdp"
+                 android:id="@+id/btnCommission"
+-                android:text="Commission\nকমিশন"
+-                android:layout_width="@dimen/_110sdp"
++                android:text="@string/commission"
++                android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"/>
+ 
+             <Button
+-                android:layout_weight="1"
+                 android:layout_gravity="center_vertical"
+-                android:paddingTop="@dimen/_5sdp"
+-                android:paddingBottom="@dimen/_5sdp"
++                android:paddingTop="@dimen/_3sdp"
++                android:paddingBottom="@dimen/_3sdp"
+                 android:drawablePadding="@dimen/_8sdp"
+                 android:paddingEnd="@dimen/_8sdp"
+                 android:paddingStart="@dimen/_8sdp"
+@@ -75,9 +68,8 @@
+                 android:textAllCaps="false"
+                 android:layout_margin="@dimen/_4sdp"
+                 android:id="@+id/btnwithdrawable"
+-                android:text="Prize\nপ্রাইজ
+-"
+-                android:layout_width="@dimen/_120sdp"
++                android:text="@string/withdrawable"
++                android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"/>
+         </LinearLayout>
+     </HorizontalScrollView>
+@@ -111,7 +103,7 @@
+                 <com.try3x.uttam.Custom.MyViewpager
+                     android:id="@+id/gameViewPager"
+                     android:layout_width="match_parent"
+-                    android:layout_height="@dimen/_180sdp"
++                    android:layout_height="@dimen/_200sdp"
+                     android:name="com.try3x.uttam.Custom.MyViewpager">
+                 </com.try3x.uttam.Custom.MyViewpager>
+ 
+@@ -122,7 +114,7 @@
+                     android:orientation="vertical"
+                     android:background="@color/Pink"
+                     android:layout_width="match_parent"
+-                    android:layout_height="wrap_content">
++                    android:layout_height="@dimen/_200sdp">
+ 
+                     <ImageView
+                         android:src="@drawable/warning"
+@@ -149,84 +141,57 @@
+                         android:textColor="@color/white"
+                         android:background="@drawable/update_btn_1"
+                         android:textAllCaps="false"
+-                        android:text="Reload Game"
++                        android:text="Reload Baji"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"/>
+                 </LinearLayout>
+ 
+-               <LinearLayout
+-                   android:gravity="center_vertical"
+-                   android:layout_marginBottom="@dimen/_5sdp"
+-                   android:layout_marginTop="@dimen/_5sdp"
+-                   android:weightSum="3"
+-                   android:orientation="horizontal"
+-                   android:layout_below="@id/gameViewPager"
+-                   android:id="@+id/layOutBtn"
+-                   android:layout_width="match_parent"
+-                   android:layout_height="wrap_content">
+-                   <Button
+-                       android:paddingBottom="@dimen/_5sdp"
+-                       android:paddingTop="@dimen/_5sdp"
+-                       android:layout_margin="@dimen/_2sdp"
+-                       android:layout_weight="1"
+-                       android:background="@color/colorAccent"
+-                       android:elevation="@dimen/_3sdp"
+-                       android:id="@+id/btnResult"
+-                       android:layout_width="match_parent"
+-                       android:layout_height="wrap_content"
+-                       android:text="See Result\nরেজাল্ট দেখুন"
+-                       android:textAllCaps="false"
+-                       android:textColor="@color/white"
+-                       android:textSize="@dimen/_12sdp" />
+-                   <Button
+-                       android:paddingBottom="@dimen/_5sdp"
+-                       android:paddingTop="@dimen/_5sdp"
+-                       android:layout_margin="@dimen/_2sdp"
+-                       android:layout_weight="1"
+-                       android:gravity="center"
+-                       android:background="@color/DarkOrange"
+-                       android:id="@+id/btnMyBajiList"
+-                       android:layout_width="match_parent"
+-                       android:layout_height="wrap_content"
+-                       android:layout_below="@id/btnResult"
+-                       android:layout_marginTop="8dp"
+-                       android:text="My Game \nখেলার লিষ্ট"
+-                       android:textAllCaps="false"
+-                       android:textColor="@color/White"
+-                       android:textSize="@dimen/_12sdp" />
+-                   <Button
+-                       android:paddingBottom="@dimen/_5sdp"
+-                       android:paddingTop="@dimen/_5sdp"
+-                       android:layout_margin="@dimen/_2sdp"
+-                       android:layout_weight="1"
+-                       android:background="#4CAF50"
+-                       android:elevation="@dimen/_3sdp"
+-                       android:id="@+id/btnYtVideo"
+-                       android:layout_width="match_parent"
+-                       android:layout_height="wrap_content"
+-                       android:layout_below="@id/btnMyBajiList"
+-                       android:layout_marginTop="8dp"
+-                       android:text="Game Tips \nখেলার টিপস"
+-                       android:textAllCaps="false"
+-                       android:textColor="@color/white"
+-                       android:textSize="@dimen/_12sdp" />
+-               </LinearLayout>
++                <Button
++                    android:background="@drawable/bg_btn_green"
++                    android:elevation="@dimen/_3sdp"
++                    android:id="@+id/btnResult"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_below="@id/gameViewPager"
++                    android:layout_marginTop="8dp"
++                    android:text="See Result - রেজাল্ট দেখুন"
++                    android:textAllCaps="false"
++                    android:textColor="@color/MidnightBlue"
++                    android:textSize="@dimen/_16sdp" />
++                <Button
++                    android:paddingBottom="@dimen/_8sdp"
++                    android:gravity="center"
++                    android:background="@drawable/bg_btn_green"
++                    android:elevation="@dimen/_3sdp"
++                    android:id="@+id/btnMyBajiList"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_below="@id/btnResult"
++                    android:layout_marginTop="8dp"
++                    android:text="My Baji \n দেখুন আপনি কবে কোন ঘরে খেলেছেন"
++                    android:textAllCaps="false"
++                    android:textColor="@color/MidnightBlue"
++                    android:textSize="@dimen/_16sdp" />
++                <Button
++                    android:background="@drawable/bg_btn_green"
++                    android:elevation="@dimen/_3sdp"
++                    android:id="@+id/btnYtVideo"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:layout_below="@id/btnMyBajiList"
++                    android:layout_marginTop="8dp"
++                    android:text="Game Tips - খেলার কিছু টিপস"
++                    android:textAllCaps="false"
++                    android:textColor="@color/MidnightBlue"
++                    android:textSize="@dimen/_16sdp" />
+ 
+-                <Button
+-                    android:textColor="@color/white"
+-                    android:text="How To ply - কিভাবে খেলবেন?"
+-                    android:background="@color/MediumVioletRed"
+-                    android:id="@+id/btnHowToPly"
+-                    android:layout_below="@+id/layOutBtn"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="wrap_content"/>
+ 
+ 
+ 
+                 <com.smarteist.autoimageslider.SliderView
+-                    android:visibility="visible"
++
+                     android:layout_marginTop="@dimen/_8sdp"
+-                    android:layout_below="@+id/btnHowToPly"
++                    android:layout_below="@+id/btnYtVideo"
+                     android:id="@+id/imageSlider"
+                     android:layout_width="match_parent"
+                     android:layout_height="@dimen/_170sdp"
+@@ -244,38 +209,16 @@
+                     app:sliderScrollTimeInSec="1"
+                     app:sliderStartAutoCycle="false" />
+ 
+-                <View
+-                    android:layout_marginBottom="@dimen/_20sdp"
+-                    android:layout_marginTop="@dimen/_20sdp"
+-                    android:id="@+id/divider"
+-                    android:layout_below="@id/imageSlider"
+-                    android:background="@color/colorAccent"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="@dimen/_3sdp"/>
+-
+-                <ImageView
+-
+-                    android:layout_below="@id/divider"
+-                    android:layout_marginBottom="@dimen/_8sdp"
+-                    android:layout_marginTop="@dimen/_15sdp"
+-                    android:scaleType="fitXY"
+-                    android:id="@+id/imgBanner1"
+-                    android:visibility="visible"
+-                    android:layout_margin="@dimen/_5sdp"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="@dimen/_160sdp"/>
+-
+-
+                 <LinearLayout
+-                    android:visibility="visible"
++                    android:visibility="gone"
+                     android:orientation="vertical"
+                     android:layout_marginBottom="@dimen/_8sdp"
+-                    android:layout_below="@+id/imgBanner1"
++                    android:layout_marginTop="@dimen/_3sdp"
++                    android:layout_below="@+id/imageSlider"
+                     android:id="@+id/laySecondGame"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content">
+                     <include
+-                        android:visibility="visible"
+                         android:layout_height="wrap_content"
+                         android:layout_width="match_parent"
+                         layout="@layout/activity_game2"/>
+Index: app/src/main/java/com/try3x/uttam/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.try3x.uttam;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.content.ContextCompat;\r\nimport androidx.drawerlayout.widget.DrawerLayout;\r\nimport androidx.fragment.app.Fragment;\r\n\r\nimport android.content.Intent;\r\nimport android.content.pm.PackageInfo;\r\nimport android.content.pm.PackageManager;\r\nimport android.graphics.Color;\r\nimport android.net.Uri;\r\nimport android.os.Build;\r\nimport android.os.Bundle;\r\nimport android.os.Handler;\r\nimport android.view.Gravity;\r\nimport android.view.View;\r\nimport android.view.ViewTreeObserver;\r\nimport android.view.Window;\r\nimport android.view.WindowManager;\r\nimport android.view.animation.AccelerateInterpolator;\r\nimport android.view.animation.AlphaAnimation;\r\nimport android.view.animation.Animation;\r\nimport android.view.animation.AnimationSet;\r\nimport android.view.animation.DecelerateInterpolator;\r\nimport android.view.animation.TranslateAnimation;\r\nimport android.widget.Button;\r\nimport android.widget.FrameLayout;\r\nimport android.widget.ImageView;\r\nimport android.widget.LinearLayout;\r\nimport android.widget.ScrollView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.google.android.material.navigation.NavigationView;\r\nimport com.google.android.material.tabs.TabLayout;\r\nimport com.google.firebase.messaging.FirebaseMessaging;\r\nimport com.smarteist.autoimageslider.SliderView;\r\nimport com.try3x.uttam.Adapters.BajiViewpagerAdapter;\r\nimport com.try3x.uttam.Adapters.BannerSliderAdapter;\r\nimport com.try3x.uttam.Common.PaperDB;\r\nimport com.try3x.uttam.Custom.MyViewpager;\r\nimport com.try3x.uttam.Fragments.GameSlotView;\r\nimport com.try3x.uttam.Fragments.GameSlotView2;\r\nimport com.try3x.uttam.Models.ActivityBanner;\r\nimport com.try3x.uttam.Models.GameSlot;\r\nimport com.try3x.uttam.Models.GmailInfo;\r\nimport com.try3x.uttam.Models.Response.ResultStatusResponse;\r\nimport com.try3x.uttam.Models.Response.SlideResponse;\r\nimport com.try3x.uttam.Models.ResultStatus;\r\nimport com.try3x.uttam.Models.Slot;\r\nimport com.try3x.uttam.Models.User;\r\nimport com.try3x.uttam.Retrofit.IRetrofitApiCall;\r\nimport com.try3x.uttam.Retrofit.RetrofitClient;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\nimport cc.cloudist.acplibrary.ACProgressConstant;\r\nimport cc.cloudist.acplibrary.ACProgressPie;\r\nimport io.paperdb.Paper;\r\nimport retrofit2.Call;\r\nimport retrofit2.Callback;\r\nimport retrofit2.Response;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n    ScrollView mScrollView;\r\n    LinearLayout laySecondGame;\r\n    LinearLayout layMyBaji,layAddCoin,layMycoin,layWithdraw,layCommission, layTransaction, layAlert;\r\n    private static final String TOPIC_ALL_USER = \"ALL_USERS\";\r\n    TabLayout tabLayout;\r\n    MyViewpager viewpagerBaji;\r\n    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji, btnYtVideo, btnHowToPly;\r\n    User user;\r\n    private NavigationView navigationView;\r\n    ImageView imgDrawer,imgChat, imgUpdate;\r\n    private DrawerLayout drawer;\r\n    private ACProgressPie dialog;\r\n    GmailInfo gmailInfo;\r\n\r\n    private SliderView imageSlider;\r\n    private TextView txtUName;\r\n    private PackageInfo pInfo;\r\n\r\n    //Game 2\r\n    LinearLayout game2layAlert;\r\n    TabLayout game2tabLayout;\r\n    MyViewpager game2viewpagerBaji;\r\n    Button game2btnGame2Bajilist, game2btnResult,  btnMyBajiList;\r\n    ImageView imgBanner, imgBanner1;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        changeStatusBarColor(getResources().getColor(R.color.OrangeRed));\r\n        setContentView(R.layout.activity_main);\r\n        Paper.init(this);\r\n        user = Paper.book().read(PaperDB.USER_PROFILE);\r\n        gmailInfo = Paper.book().read(PaperDB.GMAILINFO);\r\n\r\n        drawer = findViewById(R.id.drawer_layout);\r\n        //navigationView = findViewById(R.id.nav_view);\r\n\r\n        initview();\r\n\r\n        addInfoToNav();\r\n\r\n        getBannerSlider();\r\n        getBanner();\r\n        getBanner1();\r\n\r\n      /*  navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {\r\n            @Override\r\n            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {\r\n                int id = menuItem.getItemId();\r\n                drawer.closeDrawers();\r\n                if (id == R.id.menuMybaji){\r\n\r\n                    startActivity(new Intent(MainActivity.this, MyBajiListActivity.class));\r\n                    return true;\r\n                }else if (id == R.id.menuMyCoin){\r\n                    startActivity(new Intent(MainActivity.this, MyCoinActivity.class));\r\n                    return true;\r\n                }else if (id == R.id.menuProfile){\r\n                    startActivity(new Intent(MainActivity.this, UserProfileActivity.class));\r\n                    return true;\r\n                }\r\n                return true;\r\n            }\r\n        });*/\r\n\r\n      scrollAnimation();\r\n\r\n\r\n\r\n//        mScrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {\r\n//            @Override\r\n//            public void onGlobalLayout() {\r\n//                mScrollView.post(new Runnable() {\r\n//                    public void run() {\r\n//                        mScrollView.fullScroll(View.FOCUS_DOWN);\r\n//\r\n//                    }\r\n//                });\r\n//            }\r\n//        });\r\n\r\n\r\n        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_ALL_USER);\r\n        setAppUpdateHistory();\r\n    }\r\n\r\n    private void getBanner1() {\r\n        imgBanner1.setVisibility(View.GONE);\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getActivityBanner(\"MainActivity1\")\r\n                .enqueue(new Callback<ActivityBanner>() {\r\n                    @Override\r\n                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            final ActivityBanner activityBanner = response.body();\r\n                            if (!activityBanner.error){\r\n                                if (activityBanner.imageUrl!=null){\r\n                                    imgBanner1.setVisibility(View.VISIBLE);\r\n                                    if(!MainActivity.this.isFinishing()){\r\n                                        Glide.with(MainActivity.this)\r\n                                                .load(activityBanner.imageUrl)\r\n                                                .into(imgBanner1);\r\n\r\n                                        imgBanner1.setOnClickListener(new View.OnClickListener() {\r\n                                            @Override\r\n                                            public void onClick(View view) {\r\n                                                if (activityBanner.actionType==1){\r\n                                                    //open url\r\n                                                    if (activityBanner.actionUrl!=null){\r\n                                                        String url = activityBanner.actionUrl;\r\n                                                        String linkHost = Uri.parse(url).getHost();\r\n                                                        Uri uri = Uri.parse(url);\r\n\r\n                                                        if (linkHost==null){\r\n                                                            return;\r\n                                                        }\r\n\r\n                                                        if (linkHost.equals(\"play.google.com\")){\r\n                                                            String appId = uri.getQueryParameter(\"id\");\r\n\r\n                                                            Intent intent = new Intent(Intent.ACTION_VIEW);\r\n                                                            intent.setData(Uri.parse(\"market://details?id=\"+appId));\r\n                                                            startActivity(intent);\r\n\r\n                                                        }else if(linkHost.equals(\"www.youtube.com\")){\r\n                                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);\r\n                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);\r\n                                                            intent.setPackage(\"com.google.android.youtube\");\r\n                                                            startActivity(intent);\r\n\r\n\r\n                                                        }else if (url != null && (url.startsWith(\"http://\") || url.startsWith(\"https://\"))) {\r\n                                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));\r\n                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);\r\n\r\n                                                            startActivity(intent);\r\n\r\n                                                        }\r\n                                                    }\r\n                                                }else if (activityBanner.actionType==2){\r\n                                                    //open activity\r\n                                                }\r\n                                            }\r\n                                        });\r\n                                    }\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<ActivityBanner> call, Throwable t) {\r\n\r\n                    }\r\n                });\r\n    }\r\n\r\n    private void scrollAnimation() {\r\n        new Handler().postDelayed(new Runnable() {\r\n            @Override\r\n            public void run() {\r\n                mScrollView.post(new Runnable() {\r\n                    public void run() {\r\n                        mScrollView.smoothScrollTo(0, laySecondGame.getBottom());\r\n                        new Handler().postDelayed(new Runnable() {\r\n                            @Override\r\n                            public void run() {\r\n                                mScrollView.smoothScrollTo(laySecondGame.getBottom(), View.FOCUS_UP);\r\n                            }\r\n                        }, 1000);\r\n                    }\r\n                });\r\n            }\r\n        }, 2000);\r\n    }\r\n\r\n    private void getBanner() {\r\n        imgBanner.setVisibility(View.GONE);\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getActivityBanner(\"MainActivity\")\r\n                .enqueue(new Callback<ActivityBanner>() {\r\n                    @Override\r\n                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            final ActivityBanner activityBanner = response.body();\r\n                            if (!activityBanner.error){\r\n                                if (activityBanner.imageUrl!=null){\r\n                                    imgBanner.setVisibility(View.VISIBLE);\r\n                                    if(!MainActivity.this.isFinishing()){\r\n                                        Glide.with(MainActivity.this)\r\n                                                .load(activityBanner.imageUrl)\r\n                                                .into(imgBanner);\r\n\r\n                                        imgBanner.setOnClickListener(new View.OnClickListener() {\r\n                                            @Override\r\n                                            public void onClick(View view) {\r\n                                                if (activityBanner.actionType==1){\r\n                                                    //open url\r\n                                                    if (activityBanner.actionUrl!=null){\r\n                                                        String url = activityBanner.actionUrl;\r\n                                                        String linkHost = Uri.parse(url).getHost();\r\n                                                        Uri uri = Uri.parse(url);\r\n\r\n                                                        if (linkHost==null){\r\n                                                            return;\r\n                                                        }\r\n\r\n                                                        if (linkHost.equals(\"play.google.com\")){\r\n                                                            String appId = uri.getQueryParameter(\"id\");\r\n\r\n                                                            Intent intent = new Intent(Intent.ACTION_VIEW);\r\n                                                            intent.setData(Uri.parse(\"market://details?id=\"+appId));\r\n                                                            startActivity(intent);\r\n\r\n                                                        }else if(linkHost.equals(\"www.youtube.com\")){\r\n                                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);\r\n                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);\r\n                                                            intent.setPackage(\"com.google.android.youtube\");\r\n                                                            startActivity(intent);\r\n\r\n\r\n                                                        }else if (url != null && (url.startsWith(\"http://\") || url.startsWith(\"https://\"))) {\r\n                                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));\r\n                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);\r\n\r\n                                                            startActivity(intent);\r\n\r\n                                                        }\r\n                                                    }\r\n                                                }else if (activityBanner.actionType==2){\r\n                                                    //open activity\r\n                                                }\r\n                                            }\r\n                                        });\r\n                                    }\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<ActivityBanner> call, Throwable t) {\r\n\r\n                    }\r\n                });\r\n    }\r\n    private void getBannerSlider() {\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getBannerSlide()\r\n                .enqueue(new Callback<SlideResponse>() {\r\n                    @Override\r\n                    public void onResponse(Call<SlideResponse> call, Response<SlideResponse> response) {\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            SlideResponse slideResponse = response.body();\r\n                            if (!slideResponse.error){\r\n                                BannerSliderAdapter adapter = new BannerSliderAdapter(getApplicationContext(), slideResponse.slides);\r\n                                imageSlider.setSliderAdapter(adapter);\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<SlideResponse> call, Throwable t) {\r\n\r\n                    }\r\n                });\r\n    }\r\n\r\n    private void changeStatusBarColor(int resourseColor) {\r\n        if (Build.VERSION.SDK_INT >= 21) {\r\n            if (Build.VERSION.SDK_INT<23){\r\n                Window window = MainActivity.this.getWindow();\r\n\r\n                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);\r\n\r\n                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);\r\n\r\n                window.setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.WhiteBlue));\r\n            }else {\r\n                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark\r\n            }\r\n\r\n            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.WhiteBlue)); // Navigation bar the soft bottom of some phones like nexus and some Samsung note series\r\n            getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.WhiteBlue)); //status bar or the time bar at the top\r\n        }\r\n\r\n    }\r\n\r\n    private void addInfoToNav() {\r\n        ImageView imgPro = findViewById(R.id.navImgProfile);\r\n\r\n        LinearLayout layMyBaji = findViewById(R.id.layMyBaji);\r\n        LinearLayout layAddCoin = findViewById(R.id.layAddCoin);\r\n        LinearLayout layMycoin = findViewById(R.id.layMycoin);\r\n        LinearLayout layWithdraw = findViewById(R.id.layWithdraw);\r\n        LinearLayout layCommission = findViewById(R.id.layCommission);\r\n        LinearLayout layTransaction = findViewById(R.id.layTransaction);\r\n        LinearLayout layProfile = findViewById(R.id.layProfile);\r\n\r\n        TextView txtPrivacyPolicyNav = findViewById(R.id.txtPrivacyPolicyNav);\r\n        TextView txtTermsAndConditionNav = findViewById(R.id.txtTermsAndConditionNav);\r\n\r\n        Glide.with(this)\r\n                .load(user.getPhoto_url())\r\n                .placeholder(R.drawable.person)\r\n                .into(imgPro);\r\n\r\n        TextView name = findViewById(R.id.txtNavUserName);\r\n        TextView mail = findViewById(R.id.txtNavUserMail);\r\n\r\n        name.setText(user.name);\r\n        mail.setText(user.email);\r\n\r\n\r\n\r\n        imgPro.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, UserProfileActivity.class));\r\n            }\r\n        });\r\n\r\n        layAddCoin.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, AddCoinActivity.class));\r\n            }\r\n        });\r\n\r\n        layMycoin.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, MyCoinActivity.class));\r\n            }\r\n        });\r\n\r\n        layWithdraw.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, MyWithrawbleActivity.class));\r\n            }\r\n        });\r\n\r\n        layCommission.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, MyCommisionActivity.class));\r\n            }\r\n        });\r\n\r\n        layMyBaji.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, MyBajiListActivity.class));\r\n            }\r\n        });\r\n        layTransaction.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, TransactionActivity.class));\r\n            }\r\n        });\r\n\r\n        layProfile.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, UserProfileActivity.class));\r\n            }\r\n        });\r\n\r\n        txtPrivacyPolicyNav.setOnClickListener(new View.OnClickListener() {\r\n                    @Override\r\n                    public void onClick(View view) {\r\n                        startActivity(new Intent(MainActivity.this, PrivacyActivity.class));\r\n                    }\r\n         });\r\n\r\n        txtTermsAndConditionNav.setOnClickListener(new View.OnClickListener() {\r\n                    @Override\r\n                    public void onClick(View view) {\r\n                        startActivity(new Intent(MainActivity.this, TermActivity.class));\r\n                    }\r\n         });\r\n\r\n\r\n\r\n\r\n    }\r\n\r\n    private void initViewpager() {\r\n        showWaitingDialog();\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getBajiResultStatus()\r\n                .enqueue(new Callback<ResultStatusResponse>() {\r\n                    @Override\r\n                    public void onResponse(Call<ResultStatusResponse> call, Response<ResultStatusResponse> response) {\r\n                        dismissWaitingDialog();\r\n                        if(response.isSuccessful() && response.body()!=null){\r\n                            ResultStatusResponse ResultStatusResponse = response.body();\r\n                            if(!ResultStatusResponse.error){\r\n                                ResultStatus resultStatus = ResultStatusResponse.resultStatus;\r\n\r\n                                //createViepager(resultStatus);\r\n                            }\r\n                        }\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<ResultStatusResponse> call, Throwable t) {\r\n\r\n                    }\r\n                });\r\n\r\n\r\n\r\n\r\n    }\r\n\r\n    private void createViepager(/*ResultStatus resultStatus*/) {\r\n        layAlert.setVisibility(View.GONE);\r\n        showWaitingDialog();\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getGameSlot()\r\n                .enqueue(new Callback<GameSlot>() {\r\n                    @Override\r\n                    public void onResponse(Call<GameSlot> call, Response<GameSlot> response) {\r\n                        dismissWaitingDialog();\r\n                        List<Fragment> fragments = new ArrayList<>();\r\n                        List<String> titles = new ArrayList<>();\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            GameSlot gameSlot = response.body();\r\n                            if (!gameSlot.error){\r\n                                List<Slot> slots = gameSlot.slots;\r\n                                if (slots.size()>0){\r\n                                    layAlert.setVisibility(View.GONE);\r\n                                    for (Slot slot : slots){\r\n                                        GameSlotView gameSlotView = GameSlotView.getInstance(slot);\r\n                                        fragments.add(gameSlotView);\r\n                                        titles.add(slot.name);\r\n                                    }\r\n\r\n\r\n                                    BajiViewpagerAdapter bajiViewpagerAdapter = new BajiViewpagerAdapter(getSupportFragmentManager(), fragments, titles);\r\n                                    viewpagerBaji.setAdapter(bajiViewpagerAdapter);\r\n                                    tabLayout.setupWithViewPager(viewpagerBaji);\r\n\r\n                                    viewpagerBaji.setMyScroller();\r\n\r\n                                    return;\r\n\r\n                                }\r\n                            }\r\n                        }\r\n\r\n                        layAlert.setVisibility(View.VISIBLE);\r\n\r\n\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<GameSlot> call, Throwable t) {\r\n                        dismissWaitingDialog();\r\n                    }\r\n                });\r\n\r\n//        List<Boolean> resultPublish = new ArrayList<>();\r\n//        if (resultStatus.getBaji1()==0){\r\n//            resultPublish.add(false);\r\n//        }else {\r\n//            resultPublish.add(true);\r\n//\r\n//        }\r\n//\r\n//        if (resultStatus.getBaji2()==0){\r\n//            resultPublish.add(false);\r\n//        }else {\r\n//            resultPublish.add(true);\r\n//\r\n//        }\r\n//\r\n//        if (resultStatus.getBaji3()==0){\r\n//            resultPublish.add(false);\r\n//        }else {\r\n//            resultPublish.add(true);\r\n//\r\n//        }\r\n//\r\n//        if (resultStatus.getBaji4()==0){\r\n//            resultPublish.add(false);\r\n//        }else {\r\n//            resultPublish.add(true);\r\n//\r\n//        }\r\n//\r\n//        if (resultStatus.getBaji5()==0){\r\n//            resultPublish.add(false);\r\n//        }else {\r\n//            resultPublish.add(true);\r\n//\r\n//        }\r\n\r\n        //List<Fragment> fragments = new ArrayList<>();\r\n        //List<String> titles = new ArrayList<>();\r\n       /* fragments.add(new Baji1(resultPublish.get(0)));\r\n        fragments.add(new Baji2(resultPublish.get(1)));\r\n        fragments.add(new Baji3(resultPublish.get(2)));\r\n        fragments.add(new Baji4(resultPublish.get(3)));\r\n        fragments.add(new Baji5(resultPublish.get(4)));*/\r\n\r\n\r\n\r\n\r\n       /* titles.add(\"Baji 1\");\r\n        titles.add(\"Baji 2\");\r\n        titles.add(\"Baji 3\");\r\n        titles.add(\"Baji 4\");\r\n        titles.add(\"Baji 5\");*/\r\n\r\n\r\n\r\n\r\n    }\r\n    private void createGame2Viepager() {\r\n        game2layAlert.setVisibility(View.GONE);\r\n        showWaitingDialog();\r\n        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                .getGameSlot2()\r\n                .enqueue(new Callback<GameSlot>() {\r\n                    @Override\r\n                    public void onResponse(Call<GameSlot> call, Response<GameSlot> response) {\r\n                        dismissWaitingDialog();\r\n                        List<Fragment> fragments = new ArrayList<>();\r\n                        List<String> titles = new ArrayList<>();\r\n                        if (response.isSuccessful() && response.body()!=null){\r\n                            GameSlot gameSlot = response.body();\r\n                            if (!gameSlot.error){\r\n                                List<Slot> slots = gameSlot.slots;\r\n                                if (slots.size()>0){\r\n                                    game2layAlert.setVisibility(View.GONE);\r\n                                    for (Slot slot : slots){\r\n                                        GameSlotView2 gameSlotView = GameSlotView2.getInstance(slot);\r\n                                        fragments.add(gameSlotView);\r\n                                        titles.add(slot.name);\r\n                                    }\r\n\r\n\r\n                                    BajiViewpagerAdapter bajiViewpagerAdapter = new BajiViewpagerAdapter(getSupportFragmentManager(), fragments, titles);\r\n                                    game2viewpagerBaji.setAdapter(bajiViewpagerAdapter);\r\n                                    game2tabLayout.setupWithViewPager(game2viewpagerBaji);\r\n\r\n                                    game2viewpagerBaji.setMyScroller();\r\n\r\n                                    return;\r\n\r\n                                }\r\n                            }\r\n                        }\r\n\r\n                        game2layAlert.setVisibility(View.VISIBLE);\r\n\r\n\r\n                    }\r\n\r\n                    @Override\r\n                    public void onFailure(Call<GameSlot> call, Throwable t) {\r\n                        dismissWaitingDialog();\r\n                    }\r\n                });\r\n\r\n\r\n\r\n    }\r\n\r\n    private void initview() {\r\n        tabLayout = findViewById(R.id.tabLayout);\r\n        viewpagerBaji = findViewById(R.id.gameViewPager);\r\n        btnCommission = findViewById(R.id.btnCommission);\r\n        btnWithdrawable = findViewById(R.id.btnwithdrawable);\r\n        btnResult = findViewById(R.id.btnResult);\r\n        btnMyBajiList = findViewById(R.id.btnMyBajiList);\r\n        btnHowToPly = findViewById(R.id.btnHowToPly);\r\n\r\n        btnMyCoin = findViewById(R.id.btnMyCoin);\r\n        btnReloadBaji = findViewById(R.id.btnReloadBaji);\r\n        imgDrawer = findViewById(R.id.imgDrawer);\r\n        imageSlider = findViewById(R.id.imageSlider);\r\n        imgChat = findViewById(R.id.imgChat);\r\n        imgUpdate = findViewById(R.id.imgChckUpdate);\r\n        layAlert = findViewById(R.id.layAlert);\r\n\r\n        mScrollView = findViewById(R.id.scrollview);\r\n        laySecondGame = findViewById(R.id.laySecondGame);\r\n        imgBanner = findViewById(R.id.imgBanner);\r\n        imgBanner1 = findViewById(R.id.imgBanner1);\r\n        btnYtVideo = findViewById(R.id.btnYtVideo);\r\n\r\n        initGame2View();\r\n\r\n        btnReloadBaji.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                createViepager();\r\n\r\n            }\r\n        });\r\n\r\n        imgDrawer.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                drawer.openDrawer(Gravity.LEFT);\r\n            }\r\n        });\r\n        btnMyCoin.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, MyCoinActivity.class));\r\n            }\r\n        });\r\n\r\n        btnCommission.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, MyCommisionActivity.class));\r\n            }\r\n        });\r\n\r\n        btnWithdrawable.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(MainActivity.this, MyWithrawbleActivity.class));\r\n            }\r\n        });\r\n\r\n        btnResult.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(getApplicationContext(), ResultListActivity.class));\r\n            }\r\n        });\r\n\r\n        imgChat.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                openLiveChat();\r\n            }\r\n        });\r\n\r\n        imgUpdate.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                startActivity(new Intent(getApplicationContext(), AppUpdateActivity.class));\r\n\r\n            }\r\n        });\r\n\r\n        btnYtVideo.setOnClickListener(new View.OnClickListener() {\r\n                @Override\r\n                public void onClick(View view) {\r\n                    startActivity(new Intent(getApplicationContext(), YtVideoActivity.class));\r\n\r\n                }\r\n            });\r\n        btnMyBajiList.setOnClickListener(new View.OnClickListener() {\r\n                @Override\r\n                public void onClick(View view) {\r\n                    startActivity(new Intent(getApplicationContext(), MyBajiListActivity.class));\r\n\r\n                }\r\n            });\r\n\r\n         btnHowToPly.setOnClickListener(new View.OnClickListener() {\r\n                        @Override\r\n                        public void onClick(View view) {\r\n                            startActivity(new Intent(getApplicationContext(), HowToPlyActivity.class));\r\n\r\n                        }\r\n         });\r\n\r\n\r\n    }\r\n\r\n    private void initGame2View() {\r\n        game2tabLayout = findViewById(R.id.game2tabLayout);\r\n        game2viewpagerBaji = findViewById(R.id.game2gameViewPager);\r\n        game2layAlert = findViewById(R.id.game2layAlert);\r\n        game2btnGame2Bajilist = findViewById(R.id.game2btnGame2Bajilist);\r\n        game2btnResult = findViewById(R.id.game2btnResult);\r\n\r\n        game2btnGame2Bajilist.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                startActivity(new Intent(MainActivity.this, com.try3x.uttam.Game2.MyBajiListActivity.class));\r\n            }\r\n        });\r\n\r\n        game2btnResult.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                startActivity(new Intent(MainActivity.this, com.try3x.uttam.Game2.ResultListActivity.class));\r\n            }\r\n        });\r\n    }\r\n\r\n    @Override\r\n    protected void onStart() {\r\n        super.onStart();\r\n\r\n    }\r\n\r\n    @Override\r\n    protected void onResume() {\r\n        super.onResume();\r\n        createViepager();\r\n        createGame2Viepager();\r\n\r\n    }\r\n\r\n    private void createDialog() {\r\n        dialog = new ACProgressPie.Builder(this)\r\n                .ringColor(Color.WHITE)\r\n                .pieColor(Color.WHITE)\r\n                .updateType(ACProgressConstant.PIE_AUTO_UPDATE)\r\n                .build();\r\n    }\r\n\r\n    private void showWaitingDialog() {\r\n        if (!isFinishing() &&dialog!=null && !dialog.isShowing()){\r\n            dialog.show();\r\n        }\r\n    }\r\n\r\n    private void dismissWaitingDialog() {\r\n        if (!isFinishing() &&dialog!=null && dialog.isShowing()){\r\n            dialog.dismiss();\r\n        }\r\n    }\r\n\r\n    public void  openLiveChat(){\r\n        String contact = \"+918585807175\"; // use country code with your phone number\r\n        String url = \"https://api.whatsapp.com/send?phone=\" + contact;\r\n        try {\r\n            PackageManager pm = getApplicationContext().getPackageManager();\r\n            pm.getPackageInfo(\"com.whatsapp\", PackageManager.GET_ACTIVITIES);\r\n            Intent i = new Intent(Intent.ACTION_VIEW);\r\n            i.setData(Uri.parse(url));\r\n            startActivity(i);\r\n        } catch (PackageManager.NameNotFoundException e) {\r\n            Toast.makeText(MainActivity.this, \"Whatsapp app not installed in your phone\", Toast.LENGTH_SHORT).show();\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    private void setAppUpdateHistory(){\r\n        try {\r\n            pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);\r\n\r\n            String version = pInfo.versionName;\r\n            int versionCode = pInfo.versionCode;\r\n\r\n            RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)\r\n                    .appUpdateHistory(\r\n                          gmailInfo.gmail,\r\n                            gmailInfo.user_id,\r\n                            version,\r\n                            String.valueOf(versionCode)\r\n                    )\r\n                    .enqueue(new Callback<String>() {\r\n                        @Override\r\n                        public void onResponse(Call<String> call, Response<String> response) {\r\n\r\n                        }\r\n\r\n                        @Override\r\n                        public void onFailure(Call<String> call, Throwable t) {\r\n\r\n                        }\r\n                    });\r\n        } catch (PackageManager.NameNotFoundException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/try3x/uttam/MainActivity.java	(revision 403455868a5119df8ba76623c5b2d44014df7cc6)
++++ app/src/main/java/com/try3x/uttam/MainActivity.java	(date 1614724389816)
+@@ -71,7 +71,7 @@
+     private static final String TOPIC_ALL_USER = "ALL_USERS";
+     TabLayout tabLayout;
+     MyViewpager viewpagerBaji;
+-    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji, btnYtVideo, btnHowToPly;
++    Button btnMyCoin, btnCommission ,btnWithdrawable, btnResult, btnReloadBaji, btnYtVideo;
+     User user;
+     private NavigationView navigationView;
+     ImageView imgDrawer,imgChat, imgUpdate;
+@@ -88,7 +88,7 @@
+     TabLayout game2tabLayout;
+     MyViewpager game2viewpagerBaji;
+     Button game2btnGame2Bajilist, game2btnResult,  btnMyBajiList;
+-    ImageView imgBanner, imgBanner1;
++    ImageView imgBanner;
+ 
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+@@ -108,7 +108,6 @@
+ 
+         getBannerSlider();
+         getBanner();
+-        getBanner1();
+ 
+       /*  navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+             @Override
+@@ -130,7 +129,7 @@
+             }
+         });*/
+ 
+-      scrollAnimation();
++      //scrollAnimation();
+ 
+ 
+ 
+@@ -151,77 +150,6 @@
+         setAppUpdateHistory();
+     }
+ 
+-    private void getBanner1() {
+-        imgBanner1.setVisibility(View.GONE);
+-        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+-                .getActivityBanner("MainActivity1")
+-                .enqueue(new Callback<ActivityBanner>() {
+-                    @Override
+-                    public void onResponse(Call<ActivityBanner> call, Response<ActivityBanner> response) {
+-                        if (response.isSuccessful() && response.body()!=null){
+-                            final ActivityBanner activityBanner = response.body();
+-                            if (!activityBanner.error){
+-                                if (activityBanner.imageUrl!=null){
+-                                    imgBanner1.setVisibility(View.VISIBLE);
+-                                    if(!MainActivity.this.isFinishing()){
+-                                        Glide.with(MainActivity.this)
+-                                                .load(activityBanner.imageUrl)
+-                                                .into(imgBanner1);
+-
+-                                        imgBanner1.setOnClickListener(new View.OnClickListener() {
+-                                            @Override
+-                                            public void onClick(View view) {
+-                                                if (activityBanner.actionType==1){
+-                                                    //open url
+-                                                    if (activityBanner.actionUrl!=null){
+-                                                        String url = activityBanner.actionUrl;
+-                                                        String linkHost = Uri.parse(url).getHost();
+-                                                        Uri uri = Uri.parse(url);
+-
+-                                                        if (linkHost==null){
+-                                                            return;
+-                                                        }
+-
+-                                                        if (linkHost.equals("play.google.com")){
+-                                                            String appId = uri.getQueryParameter("id");
+-
+-                                                            Intent intent = new Intent(Intent.ACTION_VIEW);
+-                                                            intent.setData(Uri.parse("market://details?id="+appId));
+-                                                            startActivity(intent);
+-
+-                                                        }else if(linkHost.equals("www.youtube.com")){
+-                                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+-                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+-                                                            intent.setPackage("com.google.android.youtube");
+-                                                            startActivity(intent);
+-
+-
+-                                                        }else if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+-                                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+-                                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+-
+-                                                            startActivity(intent);
+-
+-                                                        }
+-                                                    }
+-                                                }else if (activityBanner.actionType==2){
+-                                                    //open activity
+-                                                }
+-                                            }
+-                                        });
+-                                    }
+-                                }
+-                            }
+-                        }
+-                    }
+-
+-                    @Override
+-                    public void onFailure(Call<ActivityBanner> call, Throwable t) {
+-
+-                    }
+-                });
+-    }
+-
+     private void scrollAnimation() {
+         new Handler().postDelayed(new Runnable() {
+             @Override
+@@ -364,9 +292,6 @@
+         LinearLayout layTransaction = findViewById(R.id.layTransaction);
+         LinearLayout layProfile = findViewById(R.id.layProfile);
+ 
+-        TextView txtPrivacyPolicyNav = findViewById(R.id.txtPrivacyPolicyNav);
+-        TextView txtTermsAndConditionNav = findViewById(R.id.txtTermsAndConditionNav);
+-
+         Glide.with(this)
+                 .load(user.getPhoto_url())
+                 .placeholder(R.drawable.person)
+@@ -435,20 +360,6 @@
+             }
+         });
+ 
+-        txtPrivacyPolicyNav.setOnClickListener(new View.OnClickListener() {
+-                    @Override
+-                    public void onClick(View view) {
+-                        startActivity(new Intent(MainActivity.this, PrivacyActivity.class));
+-                    }
+-         });
+-
+-        txtTermsAndConditionNav.setOnClickListener(new View.OnClickListener() {
+-                    @Override
+-                    public void onClick(View view) {
+-                        startActivity(new Intent(MainActivity.this, TermActivity.class));
+-                    }
+-         });
+-
+ 
+ 
+ 
+@@ -645,7 +556,6 @@
+         btnWithdrawable = findViewById(R.id.btnwithdrawable);
+         btnResult = findViewById(R.id.btnResult);
+         btnMyBajiList = findViewById(R.id.btnMyBajiList);
+-        btnHowToPly = findViewById(R.id.btnHowToPly);
+ 
+         btnMyCoin = findViewById(R.id.btnMyCoin);
+         btnReloadBaji = findViewById(R.id.btnReloadBaji);
+@@ -658,7 +568,6 @@
+         mScrollView = findViewById(R.id.scrollview);
+         laySecondGame = findViewById(R.id.laySecondGame);
+         imgBanner = findViewById(R.id.imgBanner);
+-        imgBanner1 = findViewById(R.id.imgBanner1);
+         btnYtVideo = findViewById(R.id.btnYtVideo);
+ 
+         initGame2View();
+@@ -735,14 +644,6 @@
+                 }
+             });
+ 
+-         btnHowToPly.setOnClickListener(new View.OnClickListener() {
+-                        @Override
+-                        public void onClick(View view) {
+-                            startActivity(new Intent(getApplicationContext(), HowToPlyActivity.class));
+-
+-                        }
+-         });
+-
+ 
+     }
+ 
+@@ -778,7 +679,7 @@
+     protected void onResume() {
+         super.onResume();
+         createViepager();
+-        createGame2Viepager();
++        //createGame2Viepager();
+ 
+     }
+ 
+Index: app/src/main/res/layout/activity_splash.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<RelativeLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"@drawable/splash\"\r\n    tools:context=\".SplashActivity\">\r\n\r\n\r\n    <LinearLayout\r\n       android:layout_margin=\"@dimen/_8sdp\"\r\n        android:layout_centerHorizontal=\"true\"\r\n        android:orientation=\"vertical\"\r\n        android:layout_above=\"@+id/frameLayout\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\">\r\n        <TextView\r\n            android:layout_gravity=\"center_horizontal\"\r\n            android:text=\"By clicking Sign In button you are agree to our\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"/>\r\n\r\n       <LinearLayout\r\n           android:gravity=\"center_horizontal\"\r\n           android:layout_gravity=\"center\"\r\n           android:layout_width=\"match_parent\"\r\n           android:layout_height=\"wrap_content\">\r\n           <TextView\r\n                android:id=\"@+id/txtTermsAndCondition\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:text=\"@string/terms_condition\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n\r\n           <TextView\r\n               android:text=\"and \"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n           <TextView\r\n               android:id=\"@+id/txtPrivacyPolicy\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:text=\"@string/privacy_policy\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n       </LinearLayout>\r\n    </LinearLayout>\r\n\r\n    <FrameLayout\r\n        android:id=\"@+id/frameLayout\"\r\n        android:layout_alignParentBottom=\"true\"\r\n        android:layout_marginBottom=\"@dimen/_35sdp\"\r\n        android:layout_marginEnd=\"@dimen/_20sdp\"\r\n        android:layout_marginStart=\"@dimen/_20sdp\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\">\r\n\r\n\r\n        <Button\r\n\r\n            android:id=\"@+id/btnSignIn\"\r\n            android:visibility=\"gone\"\r\n            android:textColor=\"@color/Black\"\r\n            android:textAllCaps=\"false\"\r\n            android:textSize=\"@dimen/_15sdp\"\r\n            android:background=\"@drawable/bg_gra_btn_signin\"\r\n            android:text=\"Sign In With Gmail\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"/>\r\n        <ProgressBar\r\n            android:id=\"@+id/progress\"\r\n            android:layout_gravity=\"center_horizontal\"\r\n            android:layout_width=\"@dimen/_30sdp\"\r\n            android:layout_height=\"@dimen/_30sdp\"/>\r\n\r\n    </FrameLayout>\r\n\r\n</RelativeLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_splash.xml	(revision 403455868a5119df8ba76623c5b2d44014df7cc6)
++++ app/src/main/res/layout/activity_splash.xml	(date 1614724389823)
+@@ -8,46 +8,7 @@
+     tools:context=".SplashActivity">
+ 
+ 
+-    <LinearLayout
+-       android:layout_margin="@dimen/_8sdp"
+-        android:layout_centerHorizontal="true"
+-        android:orientation="vertical"
+-        android:layout_above="@+id/frameLayout"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content">
+-        <TextView
+-            android:layout_gravity="center_horizontal"
+-            android:text="By clicking Sign In button you are agree to our"
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content"/>
+-
+-       <LinearLayout
+-           android:gravity="center_horizontal"
+-           android:layout_gravity="center"
+-           android:layout_width="match_parent"
+-           android:layout_height="wrap_content">
+-           <TextView
+-                android:id="@+id/txtTermsAndCondition"
+-               android:textSize="@dimen/_13sdp"
+-               android:text="@string/terms_condition"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-
+-           <TextView
+-               android:text="and "
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-           <TextView
+-               android:id="@+id/txtPrivacyPolicy"
+-               android:textSize="@dimen/_13sdp"
+-               android:text="@string/privacy_policy"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-       </LinearLayout>
+-    </LinearLayout>
+-
+     <FrameLayout
+-        android:id="@+id/frameLayout"
+         android:layout_alignParentBottom="true"
+         android:layout_marginBottom="@dimen/_35sdp"
+         android:layout_marginEnd="@dimen/_20sdp"
+@@ -55,9 +16,7 @@
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content">
+ 
+-
+         <Button
+-
+             android:id="@+id/btnSignIn"
+             android:visibility="gone"
+             android:textColor="@color/Black"
+Index: app/src/main/res/layout/dialog_paytm_pay_method.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<ScrollView xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    android:orientation=\"vertical\"\r\n    android:padding=\"@dimen/_8sdp\"\r\n    android:layout_margin=\"@dimen/_10sdp\"\r\n    android:background=\"@drawable/update_btn_bg\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"wrap_content\">\r\n   <LinearLayout\r\n       android:orientation=\"vertical\"\r\n       android:layout_width=\"match_parent\"\r\n       android:layout_height=\"wrap_content\">\r\n\r\n       <TextView\r\n           android:layout_margin=\"@dimen/_8sdp\"\r\n           android:layout_gravity=\"center\"\r\n           android:padding=\"@dimen/_8sdp\"\r\n           android:textStyle=\"bold\"\r\n           android:textColor=\"@color/white\"\r\n           android:background=\"@drawable/update_btn_1\"\r\n           android:textSize=\"@dimen/_18sdp\"\r\n           android:text=\"Select Payment Method\"\r\n           android:layout_width=\"wrap_content\"\r\n           android:layout_height=\"wrap_content\"/>\r\n\r\n       <RadioGroup\r\n           android:id=\"@+id/rdiogrp_pay\"\r\n           android:layout_width=\"match_parent\"\r\n           android:layout_height=\"wrap_content\">\r\n           <RadioButton\r\n               android:id=\"@+id/rdioBtn_bank\"\r\n               android:paddingStart=\"@dimen/_10sdp\"\r\n               style=\"@style/radionbutton\"\r\n               android:textSize=\"@dimen/_16sdp\"\r\n               android:textColor=\"@color/white\"\r\n               android:text=\"Bank Account - ব্যাংক একাউন্ট\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n\r\n           <RadioButton\r\n               android:layout_marginTop=\"@dimen/_10sdp\"\r\n               android:id=\"@+id/rdioBtn_upi\"\r\n               android:paddingStart=\"@dimen/_10sdp\"\r\n               style=\"@style/radionbutton\"\r\n               android:textSize=\"@dimen/_16sdp\"\r\n               android:textColor=\"@color/white\"\r\n               android:text=\"Phonepay/Gpay/Paytm/UPI\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n       </RadioGroup>\r\n\r\n       <LinearLayout\r\n              android:layout_margin=\"@dimen/_8sdp\"\r\n              android:id=\"@+id/layoutPayMobile\"\r\n              android:visibility=\"gone\"\r\n              android:orientation=\"vertical\"\r\n              android:layout_width=\"match_parent\"\r\n              android:layout_height=\"wrap_content\">\r\n              <ImageView\r\n                  android:src=\"@drawable/payout_image\"\r\n                  android:layout_width=\"match_parent\"\r\n                  android:layout_height=\"@dimen/_100sdp\"/>\r\n\r\n              <TextView\r\n                  android:textStyle=\"bold\"\r\n                  android:textColor=\"@color/White\"\r\n                  android:textSize=\"@dimen/_13sdp\"\r\n                  android:layout_marginTop=\"@dimen/_8sdp\"\r\n                  android:layout_marginStart=\"@dimen/_8sdp\"\r\n                  android:padding=\"@dimen/_5sdp\"\r\n                  android:text=\"Enter Your Paytm/Phonepay/Gpay Number\"\r\n                  android:layout_width=\"wrap_content\"\r\n                  android:layout_height=\"wrap_content\"/>\r\n              <EditText\r\n                  android:textColor=\"@color/white\"\r\n                  android:textColorHint=\"@color/gray_8ba6c1\"\r\n                  android:hint=\"Enter number here\"\r\n                  android:textStyle=\"bold\"\r\n                  android:background=\"@drawable/edt_bg_black_trans\"\r\n                  android:inputType=\"phone\"\r\n                  android:id=\"@+id/payNum1\"\r\n                  android:padding=\"@dimen/_5sdp\"\r\n                  android:drawablePadding=\"@dimen/_5sdp\"\r\n                  android:textSize=\"@dimen/_13sdp\"\r\n                  android:layout_margin=\"@dimen/_8sdp\"\r\n                  android:layout_width=\"match_parent\"\r\n                  android:layout_height=\"wrap_content\"/>\r\n\r\n              <TextView\r\n                  android:textStyle=\"bold\"\r\n                  android:textColor=\"@color/White\"\r\n                  android:textSize=\"@dimen/_13sdp\"\r\n                  android:layout_marginTop=\"@dimen/_8sdp\"\r\n                  android:layout_marginStart=\"@dimen/_8sdp\"\r\n                  android:padding=\"@dimen/_5sdp\"\r\n                  android:text=\"Enter Your Paytm/Phonepay/Gpay Number Again\"\r\n                  android:layout_width=\"wrap_content\"\r\n                  android:layout_height=\"wrap_content\"/>\r\n              <EditText\r\n                  android:textColor=\"@color/white\"\r\n                  android:textColorHint=\"@color/gray_8ba6c1\"\r\n                  android:hint=\"Enter same number here\"\r\n                  android:background=\"@drawable/edt_bg_black_trans\"\r\n                  android:inputType=\"phone\"\r\n                  android:id=\"@+id/payNum2\"\r\n                  android:padding=\"@dimen/_5sdp\"\r\n                  android:drawablePadding=\"@dimen/_5sdp\"\r\n                  android:textSize=\"@dimen/_13sdp\"\r\n                  android:layout_margin=\"@dimen/_8sdp\"\r\n                  android:layout_width=\"match_parent\"\r\n                  android:layout_height=\"wrap_content\"/>\r\n\r\n\r\n\r\n\r\n\r\n          </LinearLayout>\r\n       <LinearLayout\r\n           android:visibility=\"gone\"\r\n           android:id=\"@+id/layoutPayBank\"\r\n           android:orientation=\"vertical\"\r\n           android:layout_width=\"match_parent\"\r\n           android:layout_height=\"wrap_content\">\r\n           <TextView\r\n               android:textStyle=\"bold\"\r\n               android:textColor=\"@color/White\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_marginTop=\"@dimen/_8sdp\"\r\n               android:layout_marginStart=\"@dimen/_8sdp\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:text=\"Enter Bank Acc No (ব্যাংক একাউন্ট নাম্বার দিন)\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n           <EditText\r\n               android:textStyle=\"bold\"\r\n               android:background=\"@color/white\"\r\n               android:inputType=\"text\"\r\n               android:id=\"@+id/edtBankAcc1\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:drawablePadding=\"@dimen/_5sdp\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_margin=\"@dimen/_8sdp\"\r\n               android:layout_width=\"match_parent\"\r\n               android:layout_height=\"wrap_content\"/>\r\n\r\n\r\n           <TextView\r\n               android:textStyle=\"bold\"\r\n               android:textColor=\"@color/White\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_marginTop=\"@dimen/_8sdp\"\r\n               android:layout_marginStart=\"@dimen/_8sdp\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:text=\"Enter Bank Acc No (ব্যাংক একাউন্ট নাম্বার দিন)\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n           <EditText\r\n               android:textStyle=\"bold\"\r\n               android:background=\"@color/white\"\r\n               android:inputType=\"text\"\r\n               android:id=\"@+id/edtBankAcc2\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:drawablePadding=\"@dimen/_5sdp\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_margin=\"@dimen/_8sdp\"\r\n               android:layout_width=\"match_parent\"\r\n               android:layout_height=\"wrap_content\"/>\r\n\r\n           <TextView\r\n               android:textStyle=\"bold\"\r\n               android:textColor=\"@color/White\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_marginTop=\"@dimen/_8sdp\"\r\n               android:layout_marginStart=\"@dimen/_8sdp\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:text=\"IFSC কোড\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n           <EditText\r\n               android:textStyle=\"bold\"\r\n               android:background=\"@color/white\"\r\n               android:inputType=\"text\"\r\n               android:id=\"@+id/edtBankIfsc\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:drawablePadding=\"@dimen/_5sdp\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_margin=\"@dimen/_8sdp\"\r\n               android:layout_width=\"match_parent\"\r\n               android:layout_height=\"wrap_content\"/>\r\n\r\n\r\n           <TextView\r\n               android:textStyle=\"bold\"\r\n               android:textColor=\"@color/White\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_marginTop=\"@dimen/_8sdp\"\r\n               android:layout_marginStart=\"@dimen/_8sdp\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:text=\"Bank Name\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n           <EditText\r\n               android:textStyle=\"bold\"\r\n               android:background=\"@color/white\"\r\n               android:inputType=\"text\"\r\n               android:id=\"@+id/edtBankName\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:drawablePadding=\"@dimen/_5sdp\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_margin=\"@dimen/_8sdp\"\r\n               android:layout_width=\"match_parent\"\r\n               android:layout_height=\"wrap_content\"/>\r\n\r\n           <TextView\r\n               android:textStyle=\"bold\"\r\n               android:textColor=\"@color/White\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_marginTop=\"@dimen/_8sdp\"\r\n               android:layout_marginStart=\"@dimen/_8sdp\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:text=\"Your Name\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n           <EditText\r\n               android:textStyle=\"bold\"\r\n               android:background=\"@color/white\"\r\n               android:inputType=\"text\"\r\n               android:id=\"@+id/edtCustName\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:drawablePadding=\"@dimen/_5sdp\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_margin=\"@dimen/_8sdp\"\r\n               android:layout_width=\"match_parent\"\r\n               android:layout_height=\"wrap_content\"/>\r\n\r\n\r\n           <TextView\r\n               android:textStyle=\"bold\"\r\n               android:textColor=\"@color/White\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_marginTop=\"@dimen/_8sdp\"\r\n               android:layout_marginStart=\"@dimen/_8sdp\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:text=\"Your Mobile Number\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n           <EditText\r\n               android:textStyle=\"bold\"\r\n               android:background=\"@color/white\"\r\n               android:inputType=\"text\"\r\n               android:id=\"@+id/edtCustPhn\"\r\n               android:padding=\"@dimen/_5sdp\"\r\n               android:drawablePadding=\"@dimen/_5sdp\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:layout_margin=\"@dimen/_8sdp\"\r\n               android:layout_width=\"match_parent\"\r\n               android:layout_height=\"wrap_content\"/>\r\n\r\n\r\n\r\n   </LinearLayout>\r\n\r\n       <LinearLayout\r\n           android:gravity=\"end\"\r\n           android:orientation=\"horizontal\"\r\n           android:layout_width=\"match_parent\"\r\n           android:layout_height=\"wrap_content\">\r\n           <Button\r\n               android:id=\"@+id/btnCancel\"\r\n               android:layout_margin=\"@dimen/_8sdp\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:textColor=\"@color/White\"\r\n               android:background=\"@color/Red\"\r\n               android:text=\"Cancel\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n\r\n           <Button\r\n               android:id=\"@+id/btnPayout\"\r\n               android:layout_margin=\"@dimen/_8sdp\"\r\n               android:textSize=\"@dimen/_13sdp\"\r\n               android:textColor=\"@color/Black\"\r\n               android:background=\"@color/LawnGreen\"\r\n               android:text=\"PAYOUT\"\r\n               android:layout_width=\"wrap_content\"\r\n               android:layout_height=\"wrap_content\"/>\r\n       </LinearLayout>\r\n\r\n       <ImageView\r\n           android:id=\"@+id/imgBanner\"\r\n           android:layout_width=\"match_parent\"\r\n           android:layout_height=\"@dimen/_150sdp\"\r\n           android:visibility=\"gone\" />\r\n\r\n       <ImageView\r\n           android:id=\"@+id/ImgWpContact\"\r\n           android:src=\"@drawable/livechat\"\r\n           android:layout_width=\"match_parent\"\r\n           android:layout_height=\"80dp\"/>\r\n   </LinearLayout>\r\n</ScrollView>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/dialog_paytm_pay_method.xml	(revision 403455868a5119df8ba76623c5b2d44014df7cc6)
++++ app/src/main/res/layout/dialog_paytm_pay_method.xml	(date 1614724389832)
+@@ -1,266 +1,64 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+-    xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:orientation="vertical"
+-    android:padding="@dimen/_8sdp"
++    android:padding="@dimen/_13sdp"
+     android:layout_margin="@dimen/_10sdp"
+-    android:background="@drawable/update_btn_bg"
++    android:background="@drawable/bg_gra_pink"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+-
+-       <TextView
+-           android:layout_margin="@dimen/_8sdp"
+-           android:layout_gravity="center"
+-           android:padding="@dimen/_8sdp"
+-           android:textStyle="bold"
+-           android:textColor="@color/white"
+-           android:background="@drawable/update_btn_1"
+-           android:textSize="@dimen/_18sdp"
+-           android:text="Select Payment Method"
+-           android:layout_width="wrap_content"
+-           android:layout_height="wrap_content"/>
+-
+-       <RadioGroup
+-           android:id="@+id/rdiogrp_pay"
+-           android:layout_width="match_parent"
+-           android:layout_height="wrap_content">
+-           <RadioButton
+-               android:id="@+id/rdioBtn_bank"
+-               android:paddingStart="@dimen/_10sdp"
+-               style="@style/radionbutton"
+-               android:textSize="@dimen/_16sdp"
+-               android:textColor="@color/white"
+-               android:text="Bank Account - ব্যাংক একাউন্ট"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-
+-           <RadioButton
+-               android:layout_marginTop="@dimen/_10sdp"
+-               android:id="@+id/rdioBtn_upi"
+-               android:paddingStart="@dimen/_10sdp"
+-               style="@style/radionbutton"
+-               android:textSize="@dimen/_16sdp"
+-               android:textColor="@color/white"
+-               android:text="Phonepay/Gpay/Paytm/UPI"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-       </RadioGroup>
+-
+-       <LinearLayout
+-              android:layout_margin="@dimen/_8sdp"
+-              android:id="@+id/layoutPayMobile"
+-              android:visibility="gone"
+-              android:orientation="vertical"
+-              android:layout_width="match_parent"
+-              android:layout_height="wrap_content">
+-              <ImageView
+-                  android:src="@drawable/payout_image"
+-                  android:layout_width="match_parent"
+-                  android:layout_height="@dimen/_100sdp"/>
++       <ImageView
++           android:src="@drawable/payout_image"
++           android:layout_width="match_parent"
++           android:layout_height="@dimen/_100sdp"/>
+ 
+-              <TextView
+-                  android:textStyle="bold"
+-                  android:textColor="@color/White"
+-                  android:textSize="@dimen/_13sdp"
+-                  android:layout_marginTop="@dimen/_8sdp"
+-                  android:layout_marginStart="@dimen/_8sdp"
+-                  android:padding="@dimen/_5sdp"
+-                  android:text="Enter Your Paytm/Phonepay/Gpay Number"
+-                  android:layout_width="wrap_content"
+-                  android:layout_height="wrap_content"/>
+-              <EditText
+-                  android:textColor="@color/white"
+-                  android:textColorHint="@color/gray_8ba6c1"
+-                  android:hint="Enter number here"
+-                  android:textStyle="bold"
+-                  android:background="@drawable/edt_bg_black_trans"
+-                  android:inputType="phone"
+-                  android:id="@+id/payNum1"
+-                  android:padding="@dimen/_5sdp"
+-                  android:drawablePadding="@dimen/_5sdp"
+-                  android:textSize="@dimen/_13sdp"
+-                  android:layout_margin="@dimen/_8sdp"
+-                  android:layout_width="match_parent"
+-                  android:layout_height="wrap_content"/>
++       <TextView
++           android:textStyle="bold"
++           android:textColor="@color/White"
++           android:textSize="@dimen/_13sdp"
++           android:layout_marginTop="@dimen/_8sdp"
++           android:layout_marginStart="@dimen/_8sdp"
++           android:padding="@dimen/_5sdp"
++           android:text="Enter Your Paytm/Phonepay/Gpay Number"
++           android:layout_width="wrap_content"
++           android:layout_height="wrap_content"/>
++       <EditText
++           android:textStyle="bold"
++           android:background="@color/white"
++           android:inputType="phone"
++           android:id="@+id/payNum1"
++           android:padding="@dimen/_5sdp"
++           android:drawablePadding="@dimen/_5sdp"
++           android:textSize="@dimen/_13sdp"
++           android:layout_margin="@dimen/_8sdp"
++           android:layout_width="match_parent"
++           android:layout_height="wrap_content"/>
+ 
+-              <TextView
+-                  android:textStyle="bold"
+-                  android:textColor="@color/White"
+-                  android:textSize="@dimen/_13sdp"
+-                  android:layout_marginTop="@dimen/_8sdp"
+-                  android:layout_marginStart="@dimen/_8sdp"
+-                  android:padding="@dimen/_5sdp"
+-                  android:text="Enter Your Paytm/Phonepay/Gpay Number Again"
+-                  android:layout_width="wrap_content"
+-                  android:layout_height="wrap_content"/>
+-              <EditText
+-                  android:textColor="@color/white"
+-                  android:textColorHint="@color/gray_8ba6c1"
+-                  android:hint="Enter same number here"
+-                  android:background="@drawable/edt_bg_black_trans"
+-                  android:inputType="phone"
+-                  android:id="@+id/payNum2"
+-                  android:padding="@dimen/_5sdp"
+-                  android:drawablePadding="@dimen/_5sdp"
+-                  android:textSize="@dimen/_13sdp"
+-                  android:layout_margin="@dimen/_8sdp"
+-                  android:layout_width="match_parent"
+-                  android:layout_height="wrap_content"/>
+-
+-
+-
+-
+-
+-          </LinearLayout>
+-       <LinearLayout
+-           android:visibility="gone"
+-           android:id="@+id/layoutPayBank"
+-           android:orientation="vertical"
+-           android:layout_width="match_parent"
+-           android:layout_height="wrap_content">
+-           <TextView
+-               android:textStyle="bold"
+-               android:textColor="@color/White"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_marginTop="@dimen/_8sdp"
+-               android:layout_marginStart="@dimen/_8sdp"
+-               android:padding="@dimen/_5sdp"
+-               android:text="Enter Bank Acc No (ব্যাংক একাউন্ট নাম্বার দিন)"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-           <EditText
+-               android:textStyle="bold"
+-               android:background="@color/white"
+-               android:inputType="text"
+-               android:id="@+id/edtBankAcc1"
+-               android:padding="@dimen/_5sdp"
+-               android:drawablePadding="@dimen/_5sdp"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_margin="@dimen/_8sdp"
+-               android:layout_width="match_parent"
+-               android:layout_height="wrap_content"/>
+-
+-
+-           <TextView
+-               android:textStyle="bold"
+-               android:textColor="@color/White"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_marginTop="@dimen/_8sdp"
+-               android:layout_marginStart="@dimen/_8sdp"
+-               android:padding="@dimen/_5sdp"
+-               android:text="Enter Bank Acc No (ব্যাংক একাউন্ট নাম্বার দিন)"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-           <EditText
+-               android:textStyle="bold"
+-               android:background="@color/white"
+-               android:inputType="text"
+-               android:id="@+id/edtBankAcc2"
+-               android:padding="@dimen/_5sdp"
+-               android:drawablePadding="@dimen/_5sdp"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_margin="@dimen/_8sdp"
+-               android:layout_width="match_parent"
+-               android:layout_height="wrap_content"/>
+-
+-           <TextView
+-               android:textStyle="bold"
+-               android:textColor="@color/White"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_marginTop="@dimen/_8sdp"
+-               android:layout_marginStart="@dimen/_8sdp"
+-               android:padding="@dimen/_5sdp"
+-               android:text="IFSC কোড"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-           <EditText
+-               android:textStyle="bold"
+-               android:background="@color/white"
+-               android:inputType="text"
+-               android:id="@+id/edtBankIfsc"
+-               android:padding="@dimen/_5sdp"
+-               android:drawablePadding="@dimen/_5sdp"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_margin="@dimen/_8sdp"
+-               android:layout_width="match_parent"
+-               android:layout_height="wrap_content"/>
++       <TextView
++           android:textStyle="bold"
++           android:textColor="@color/White"
++           android:textSize="@dimen/_13sdp"
++           android:layout_marginTop="@dimen/_8sdp"
++           android:layout_marginStart="@dimen/_8sdp"
++           android:padding="@dimen/_5sdp"
++           android:text="Enter Your Paytm/Phonepay/Gpay Number Again"
++           android:layout_width="wrap_content"
++           android:layout_height="wrap_content"/>
++       <EditText
++           android:background="@color/white"
++           android:inputType="phone"
++           android:id="@+id/payNum2"
++           android:padding="@dimen/_5sdp"
++           android:drawablePadding="@dimen/_5sdp"
++           android:textSize="@dimen/_13sdp"
++           android:layout_margin="@dimen/_8sdp"
++           android:layout_width="match_parent"
++           android:layout_height="wrap_content"/>
+ 
+ 
+-           <TextView
+-               android:textStyle="bold"
+-               android:textColor="@color/White"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_marginTop="@dimen/_8sdp"
+-               android:layout_marginStart="@dimen/_8sdp"
+-               android:padding="@dimen/_5sdp"
+-               android:text="Bank Name"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-           <EditText
+-               android:textStyle="bold"
+-               android:background="@color/white"
+-               android:inputType="text"
+-               android:id="@+id/edtBankName"
+-               android:padding="@dimen/_5sdp"
+-               android:drawablePadding="@dimen/_5sdp"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_margin="@dimen/_8sdp"
+-               android:layout_width="match_parent"
+-               android:layout_height="wrap_content"/>
+-
+-           <TextView
+-               android:textStyle="bold"
+-               android:textColor="@color/White"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_marginTop="@dimen/_8sdp"
+-               android:layout_marginStart="@dimen/_8sdp"
+-               android:padding="@dimen/_5sdp"
+-               android:text="Your Name"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-           <EditText
+-               android:textStyle="bold"
+-               android:background="@color/white"
+-               android:inputType="text"
+-               android:id="@+id/edtCustName"
+-               android:padding="@dimen/_5sdp"
+-               android:drawablePadding="@dimen/_5sdp"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_margin="@dimen/_8sdp"
+-               android:layout_width="match_parent"
+-               android:layout_height="wrap_content"/>
+-
+-
+-           <TextView
+-               android:textStyle="bold"
+-               android:textColor="@color/White"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_marginTop="@dimen/_8sdp"
+-               android:layout_marginStart="@dimen/_8sdp"
+-               android:padding="@dimen/_5sdp"
+-               android:text="Your Mobile Number"
+-               android:layout_width="wrap_content"
+-               android:layout_height="wrap_content"/>
+-           <EditText
+-               android:textStyle="bold"
+-               android:background="@color/white"
+-               android:inputType="text"
+-               android:id="@+id/edtCustPhn"
+-               android:padding="@dimen/_5sdp"
+-               android:drawablePadding="@dimen/_5sdp"
+-               android:textSize="@dimen/_13sdp"
+-               android:layout_margin="@dimen/_8sdp"
+-               android:layout_width="match_parent"
+-               android:layout_height="wrap_content"/>
+-
+-
+-
+-   </LinearLayout>
+-
+        <LinearLayout
+            android:gravity="end"
+            android:orientation="horizontal"
+@@ -295,7 +93,7 @@
+ 
+        <ImageView
+            android:id="@+id/ImgWpContact"
+-           android:src="@drawable/livechat"
++            android:src="@drawable/livechat"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"/>
+    </LinearLayout>

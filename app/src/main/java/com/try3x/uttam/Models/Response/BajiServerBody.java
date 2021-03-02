@@ -6,36 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BajiServerBody {
-    public String email, u_id, sha1, quesId;
-    public int noOfBaji, quesResult;
+    public String email, u_id, sha1;
+    public int noOfBaji;
     public String token;
    public List<Packages> packageList = new ArrayList<>();
 
     public BajiServerBody() {
-    }
-
-    public String getQuesId() {
-        return quesId;
-    }
-
-    public void setQuesId(String quesId) {
-        this.quesId = quesId;
-    }
-
-    public int getQuesResult() {
-        return quesResult;
-    }
-
-    public void setQuesResult(int quesResult) {
-        this.quesResult = quesResult;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public List<Packages> getPackageList() {
