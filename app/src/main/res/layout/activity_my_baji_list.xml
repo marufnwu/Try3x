@@ -179,12 +179,13 @@
                </LinearLayout>
            </LinearLayout>
            <ImageView
+
                android:scaleType="fitXY"
                android:id="@+id/imgBanner"
-               android:visibility="visible"
+               android:visibility="gone"
                android:layout_margin="@dimen/_8sdp"
                android:layout_width="match_parent"
-               android:layout_height="@dimen/_120sdp"/>
+               android:layout_height="@dimen/_160sdp"/>
            <RelativeLayout
                android:paddingEnd="@dimen/_3sdp"
                android:paddingStart="@dimen/_3sdp"

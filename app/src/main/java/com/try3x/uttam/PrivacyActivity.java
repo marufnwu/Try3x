@@ -47,7 +47,7 @@ public class PrivacyActivity extends AppCompatActivity {
             }
         });
         view.getSettings().setJavaScriptEnabled(true);
-        view.loadUrl("https://try3x.com/privacy-policy-2/");
+        view.loadUrl(getString(R.string.privacy_url));
     }
 
     private void createDialog() {

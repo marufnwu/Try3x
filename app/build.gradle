@@ -21,8 +21,8 @@ android {
         applicationId "com.try3x.uttam"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 22
-        versionName "3.0.4"
+        versionCode 23
+        versionName "3.0.5"
 //
 //        versionCode 10
 //        versionName "1.0.0"
@@ -126,4 +126,5 @@ dependencies {
 //    implementation 'com.google.android.gms:play-services-auth-api-phone:17.3.0'
 
     implementation 'com.razorpay:checkout:1.5.16'
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 }

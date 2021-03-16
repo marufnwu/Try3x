@@ -128,6 +128,7 @@ public class SplashActivity extends AppCompatActivity {
     boolean isActivityCreatedByNoti = false;
     private IRetrofitApiCall iRetrofitApiCall;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -185,6 +186,13 @@ public class SplashActivity extends AppCompatActivity {
                 gmailSignIn();
             }
         });
+        txtPrivacyPolicy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SplashActivity.this, PrivacyActivity.class));
+            }
+        });
+
     }
     private void gmailSignIn() {
         showWaitingDialog();

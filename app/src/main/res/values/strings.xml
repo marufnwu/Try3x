@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Try3x DEV</string>
+    <string name="app_name">Try3x</string>
     <string name="my_coin">My Coin কয়েন কিনুন</string>
     <string name="commission">Commission</string>
     <string name="withdrawable">Withdrawable</string>
@@ -17,4 +17,6 @@ Use the version\n
     <string name="invite_text_desc">আপনি আপনার বন্ধুকে যদি গেমটি রেফার করেন,তবে তিনি যতোবার টাকা তুলবেন আপনি ততোবার Rs: 250 (সর্বোচ্চ)  করে কমিশন পাবেন।আনলিমিটেড কমিশন</string>
     <string name="terms_condition"><u> Terms of use </u></string>
     <string name="privacy_policy"><u> Privacy policy </u></string>
+    <string name="privacy_url">https://try3x.com/privacy-policy-2/</string>
+    <string name="terms_condition_url">https://try3x.com/privacy-policy-2/</string>
 </resources>

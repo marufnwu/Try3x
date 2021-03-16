@@ -265,7 +265,10 @@ public class GameSlotView extends Fragment implements OnPackageItemClickListener
         recyclerPck.setHasFixedSize(true);
 
         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
-                .getPackages()
+                .getPackages(
+                        slot.id,
+                        gmailInfo.user_id
+                )
                 .enqueue(new Callback<PackageList>() {
                     @Override
                     public void onResponse(Call<PackageList> call, Response<PackageList> response) {

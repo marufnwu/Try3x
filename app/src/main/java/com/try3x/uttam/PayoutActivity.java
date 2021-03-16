@@ -502,10 +502,92 @@ public class PayoutActivity extends AppCompatActivity {
                     }
 
                 }else if(rdioGrp_pay.getCheckedRadioButtonId() == R.id.rdioBtn_bank) {
-                    Toast.makeText(PayoutActivity.this, "Coming soon", Toast.LENGTH_SHORT).show();
+
+                    EditText edtBankAcc1 = payMethodDialog.findViewById(R.id.edtBankAcc1);
+                    EditText edtBankAcc2 = payMethodDialog.findViewById(R.id.edtBankAcc2);
+                    EditText edtBankIfsc = payMethodDialog.findViewById(R.id.edtBankIfsc);
+                    EditText edtBankName = payMethodDialog.findViewById(R.id.edtBankName);
+                    EditText edtCustPhn = payMethodDialog.findViewById(R.id.edtCustPhn);
+                    EditText edtCustName = payMethodDialog.findViewById(R.id.edtCustName);
+
+                    String accNo1 = edtBankAcc1.getText().toString().trim();
+                    String accNo2 = edtBankAcc2.getText().toString().trim();
+
+                    String ifsc = edtBankIfsc.getText().toString().trim();
+                    String bankName = edtBankName.getText().toString().trim();
+                    String custPhn = edtCustPhn.getText().toString().trim();
+                    String custName = edtCustName.getText().toString().trim();
+
+                    if (!accNo1.isEmpty() && !accNo2.isEmpty()){
+                        if (!accNo1.equals(accNo2)){
+                            Toast.makeText(PayoutActivity.this, "Acc No. Not Matched.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }else {
+                        Toast.makeText(PayoutActivity.this, "Bank Acc Can Not Empty", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (ifsc.isEmpty()){
+                        Toast.makeText(PayoutActivity.this, "IFSC code is required", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (bankName.isEmpty()){
+                        Toast.makeText(PayoutActivity.this, "Bank Name code is required", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (custName.isEmpty()){
+                        Toast.makeText(PayoutActivity.this, "Your Name is required", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (custPhn.isEmpty()){
+                        Toast.makeText(PayoutActivity.this, "Phone number is required", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    showWaitingDialog();
+                    RetrofitClient.getRetrofit()
+                            .create(IRetrofitApiCall.class)
+                            .paymentBankRequest(
+                                    Common.getKeyHash(PayoutActivity.this),
+                                    gmailInfo.gmail,
+                                    gmailInfo.user_id,
+                                    gmailInfo.access_token,
+                                    accNo1,
+                                    ifsc,
+                                    bankName,
+                                    custPhn,
+                                    custName
+                            )
+                            .enqueue(new Callback<ServerResponse>() {
+                                @Override
+                                public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                                    dismissWaitingDialog();
+                                    if (response.isSuccessful() && response.body() != null) {
+                                        ServerResponse serverResponse = response.body();
+                                        Toast.makeText(PayoutActivity.this, serverResponse.error_description, Toast.LENGTH_LONG).show();
+
+                                        if (!serverResponse.isError()) {
+                                            payMethodDialog.dismiss();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ServerResponse> call, Throwable t) {
+                                    Toast.makeText(PayoutActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    dismissWaitingDialog();
+                                }
+                            });
                 }else {
                     Toast.makeText(PayoutActivity.this, "Please select any payment method", Toast.LENGTH_SHORT).show();
                 }
+
+
+
+
 
             }
         });

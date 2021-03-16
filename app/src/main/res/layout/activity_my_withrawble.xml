@@ -86,7 +86,7 @@
                android:visibility="gone"
                android:layout_margin="@dimen/_8sdp"
                android:layout_width="match_parent"
-               android:layout_height="@dimen/_120sdp"/>
+               android:layout_height="@dimen/_160sdp"/>
 
            <RelativeLayout
                android:padding="@dimen/_8sdp"
@@ -175,7 +175,7 @@
                    <ImageView
                        android:src="@drawable/poor"
                        android:layout_width="@dimen/_100sdp"
-                       android:layout_height="@dimen/_100sdp"/>
+                       android:layout_height="@dimen/_160sdp"/>
 
                    <TextView
                        android:textColor="@color/BlueViolet"

@@ -47,7 +47,7 @@ public class TermActivity extends AppCompatActivity {
             }
         });
         view.getSettings().setJavaScriptEnabled(true);
-        view.loadUrl("https://try3x.com/terms-conditions/");
+        view.loadUrl(getString(R.string.terms_condition_url));
     }
 
     private void createDialog() {

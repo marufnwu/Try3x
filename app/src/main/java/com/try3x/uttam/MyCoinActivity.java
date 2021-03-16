@@ -37,6 +37,8 @@ import com.try3x.uttam.Models.User;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
 import com.try3x.uttam.Retrofit.RetrofitClient;
 
+import java.util.Random;
+
 import cc.cloudist.acplibrary.ACProgressConstant;
 import cc.cloudist.acplibrary.ACProgressPie;
 import io.paperdb.Paper;
@@ -425,10 +427,33 @@ public class MyCoinActivity extends AppCompatActivity {
                             final ActivityBanner activityBanner = response.body();
                             if (!activityBanner.error){
                                 if (activityBanner.imageUrl!=null){
+                                    int val = new Random().nextInt(6-1)+1;
+                                    int drawable = R.drawable.place1;
+                                    switch (val){
+                                        case 2:
+                                            drawable = R.drawable.place2;
+                                            break;
+                                        case 3:
+                                            drawable = R.drawable.place3;
+                                            break;
+                                        case 4:
+                                            drawable = R.drawable.place4;
+                                            break;
+                                        case 5:
+                                            drawable = R.drawable.place5;
+                                            break;
+                                        case 6:
+                                            drawable = R.drawable.place6;
+                                            break;
+                                        default:
+                                            drawable = R.drawable.place1;
+
+                                    }
                                     imgBanner.setVisibility(View.VISIBLE);
                                     if(!MyCoinActivity.this.isFinishing()){
                                         Glide.with(MyCoinActivity.this)
                                                 .load(activityBanner.imageUrl)
+                                                .thumbnail(Glide.with(MyCoinActivity.this).load(drawable))
                                                 .into(imgBanner);
 
                                         imgBanner.setOnClickListener(new View.OnClickListener() {

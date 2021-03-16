@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,6 +44,8 @@ public class YtVideoAdapter extends RecyclerView.Adapter<YtVideoAdapter.MyViewHo
                     .into(holder.thumbnail);
         }
 
+        holder.txtTitle.setText(item.getSnippet().getTitle());
+
         if(item.getSnippet().getResourceId().getVideoId()!=null){
             holder.thumbnail.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -66,10 +69,13 @@ public class YtVideoAdapter extends RecyclerView.Adapter<YtVideoAdapter.MyViewHo
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView thumbnail;
+        TextView txtTitle;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             thumbnail = itemView.findViewById(R.id.thumbnail);
+            txtTitle = itemView.findViewById(R.id.txtTitle);
         }
     }
 }

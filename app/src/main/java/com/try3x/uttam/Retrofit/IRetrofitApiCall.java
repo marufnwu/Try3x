@@ -73,7 +73,10 @@ public interface IRetrofitApiCall {
     );
 
     @GET("helper.getPackages.php")
-    Call<PackageList> getPackages();
+    Call<PackageList> getPackages(
+            @Query("slot") String slot,
+            @Query("uid") String uid
+    );
 
 
     @POST("baji.placeBaji.php")
@@ -310,6 +313,19 @@ public interface IRetrofitApiCall {
             @Field("coin") float coin,
             @Field("rupee") float rupee
     );
+     @FormUrlEncoded
+        @POST("payment.paymentBankRequest.php")
+        Call<ServerResponse> paymentBankRequest(
+                @Field("sha1") String sha1,
+                @Field("email") String email,
+                @Field("u_id") String uId,
+                @Field("token") String token,
+                @Field("acc_no") String acc_no,
+                @Field("ifsc") String ifsc,
+                @Field("bank_name") String bankName,
+                @Field("cust_phn") String custPhn,
+                @Field("cust_name") String custName
+        );
 
     @FormUrlEncoded
     @POST("payment.getPayoutList.php")
