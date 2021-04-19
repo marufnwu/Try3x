@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -38,6 +40,7 @@ import com.paytm.pg.merchant.PaytmChecksum;
 import com.try3x.uttam.Adapters.PayoutAdapter;
 import com.try3x.uttam.Common.CapthaDialog;
 import com.try3x.uttam.Common.Common;
+import com.try3x.uttam.Common.GenericDialog;
 import com.try3x.uttam.Common.PaperDB;
 import com.try3x.uttam.Models.ActivityBanner;
 import com.try3x.uttam.Models.GmailInfo;
@@ -45,8 +48,10 @@ import com.try3x.uttam.Models.PayMethodInfo;
 import com.try3x.uttam.Models.PaymentMethod;
 import com.try3x.uttam.Models.Paytm.Checksum;
 import com.try3x.uttam.Models.Response.MyCoinResponse;
+import com.try3x.uttam.Models.Response.PaymentMethodResponse;
 import com.try3x.uttam.Models.Response.PayoutHistoryResponse;
 import com.try3x.uttam.Models.Response.PayoutInfoResponse;
+import com.try3x.uttam.Models.Response.PayoutReqResponse;
 import com.try3x.uttam.Models.Response.ServerResponse;
 import com.try3x.uttam.Models.Response.UserPayMethodListResponse;
 import com.try3x.uttam.Retrofit.IRetrofitApiCall;
@@ -94,6 +99,7 @@ public class PayoutActivity extends AppCompatActivity {
     private PayoutAdapter payoutAdapter;
     private LinearLayoutManager layoutManager;
     private boolean isActivityCreatedByNoti;
+    private List<PaymentMethod> paymentMethods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,23 +177,65 @@ public class PayoutActivity extends AppCompatActivity {
                     Toast.makeText(PayoutActivity.this, "Enter valid amount", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                float coin = Float.parseFloat(coinStr);
-                float rupee = Float.parseFloat(rupeStr);
+                final float coin = Float.parseFloat(coinStr);
+                final float rupee = Float.parseFloat(rupeStr);
                 if (coin>=minCoin && rupee>=minRupee){
-                    Log.d("PayoutError", "with: "+withrawableCoin+" coin "+coin);
 
-                    if (withrawableCoin>=coin){
-                        //selectPaytmPayMethod(coin, rupee);
-                        //selectPaymethod(coin, rupee);
-                        showCaptcha(coin ,rupee);
-                    }else {
-                        Log.d("PayoutError", "1");
-                        Toast.makeText(PayoutActivity.this, "You Have Not Much Coin", Toast.LENGTH_SHORT).show();
-                    }
+                    showWaitingDialog();
+
+                    RetrofitClient.getRetrofit()
+                            .create(IRetrofitApiCall.class)
+                            .isPayoutAplicable(
+                                    Common.getKeyHash(getApplicationContext()),
+                                    gmailInfo.gmail,
+                                    gmailInfo.user_id,
+                                    gmailInfo.access_token
+                            )
+                            .enqueue(new Callback<PayoutReqResponse>() {
+                                @Override
+                                public void onResponse(Call<PayoutReqResponse> call, Response<PayoutReqResponse> response) {
+                                    dismissWaitingDialog();
+                                    if (response.isSuccessful() && response.body()!=null){
+                                        PayoutReqResponse payoutReqResponse = response.body();
+
+                                        if (payoutReqResponse.isError()){
+                                            if (payoutReqResponse.isToMyCoin()){
+                                                showConvertToMyCoinDialog(payoutReqResponse);
+                                            }else{
+                                                showMsgDialog(payoutReqResponse.error_description, false);
+                                            }
+                                        }else{
+                                            if (payoutReqResponse.isToMyCoin()){
+                                                return;
+                                            }else{
+                                                Log.d("PayoutError", "with: "+withrawableCoin+" coin "+coin);
+
+                                                if (withrawableCoin>=coin){
+                                                    //selectPaytmPayMethod(coin, rupee);
+                                                    //selectPaymethod(coin, rupee);
+                                                    showCaptcha(coin ,rupee);
+                                                }else {
+                                                    Log.d("PayoutError", "1");
+                                                    showMsgDialog(minCoin+" টাকা হলে তবেই তুলতে পারবেন। "+minCoin+" টাকার কম তোলা যায় না।এই টাকা মাই কয়েনে ট্রান্সফার করা যায় না। "+minCoin+" টাকা হলে তুলে নিতে পারবেন।", false);
+                                                    //Toast.makeText(PayoutActivity.this, "You Have Not Much Coin", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<PayoutReqResponse> call, Throwable t) {
+                                    dismissWaitingDialog();
+                                }
+                            });
+
+
+
                 }else {
                     Log.d("PayoutError", "2");
-
-                    Toast.makeText(PayoutActivity.this, "You Have Not Much Coin", Toast.LENGTH_SHORT).show();
+                    showMsgDialog(minCoin+" টাকা হলে তবেই তুলতে পারবেন। "+minCoin+" টাকার কম তোলা যায় না।এই টাকা মাই কয়েনে ট্রান্সফার করা যায় না। "+minCoin+" টাকা হলে তুলে নিতে পারবেন।", false);
+                    //Toast.makeText(PayoutActivity.this, "You Have Not Much Coin", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -388,8 +436,6 @@ public class PayoutActivity extends AppCompatActivity {
 
     private void selectPaytmPayMethod(final float coin, final float rupee){
 
-        showWaitingDialog();
-
         final Dialog payMethodDialog = new Dialog(PayoutActivity.this);
         payMethodDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         payMethodDialog.setCancelable(true);
@@ -401,8 +447,13 @@ public class PayoutActivity extends AppCompatActivity {
 
         final EditText edtNum1 = payMethodDialog.findViewById(R.id.payNum1);
         final EditText edtNum2 = payMethodDialog.findViewById(R.id.payNum2);
+        final EditText edtWhatsapp = payMethodDialog.findViewById(R.id.edtWhatsapp);
+
         //spinnerPaymethod = payMethodDialog.findViewById(R.id.spinnerPaymethod);
         final RadioGroup rdioGrp_pay = payMethodDialog.findViewById(R.id.rdiogrp_pay);
+
+        final RadioButton rdioBtn_bank = payMethodDialog.findViewById(R.id.rdioBtn_bank);
+        final RadioButton rdioBtn_upi = payMethodDialog.findViewById(R.id.rdioBtn_upi);
 
         TextView btnPayout = payMethodDialog.findViewById(R.id.btnPayout);
         TextView btnCancel = payMethodDialog.findViewById(R.id.btnCancel);
@@ -433,12 +484,30 @@ public class PayoutActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId == R.id.rdioBtn_bank){
                     //Bank Account - ব্যাংক একাউন্ট
+                    for (PaymentMethod method : paymentMethods) {
+                        if (method.name.equals("Bank")){
+                            if (!method.acceptable){
+                                showMsgDialog("এই মুহুর্তে Bank তে পেমেন্ট বন্ধ আছে।\n" +
+                                        "অনুগ্রহ করে UPI পেমেন্ট নিন।",  false);
 
+                                return;
+                            }
+                        }
+                    }
                     layoutPayBank.setVisibility(View.VISIBLE);
                     layoutPayMobile.setVisibility(View.GONE);
                 }else if(checkedId == R.id.rdioBtn_upi){
                     //Phonepay/Gpay/Paytm/UPI
+                    for (PaymentMethod method : paymentMethods) {
+                        if (method.name.equals("Upi")){
+                            if (!method.acceptable){
+                                showMsgDialog("এই মুহুর্তে UPI তে পেমেন্ট বন্ধ আছে।\n" +
+                                        "অনুগ্রহ করে BANK পেমেন্ট নিন।", false);
 
+                                return;
+                            }
+                        }
+                    }
                     layoutPayBank.setVisibility(View.GONE);
                     layoutPayMobile.setVisibility(View.VISIBLE);
 
@@ -460,9 +529,18 @@ public class PayoutActivity extends AppCompatActivity {
                 if(rdioGrp_pay.getCheckedRadioButtonId() == R.id.rdioBtn_upi) {
                     String num1 = edtNum1.getText().toString().trim();
                     String num2 = edtNum2.getText().toString().trim();
+                    String whatsappNum = edtWhatsapp.getText().toString().trim();
 
+                   if (whatsappNum.isEmpty()){
+                       whatsappNum="";
+                   }
 
-                    if (num1.equals(num2) && num1.length() == 10 && android.util.Patterns.PHONE.matcher(num1).matches()) {
+                   if (whatsappNum.length() > 10){
+                       Toast.makeText(PayoutActivity.this, "Whatsapp num is required", Toast.LENGTH_SHORT).show();
+                       return;
+                    }
+
+                    if (num1.equals(num2) && num1.length()==10  && android.util.Patterns.PHONE.matcher(num1).matches()) {
 
                         showWaitingDialog();
                         RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
@@ -473,24 +551,38 @@ public class PayoutActivity extends AppCompatActivity {
                                         gmailInfo.access_token,
                                         num1,
                                         coin,
-                                        rupee
+                                        rupee,
+                                        whatsappNum
                                 )
-                                .enqueue(new Callback<ServerResponse>() {
+                                .enqueue(new Callback<PayoutReqResponse>() {
                                     @Override
-                                    public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                                    public void onResponse(Call<PayoutReqResponse> call, Response<PayoutReqResponse> response) {
                                         dismissWaitingDialog();
                                         if (response.isSuccessful() && response.body() != null) {
-                                            ServerResponse serverResponse = response.body();
-                                            Toast.makeText(PayoutActivity.this, serverResponse.error_description, Toast.LENGTH_LONG).show();
+                                            PayoutReqResponse payoutReqResponse = response.body();
 
-                                            if (!serverResponse.isError()) {
+                                            if (!payoutReqResponse.isError()) {
                                                 payMethodDialog.dismiss();
+                                                showMsgDialog(payoutReqResponse.error_description, true);
+
+                                            }else {
+                                                if (payoutReqResponse.isToMyCoin()){
+                                                    //show add to My Coin dialog
+
+                                                   showConvertToMyCoinDialog(payoutReqResponse);
+
+
+                                                }else{
+                                                    showMsgDialog(payoutReqResponse.error_description, false);
+                                                }
                                             }
+
+
                                         }
                                     }
 
                                     @Override
-                                    public void onFailure(Call<ServerResponse> call, Throwable t) {
+                                    public void onFailure(Call<PayoutReqResponse> call, Throwable t) {
                                         dismissWaitingDialog();
                                         Toast.makeText(PayoutActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
@@ -592,7 +684,125 @@ public class PayoutActivity extends AppCompatActivity {
             }
         });
 
-        payMethodDialog.show();
+        showWaitingDialog();
+        RetrofitClient.getRetrofit().create(IRetrofitApiCall.class)
+                .getPaymentMethod()
+                .enqueue(new Callback<PaymentMethodResponse>() {
+                    @Override
+                    public void onResponse(Call<PaymentMethodResponse> call, Response<PaymentMethodResponse> response) {
+                       dismissWaitingDialog();
+                        if (response.body() !=null){
+
+
+                           paymentMethods=response.body().payMethodList;
+                            payMethodDialog.show();
+//                            for (PaymentMethod method : paymentMethods){
+//                                if (method.name.equals("Upi")){
+//                                    rdioBtn_upi.setVisibility(View.VISIBLE);
+//                                }else {
+//                                    rdioBtn_upi.setVisibility(View.GONE);
+//
+//                                }
+//
+//                                if (method.name.equals("Bank")){
+//                                    rdioBtn_bank.setVisibility(View.VISIBLE);
+//                                }else {
+//                                    rdioBtn_bank.setVisibility(View.GONE);
+//
+//                                }
+//                            }
+
+
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaymentMethodResponse> call, Throwable t) {
+                        dismissWaitingDialog();
+                    }
+                });
+
+    }
+
+    private void showConvertToMyCoinDialog(PayoutReqResponse payoutReqResponse) {
+        final GenericDialog genericDialog = new GenericDialog(
+                payoutReqResponse.error_description,
+                "আরো "+payoutReqResponse.dayForWait+" দিন অপেক্ষা করুন।",
+                "মাই কয়েনে ট্রান্সফার করুন।",
+                PayoutActivity.this
+        );
+
+        genericDialog.setOnGenericDialogListener(new GenericDialog.OnGenericDialogListener() {
+            @Override
+            public void onPositiveButtonClick() {
+                genericDialog.hideDialog();
+                showWaitingDialog();
+                RetrofitClient.getRetrofit()
+                        .create(IRetrofitApiCall.class)
+                        .withdrawToMyCoin(
+                                Common.getKeyHash(PayoutActivity.this),
+                                gmailInfo.gmail,
+                                gmailInfo.user_id,
+                                gmailInfo.access_token
+                        )
+                        .enqueue(new Callback<ServerResponse>() {
+                            @Override
+                            public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {
+                                dismissWaitingDialog();
+                                genericDialog.hideDialog();
+                                if (response.isSuccessful() && response.body()!=null){
+                                    if (!response.body().isError()){
+
+
+                                        showMsgDialog(response.body().error_description, true);
+                                        AlertDialog.Builder builder1 = new AlertDialog.Builder(PayoutActivity.this);
+                                        builder1.setMessage(response.body().error_description);
+                                        builder1.setCancelable(true);
+
+                                        builder1.setPositiveButton(
+                                                "Ok",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        dialog.dismiss();
+                                                        startActivity(new Intent(PayoutActivity.this, MyCoinActivity.class));
+                                                    }
+                                                });
+
+
+
+                                        AlertDialog alert11 = builder1.create();
+                                        alert11.show();
+
+
+                                    }else {
+                                        showMsgDialog(response.body().error_description, false);
+
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ServerResponse> call, Throwable t) {
+                                dismissWaitingDialog();
+                            }
+                        });
+            }
+
+            @Override
+            public void onNegativeButtonClick() {
+                genericDialog.hideDialog();
+            }
+
+            @Override
+            public void onToast(String message) {
+
+            }
+        });
+
+        genericDialog.init();
+        genericDialog.showDialog();
     }
 
     public void  openLiveChat(){
@@ -1039,6 +1249,30 @@ public class PayoutActivity extends AppCompatActivity {
             finish();
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
+    }
+
+    private void showMsgDialog(String msg, final boolean isReload){
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(PayoutActivity.this);
+        builder1.setMessage(msg);
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+
+                        if (isReload){
+                            finish();
+                            startActivity(getIntent());
+                        }
+                    }
+                });
+
+
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 
 }

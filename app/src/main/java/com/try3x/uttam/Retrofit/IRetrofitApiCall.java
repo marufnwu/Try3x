@@ -19,6 +19,7 @@ import com.try3x.uttam.Models.Response.PaymentInfoResponse;
 import com.try3x.uttam.Models.Response.PaymentMethodResponse;
 import com.try3x.uttam.Models.Response.PayoutHistoryResponse;
 import com.try3x.uttam.Models.Response.PayoutInfoResponse;
+import com.try3x.uttam.Models.Response.PayoutReqResponse;
 import com.try3x.uttam.Models.Response.ReferUserListResponse;
 import com.try3x.uttam.Models.Response.ResultListResponse;
 import com.try3x.uttam.Models.Response.ResultStatusResponse;
@@ -283,6 +284,15 @@ public interface IRetrofitApiCall {
     );
 
     @FormUrlEncoded
+    @POST("payment.isPayoutAplicable.php")
+    Call<PayoutReqResponse> isPayoutAplicable(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uId,
+            @Field("token") String token
+    );
+
+    @FormUrlEncoded
     @POST("payment.getPayMethodList.php")
     Call<UserPayMethodListResponse> getPayMethodList(
             @Field("sha1") String sha1,
@@ -304,14 +314,15 @@ public interface IRetrofitApiCall {
     );
     @FormUrlEncoded
     @POST("payment.paymentPaytmRequest.php")
-    Call<ServerResponse> paymentPaytmRequest(
+    Call<PayoutReqResponse> paymentPaytmRequest(
             @Field("sha1") String sha1,
             @Field("email") String email,
             @Field("u_id") String uId,
             @Field("token") String token,
             @Field("pay_num") String pay_num,
             @Field("coin") float coin,
-            @Field("rupee") float rupee
+            @Field("rupee") float rupee,
+            @Field("wNum") String wNum
     );
      @FormUrlEncoded
         @POST("payment.paymentBankRequest.php")
@@ -496,8 +507,15 @@ public interface IRetrofitApiCall {
             @Field("u_id") String uId,
             @Field("token") String token,
             @Field("baji_id") int id
+    );
 
-
+    @FormUrlEncoded
+    @POST("coin.withdrawToMyCoin.php")
+    Call<ServerResponse> withdrawToMyCoin(
+            @Field("sha1") String sha1,
+            @Field("email") String email,
+            @Field("u_id") String uId,
+            @Field("token") String token
     );
     @POST("baji.game2.getResult.php")
     Call<ResultListResponse> getGame2ResultList(

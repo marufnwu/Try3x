@@ -34,12 +34,20 @@
                android:gravity="center"
                android:id="@+id/txtDesc"
                android:textSize="@dimen/_14sdp"
-               android:textColor="#0CBA32"
+               android:textColor="@color/DarkSlateBlue"
                android:layout_marginTop="@dimen/_8sdp"
                android:layout_gravity="center_horizontal"
                android:text="@string/update_text"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"/>
+
+           <ImageView
+               android:id="@+id/imgDynamic"
+               android:layout_margin="@dimen/_8sdp"
+               android:scaleType="fitCenter"
+               android:src="@drawable/imageloading"
+               android:layout_width="match_parent"
+               android:layout_height="@dimen/_130sdp"/>
 
            <LinearLayout
                android:layout_marginTop="@dimen/_25sdp"
@@ -70,10 +78,12 @@
                    android:layout_height="wrap_content"/>
            </LinearLayout>
 
-           <include
-               layout="@layout/dynamic_layout"
+           <ImageView
+               android:id="@+id/imgLiveChat"
+               android:layout_margin="@dimen/_8sdp"
+               android:src="@drawable/livechat"
                android:layout_width="match_parent"
-               android:layout_height="wrap_content" />
+               android:layout_height="@dimen/_60sdp"/>
        </LinearLayout>
    </ScrollView>
 </androidx.cardview.widget.CardView>

@@ -6,81 +6,74 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <HorizontalScrollView
-        android:layout_margin="@dimen/_3sdp"
-        android:scrollbarThumbHorizontal="@color/none"
-        android:scrollbars="horizontal"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:weightSum="3"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-            android:weightSum="3"
+
+        <Button
+            android:alpha="0.9"
+            android:gravity="center"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:layout_weight="1"
+            android:maxLines="2"
+            android:id="@+id/btnMyCoin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_4sdp"
+            android:background="@drawable/bg_btn_1"
+            android:drawablePadding="@dimen/_8sdp"
+            android:paddingStart="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_8sdp"
+            android:text="My Coin\nকয়েন কিনুন"
+            android:textAllCaps="false"
+            android:textColor="@color/MidnightBlue"
+            android:textSize="@dimen/_10sdp" />
+
+        <Button
+            android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:gravity="center"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:drawablePadding="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_8sdp"
+            android:paddingStart="@dimen/_8sdp"
+            android:textColor="@color/MidnightBlue"
+            android:textSize="@dimen/_10sdp"
 
-            <Button
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:layout_weight="1"
-                android:maxLines="2"
-                android:id="@+id/btnMyCoin"
-                android:layout_width="@dimen/_120sdp"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_4sdp"
-                android:background="@drawable/bg_btn_1"
-                android:drawableEnd="@drawable/arrow_right"
-                android:drawablePadding="@dimen/_8sdp"
-                android:paddingStart="@dimen/_8sdp"
-                android:paddingEnd="@dimen/_8sdp"
-                android:text="My Coin\nকয়েন কিনুন"
-                android:textAllCaps="false"
-                android:textColor="@color/MidnightBlue"
-                android:textSize="@dimen/_13sdp" />
+            android:background="@drawable/bg_btn_1"
 
-            <Button
-                android:layout_weight="1"
-                android:layout_gravity="center_vertical"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:drawablePadding="@dimen/_8sdp"
-                android:paddingEnd="@dimen/_8sdp"
-                android:paddingStart="@dimen/_8sdp"
-                android:textColor="@color/MidnightBlue"
-                android:textSize="@dimen/_13sdp"
+            android:textAllCaps="false"
+            android:layout_margin="@dimen/_4sdp"
+            android:id="@+id/btnCommission"
+            android:text="Commission\nকমিশন"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
 
-                android:drawableEnd="@drawable/arrow_right"
-                android:background="@drawable/bg_btn_1"
-
-                android:textAllCaps="false"
-                android:layout_margin="@dimen/_4sdp"
-                android:id="@+id/btnCommission"
-                android:text="Commission\nকমিশন"
-                android:layout_width="@dimen/_110sdp"
-                android:layout_height="wrap_content"/>
-
-            <Button
-                android:layout_weight="1"
-                android:layout_gravity="center_vertical"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:drawablePadding="@dimen/_8sdp"
-                android:paddingEnd="@dimen/_8sdp"
-                android:paddingStart="@dimen/_8sdp"
-                android:textColor="@color/MidnightBlue"
-                android:textSize="@dimen/_13sdp"
-                android:drawableEnd="@drawable/arrow_right"
-                android:background="@drawable/bg_btn_1"
-                android:textAllCaps="false"
-                android:layout_margin="@dimen/_4sdp"
-                android:id="@+id/btnwithdrawable"
-                android:text="Prize\nপ্রাইজ
-"
-                android:layout_width="@dimen/_120sdp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-    </HorizontalScrollView>
+        <Button
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:drawablePadding="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_8sdp"
+            android:paddingStart="@dimen/_8sdp"
+            android:textColor="@color/MidnightBlue"
+            android:textSize="@dimen/_10sdp"
+            android:background="@drawable/bg_btn_1"
+            android:textAllCaps="false"
+            android:layout_margin="@dimen/_4sdp"
+            android:id="@+id/btnwithdrawable"
+            android:text="Prize\nপ্রাইজ"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 
     <ScrollView

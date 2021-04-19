@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -64,6 +65,13 @@ import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
+import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 import com.try3x.uttam.Common.Common;
 import com.try3x.uttam.Common.FileUtils;
@@ -127,6 +135,11 @@ public class SplashActivity extends AppCompatActivity {
     String activity = null;
     boolean isActivityCreatedByNoti = false;
     private IRetrofitApiCall iRetrofitApiCall;
+    int PERMISSION_ALL = 1;
+    String[] PERMISSIONS = {
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
 
 
     @Override
@@ -205,7 +218,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
+        //checkFilePer();
         checkUpdate();
 
 
@@ -315,11 +328,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                int PERMISSION_ALL = 1;
-                String[] PERMISSIONS = {
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                };
+
 
                 if (!hasPermissions(SplashActivity.this, PERMISSIONS)) {
                     ActivityCompat.requestPermissions(SplashActivity.this, PERMISSIONS, PERMISSION_ALL);
@@ -349,6 +358,27 @@ public class SplashActivity extends AppCompatActivity {
 //       downloadApp downloadApp = new downloadApp();
 //       downloadApp.setContext(SplashActivity.this);
 //       downloadApp.execute(apk);
+        String appName = "try3x.apk";
+        String PATH = Objects.requireNonNull(getApplicationContext().getExternalFilesDir(null)).getAbsolutePath();
+
+        File apkFile = new File(PATH, appName);
+
+        if(apkFile.exists()){
+            final PackageManager pm = getPackageManager();
+            PackageInfo info = pm.getPackageArchiveInfo(PATH+"/"+appName, 0);
+            //Toast.makeText(this, "VersionCode : " + info.versionCode + ", VersionName : " + info.versionName , Toast.LENGTH_LONG).show();
+
+            if (info!=null){
+                if (apk.vCode==info.versionCode){
+                    installApk();
+                    return;
+                }
+            }
+
+
+        }
+
+
         createUpdateProgress();
         updateServices = new UpdateServices();
 
@@ -362,6 +392,41 @@ public class SplashActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void installApk() {
+        try {
+            String appName = "try3x.apk";
+            String PATH = Objects.requireNonNull(getApplicationContext().getExternalFilesDir(null)).getAbsolutePath();
+            File file = new File(PATH + "/"+appName);
+            //String PATH = Environment.getExternalStoragePublicDirectory("try3x").getAbsolutePath();
+            //File file = new File(PATH+"/"+appName);
+            Log.d("AppPath", file.getPath());
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            if (Build.VERSION.SDK_INT >= 24) {
+                Uri downloaded_apk = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", file);
+                intent.setDataAndType(downloaded_apk, "application/vnd.android.package-archive");
+                List<ResolveInfo> resInfoList = getApplicationContext().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    getApplicationContext().grantUriPermission(getApplicationContext().getApplicationContext().getPackageName() + ".provider", downloaded_apk, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+            } else {
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+                intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
+            startActivity(intent);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(updateServices, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.d("InstallError", e.getMessage());
+        }
     }
 
     private void createUpdateProgress() {
@@ -717,6 +782,11 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                if (!hasPermissions(SplashActivity.this, PERMISSIONS)) {
+                    ActivityCompat.requestPermissions(SplashActivity.this, PERMISSIONS, PERMISSION_ALL);
+                    return;
+                }
+
                 boolean error = false;
 
                 if (edtFullName.getText().toString().length()<4){
@@ -759,6 +829,19 @@ public class SplashActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void checkFilePer() {
+        Dexter.withContext(this)
+                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .withListener(new PermissionListener() {
+                    @Override public void onPermissionGranted(PermissionGrantedResponse response) {
+                        Toast.makeText(SplashActivity.this, "Granted", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override public void onPermissionDenied(PermissionDeniedResponse response) {/* ... */}
+                    @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {/* ... */}
+
+                }).check();
     }
 
     private void getDynamicBanner(final ImageView imgBanner, String keyword) {

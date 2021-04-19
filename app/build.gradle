@@ -4,10 +4,7 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 repositories {
     mavenCentral()
-    maven {
-        url "https://s3-ap-southeast-1.amazonaws.com/godel-release/godel/"
-    }
-    maven { url 'https://maven.cashfree.com/release'}
+
 
 }
 
@@ -21,8 +18,8 @@ android {
         applicationId "com.try3x.uttam"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 23
-        versionName "3.0.5"
+        versionCode 29
+        versionName "3.0.11"
 //
 //        versionCode 10
 //        versionName "1.0.0"
@@ -127,4 +124,5 @@ dependencies {
 
     implementation 'com.razorpay:checkout:1.5.16'
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+    implementation 'com.karumi:dexter:6.2.2'
 }

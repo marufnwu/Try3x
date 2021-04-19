@@ -19,7 +19,7 @@
            android:textStyle="bold"
            android:textColor="@color/white"
            android:background="@drawable/update_btn_1"
-           android:textSize="@dimen/_18sdp"
+           android:textSize="@dimen/_14sdp"
            android:text="Select Payment Method"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"/>
@@ -29,6 +29,7 @@
            android:layout_width="match_parent"
            android:layout_height="wrap_content">
            <RadioButton
+               android:visibility="gone"
                android:id="@+id/rdioBtn_bank"
                android:paddingStart="@dimen/_10sdp"
                style="@style/radionbutton"
@@ -39,11 +40,12 @@
                android:layout_height="wrap_content"/>
 
            <RadioButton
-               android:layout_marginTop="@dimen/_10sdp"
+               android:layout_marginStart="@dimen/_10sdp"
+               android:layout_marginTop="@dimen/_5sdp"
                android:id="@+id/rdioBtn_upi"
                android:paddingStart="@dimen/_10sdp"
                style="@style/radionbutton"
-               android:textSize="@dimen/_16sdp"
+               android:textSize="@dimen/_12sdp"
                android:textColor="@color/white"
                android:text="Phonepay/Gpay/Paytm/UPI"
                android:layout_width="wrap_content"
@@ -53,36 +55,37 @@
        <LinearLayout
               android:layout_margin="@dimen/_8sdp"
               android:id="@+id/layoutPayMobile"
-              android:visibility="gone"
+              android:visibility="visible"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
               <ImageView
                   android:src="@drawable/payout_image"
                   android:layout_width="match_parent"
-                  android:layout_height="@dimen/_100sdp"/>
+                  android:layout_height="@dimen/_60sdp"/>
 
               <TextView
                   android:textStyle="bold"
                   android:textColor="@color/White"
-                  android:textSize="@dimen/_13sdp"
-                  android:layout_marginTop="@dimen/_8sdp"
+                  android:textSize="@dimen/_10sdp"
+                  android:layout_marginTop="@dimen/_5sdp"
                   android:layout_marginStart="@dimen/_8sdp"
                   android:padding="@dimen/_5sdp"
                   android:text="Enter Your Paytm/Phonepay/Gpay Number"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"/>
               <EditText
+                  android:importantForAutofill="no"
                   android:textColor="@color/white"
                   android:textColorHint="@color/gray_8ba6c1"
                   android:hint="Enter number here"
                   android:textStyle="bold"
                   android:background="@drawable/edt_bg_black_trans"
-                  android:inputType="phone"
+                  android:inputType="phone|textNoSuggestions"
                   android:id="@+id/payNum1"
                   android:padding="@dimen/_5sdp"
                   android:drawablePadding="@dimen/_5sdp"
-                  android:textSize="@dimen/_13sdp"
+                  android:textSize="@dimen/_10sdp"
                   android:layout_margin="@dimen/_8sdp"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"/>
@@ -90,26 +93,53 @@
               <TextView
                   android:textStyle="bold"
                   android:textColor="@color/White"
-                  android:textSize="@dimen/_13sdp"
-                  android:layout_marginTop="@dimen/_8sdp"
+                  android:textSize="@dimen/_10sdp"
+                  android:layout_marginTop="@dimen/_5sdp"
                   android:layout_marginStart="@dimen/_8sdp"
                   android:padding="@dimen/_5sdp"
                   android:text="Enter Your Paytm/Phonepay/Gpay Number Again"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"/>
               <EditText
+                  android:importantForAutofill="no"
                   android:textColor="@color/white"
                   android:textColorHint="@color/gray_8ba6c1"
                   android:hint="Enter same number here"
                   android:background="@drawable/edt_bg_black_trans"
-                  android:inputType="phone"
+                  android:inputType="phone|textNoSuggestions"
                   android:id="@+id/payNum2"
                   android:padding="@dimen/_5sdp"
                   android:drawablePadding="@dimen/_5sdp"
-                  android:textSize="@dimen/_13sdp"
+                  android:textSize="@dimen/_10sdp"
                   android:layout_margin="@dimen/_8sdp"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"/>
+
+               <TextView
+                   android:textStyle="bold"
+                   android:textColor="@color/White"
+                   android:textSize="@dimen/_10sdp"
+                   android:layout_marginTop="@dimen/_5sdp"
+                   android:layout_marginStart="@dimen/_8sdp"
+                   android:padding="@dimen/_5sdp"
+                   android:text="Enter Your Whatsapp Number"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+
+               <EditText
+                      android:importantForAutofill="no"
+                      android:textColor="@color/white"
+                      android:textColorHint="@color/gray_8ba6c1"
+                      android:hint="Enter whatsapp number"
+                      android:background="@drawable/edt_bg_black_trans"
+                      android:inputType="phone|textNoSuggestions"
+                      android:id="@+id/edtWhatsapp"
+                      android:padding="@dimen/_5sdp"
+                      android:drawablePadding="@dimen/_5sdp"
+                      android:textSize="@dimen/_10sdp"
+                      android:layout_margin="@dimen/_8sdp"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"/>
 
 
 
@@ -242,7 +272,7 @@
                android:layout_marginTop="@dimen/_8sdp"
                android:layout_marginStart="@dimen/_8sdp"
                android:padding="@dimen/_5sdp"
-               android:text="Your Mobile Number"
+               android:text="Your Whatsapp Number"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"/>
            <EditText
@@ -297,6 +327,6 @@
            android:id="@+id/ImgWpContact"
            android:src="@drawable/livechat"
            android:layout_width="match_parent"
-           android:layout_height="80dp"/>
+           android:layout_height="60dp"/>
    </LinearLayout>
 </ScrollView>

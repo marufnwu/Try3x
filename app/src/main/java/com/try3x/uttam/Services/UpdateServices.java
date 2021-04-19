@@ -148,10 +148,10 @@ public class UpdateServices extends Service{
                 URL url = new URL(asyncParams[0].url);
                 HttpURLConnection c = (HttpURLConnection) url.openConnection();
                 c.setRequestMethod("GET");
-                c.setDoOutput(true);
+               // c.setDoOutput(true);
                 c.connect();
                 int lenghtOfFile = c.getContentLength();
-
+                Log.d("ResCode", c.getResponseCode()+" ");
                 String PATH = Objects.requireNonNull(getApplicationContext().getExternalFilesDir(null)).getAbsolutePath();
 
                 File file = new File(PATH);
@@ -159,7 +159,7 @@ public class UpdateServices extends Service{
                 //File file = Environment.getDownloadCacheDirectory();
                 boolean isCreate = file.mkdirs();
                 File outputFile = new File(file, appName);
-               Log.d("AppPath", outputFile.getPath());
+
                 outputFile.setReadable(true, true);
                 if (outputFile.exists()) {
                     boolean isDelete = outputFile.delete();
@@ -171,6 +171,7 @@ public class UpdateServices extends Service{
                 byte[] buffer = new byte[1024];
                 int len1;
                 long total = 0;
+                Log.d("AppPath", outputFile.getPath());
                 while ((len1 = is.read(buffer)) != -1) {
                     total += len1;
                     fos.write(buffer, 0, len1);
@@ -196,7 +197,8 @@ public class UpdateServices extends Service{
                 installApk(appName);
             } catch (Exception e) {
                 failedUpdating();
-                Log.e("UpdateAPP", "Update error! " + e.getMessage());
+                e.printStackTrace();
+                //Log.e("UpdateAPP", "Update error! " + e.getStackTrace());
             }
             return null;
         }

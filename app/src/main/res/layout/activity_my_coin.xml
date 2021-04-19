@@ -15,6 +15,15 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ImageView
+                android:scaleType="fitXY"
+                android:id="@+id/imgBanner"
+                android:visibility="gone"
+                android:layout_margin="@dimen/_5sdp"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_160sdp"/>
+
             <RelativeLayout
                 android:padding="@dimen/_8sdp"
                 android:layout_margin="@dimen/_3sdp"
@@ -190,13 +199,7 @@
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
-            <ImageView
-                android:scaleType="fitXY"
-                android:id="@+id/imgBanner"
-                android:visibility="visible"
-                android:layout_margin="@dimen/_5sdp"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_160sdp"/>
+
 
             <RelativeLayout
                 android:visibility="gone"
